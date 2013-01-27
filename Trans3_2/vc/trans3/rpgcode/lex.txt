@@ -1,0 +1,204 @@
+/*
+ ********************************************************************
+ * The RPG Toolkit, Version 3
+ * This file copyright (C) 2006  Colin James Fitzpatrick
+ ********************************************************************
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * Creating a game EXE using the Make EXE feature creates a 
+ * derivative version of trans3 that includes the game's files. 
+ * Therefore the EXE must be licensed under the GPL. However, as a 
+ * special exception, you are permitted to license EXEs made with 
+ * this feature under whatever terms you like, so long as 
+ * Corresponding Source, as defined in the GPL, of the version 
+ * of trans3 used to make the EXE is available separately under 
+ * terms compatible with the Licence of this software and that you 
+ * do not charge, aside from any price of the game EXE, to obtain 
+ * these components.
+ * 
+ * If you publish a modified version of this Program, you may delete
+ * these exceptions from its distribution terms, or you may choose
+ * to propagate them.
+ */
+
+%{
+unsigned int g_lines = 0;
+extern unsigned int g_depth;
+extern bool g_bErrorHandler;
+extern std::map<STD_NATURAL_STRING, tagClass>::value_type *g_pClass;
+
+#define _END_FILE_LINE ++g_lines; CProgram::m_pLines->push_back(CProgram::m_pyyUnits->size() - 1)/**; std::cerr << "line " << g_lines << "\n"**/
+#define YY_NEVER_INTERACTIVE 1
+%}
+
+%%
+
+	/* String versions of operators. */
+"=="	{ return EQ; }
+"->"	{ return MEM; }
+"++"	{ return INC; }
+"--"	{ return DEC; }
+"*="	{ return MUL_ASSIGN; }
+"/="	{ return DIV_ASSIGN; }
+"%="	{ return MOD_ASSIGN; }
+"+="	{ return ADD_ASSIGN; }
+"-="	{ return SUB_ASSIGN; }
+"<<="	{ return LS_ASSIGN; }
+">>="	{ return RS_ASSIGN; }
+"&="	{ return AND_ASSIGN; }
+"|="	{ return OR_ASSIGN; }
+"^="	{ return POW_ASSIGN; }
+"`="	{ return XOR_ASSIGN; }
+"*"		{ return MUL; }
+"+"		{ return ADD; }
+"-"		{ return SUB; }
+"!"		{ return NOT; }
+"~"		{ return BNOT; }
+"/"		{ return DIV; }
+"%"		{ return MOD; }
+"<<"	{ return LS; }
+">>"	{ return RS; }
+"<="	{ return LTE; }
+">="	{ return GTE; }
+"<"		{ return LT; }
+">"		{ return GT; }
+"~="	{ return IEQ; }
+"&"		{ return AND; }
+"^"		{ return POW; }
+"`"		{ return XOR; }
+"|"		{ return OR; }
+"&&"			{ return LAND; }
+[aA][nN][dD]	{ return LAND; }
+"||"			{ return LOR; }
+[oO][rR]		{ return LOR; }
+"="		{ return ASSIGN; }
+"("		{ return LPAREN; }
+")"		{ return RPAREN; }
+"["		{ return LARRAY; }
+"]"		{ return RARRAY; }
+"{"		{ return LCURL; }
+"}"		{ return RCURL; }
+","		{ return COMMA; }
+";"		{ return SEMICOLON; }
+"?"		{ return QUESTION; }
+":"		{ return COLON; }
+"$"		{ return LIT; }
+"."		{ return DOT; }
+
+	/* Some reserved keywords. */
+[fF][oO][rR]						{ return FOR; }
+[fF][uU][nN][cC][tT][iI][oO][nN]	{ return METHOD; }
+[mM][eE][tT][hH][oO][dD]			{ return METHOD; }
+[rR][eE][tT][uU][rR][nN]			{ return RETURN; }
+[rR][eE][tT][uU][rR][nN][mM][eE][tT][hH][oO][dD]	{ return RETURN; }
+[cC][lL][aA][sS][sS]				{ return CLASS; }
+[sS][tT][rR][uU][cC][tT]			{ return STRUCT; }
+[pP][uU][bB][lL][iI][cC]			{ return PUBLIC; }
+[pP][rR][iI][vV][aA][tT][eE]		{ return PRIVATE; }
+[vV][aA][rR]						{
+										if (g_pClass && (g_depth == 1))
+										{
+											// Only recognise this as a member declaration
+											// if we are in a class and not in a method.
+											return VAR;
+										}
+										yylval = "var";
+										return IDENTIFIER;
+									}
+[tT][rR][uU][eE]					{ yylval = 1; return NUMBER; }
+[fF][aA][lL][sS][eE]				{ yylval = 0; return NUMBER; }
+[nN][uU][lL][lL]					{ yylval = 0; return NUMBER; }
+[iI][nN][cC][lL][uU][dD][eE]		{ return INCLUDE; }
+[iI][nN][lL][iI][nN][eE]			{ return INLINE; }
+[sS][wW][iI][tT][cC][hH]			{ return SWITCH; }
+[cC][aA][sS][eE]					{ return CASE; }
+[dD][eE][fF][aA][uU][lL][tT]		{ return DEFAULT; }
+
+	/* Redirects */
+[rR][eE][dD][iI][rR][eE][cC][tT]									{ return REDIRECT; }
+[kK][iI][lL][lL][rR][eE][dD][iI][rR][eE][cC][tT]					{ return KILL_REDIRECT; }
+[kK][iI][lL][lL][aA][lL][lL][rR][eE][dD][iI][rR][eE][cC][tT][sS]	{ return KILL_ALL_REDIRECTS; }
+
+	/* Error handling */
+[oO][nN][ ]+[eE][rR][rR][oO][rR]	{ return ON_ERROR; }
+[rR][eE][sS][uU][mM][eE][ ]+[nN][eE][xX][tT]	{ return RESUME_NEXT; }
+[gG][oO][tT][oO]		{
+							if (g_bErrorHandler)
+								return GOTO;
+							yylval = "goto";
+							return IDENTIFIER;
+						}
+
+	/* An identifier */
+~?[0-9]*[A-Za-z_][A-Za-z0-9_]*	{
+								char *str = _strlwr(_strdup(yytext));
+								const STD_NATURAL_STRING s = str;
+								free(str);
+
+								std::map<STD_NATURAL_STRING, STACK_FRAME>::iterator i = CProgram::m_constants.find(s);
+								if (i != CProgram::m_constants.end())
+								{
+									STACK_FRAME &cst = i->second;
+									if (cst.udt & UDT_LIT)
+									{
+										yylval = "\"" + cst.lit + "\"";
+										return STRING;
+									}
+									yylval = cst.num;
+									return NUMBER;
+								}
+
+								yylval = s;
+								return IDENTIFIER;
+							}
+
+([0-9]+(\.[0-9]+)?|([0-9]+)?(\.[0-9]+))(e[+-][0-9]+)?	{ yylval = atof(yytext); return NUMBER; }
+\"[^\"]*\"				{ yylval = yytext; return STRING; }
+
+"/*"	{
+			// This C comment code is copied from an example in the flex manual.
+			int c;
+
+            while (true)
+			{
+				while ((c = yyinput()) != '*' && c != EOF)
+                    ;    /* eat up text of comment */
+
+				if (c == '*')
+				{
+					while ((c = yyinput()) == '*')
+							;
+					if (c == '/')
+						break;    /* found the end */
+				}
+
+				if (c == EOF)
+				{
+					yyerror("malformed comment");
+					break;
+				}
+			}
+		}
+
+_[ \t]*(("//".*)|"")[\r\n]+	{ }
+"//".*$					{ return SEMICOLON; }
+\*\*.*$					{ return SEMICOLON; }
+^[ \t]*\*.*$			{ return SEMICOLON; }
+[ \t]+					{ }
+"#"						{ }
+\r\n					{ _END_FILE_LINE; return SEMICOLON; }
+\r						{ _END_FILE_LINE; return SEMICOLON; }
+\n						{ _END_FILE_LINE; return SEMICOLON; }
+
+%%
+
+int yywrap(void) { return 1; }

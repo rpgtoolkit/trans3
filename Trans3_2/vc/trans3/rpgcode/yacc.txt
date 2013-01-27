@@ -1,0 +1,1016 @@
+/*
+ ********************************************************************
+ * The RPG Toolkit, Version 3
+ * This file copyright (C) 2006  Colin James Fitzpatrick
+ ********************************************************************
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * Creating a game EXE using the Make EXE feature creates a 
+ * derivative version of trans3 that includes the game's files. 
+ * Therefore the EXE must be licensed under the GPL. However, as a 
+ * special exception, you are permitted to license EXEs made with 
+ * this feature under whatever terms you like, so long as 
+ * Corresponding Source, as defined in the GPL, of the version 
+ * of trans3 used to make the EXE is available separately under 
+ * terms compatible with the Licence of this software and that you 
+ * do not charge, aside from any price of the game EXE, to obtain 
+ * these components.
+ * 
+ * If you publish a modified version of this Program, you may delete
+ * these exceptions from its distribution terms, or you may choose
+ * to propagate them.
+ ********************************************************************
+ *
+ * LALR(1) RPGCode grammar. Produce a series of machine
+ * instruction units from the RPGCode source.
+ *
+ * This grammar has some reduce/reduce conflicts. These
+ * are my fault. I tried to depend on context in context-free
+ * grammar. But fixing them is tricky and the default
+ * resolution works fine. If you can resolve them
+ * properly, go ahead.
+ *
+ */
+
+%start	begin
+%expect	42
+
+%token	MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN
+%token	SUB_ASSIGN LS_ASSIGN RS_ASSIGN AND_ASSIGN
+%token	OR_ASSIGN POW_ASSIGN XOR_ASSIGN EQ IEQ MEM
+%token	MUL ADD SUB NOT BNOT DIV MOD LS RS LTE GTE
+%token	LT GT AND POW XOR OR LAND LOR ASSIGN INC DEC
+%token	SEMICOLON IDENTIFIER NUMBER STRING LPAREN RPAREN
+%token	LARRAY RARRAY LCURL RCURL LIT FOR COMMA DEFAULT
+%token	QUESTION COLON METHOD RETURN HIGHEST SWITCH CASE
+%token	CLASS STRUCT PUBLIC PRIVATE VAR DOT INCLUDE
+%token	REDIRECT KILL_REDIRECT KILL_ALL_REDIRECTS INLINE
+%token	ON_ERROR RESUME_NEXT GOTO
+
+%right	XOR_ASSIGN
+		OR_ASSIGN
+		AND_ASSIGN
+		RS_ASSIGN
+		LS_ASSIGN
+		SUB_ASSIGN
+		ADD_ASSIGN
+		MOD_ASSIGN
+		DIV_ASSIGN
+		MUL_ASSIGN
+		POW_ASSIGN
+		ASSIGN
+
+%right	CONDITIONAL QUESTION COLON
+
+%left	LOR
+
+%left	LAND
+
+%left	OR
+
+%left	XOR
+
+%left	AND
+
+%left	IEQ
+		EQ
+
+%left	GTE
+		LTE
+		GT
+		LT
+
+%left	RS
+		LS
+
+%left	SUB
+		ADD
+
+%left	MOD
+		DIV
+		MUL
+
+%left	POW
+
+%right	NOT
+		BNOT
+		NEG
+		PREF_DEC
+		PREF_INC
+
+%left	POST_DEC
+		POST_INC
+		MEM
+		LPAREN RPAREN
+		LARRAY RARRAY
+		HIGHEST
+
+%{
+
+#define _MACHINE_UNIT(_func, _params) \
+	{ \
+		MACHINE_UNIT mu; \
+		mu.func = _func; \
+		mu.params = _params; \
+		mu.udt = UDT_FUNC; \
+		CProgram::m_pyyUnits->push_back(mu); \
+	}
+
+#define _END_LINE CProgram::m_pyyUnits->back().udt = UNIT_DATA_TYPE(CProgram::m_pyyUnits->back().udt | UDT_LINE)
+
+#define _FOUND_PARAM ++CProgram::m_params.back()
+
+%}
+
+%%
+
+tdc:
+	LIT
+|	NOT
+|	/* No TDC. */
+	{ }
+;
+
+/*
+ * These identifier rules must stay above the operators rule.
+ */
+
+var_identifier:
+	IDENTIFIER tdc
+		{
+			MACHINE_UNIT mu;
+			const STD_NATURAL_STRING var = $1.getLit();
+			if (!g_bVarFlag && g_methods.size() && g_methods.back().count(var))
+			{
+				(mu.lit = _T(" ")) += TCHAR(g_methods.back()[var] + 1);
+			}
+			else
+			{
+				mu.lit = var;
+			}
+			mu.udt = UDT_ID;
+			CProgram::m_pyyUnits->push_back(mu);
+		}
+;
+
+mem:
+	MEM { g_bVarFlag = true; }
+;
+
+empty_array:
+	LARRAY RARRAY
+|	LARRAY RARRAY empty_array
+;
+
+identifier:
+	var_identifier
+|	identifier LARRAY value RARRAY tdc
+		{ _MACHINE_UNIT(operators::array, 2); }
+|	LPAREN identifier RPAREN
+|	value mem function
+		{
+			g_bVarFlag = false;
+			if (CProgram::m_pyyUnits->back().func == CProgram::methodCall)
+			{
+				MACHINE_UNIT &name = *(CProgram::m_pyyUnits->end() - 2);
+				name.udt = UNIT_DATA_TYPE(name.udt | UDT_OBJ);
+			}
+			++CProgram::m_pyyUnits->back().params;
+		}
+|	value mem var_identifier
+		{
+			g_bVarFlag = false;
+			_MACHINE_UNIT(operators::member, 2);
+		}
+|	function
+|	identifier empty_array tdc
+;
+
+value:
+	_value
+|	identifier
+;
+
+label:
+	COLON IDENTIFIER
+		{
+			MACHINE_UNIT mu;
+			mu.udt = UDT_LABEL;
+			mu.lit = _T(":") + $2.getLit();
+			CProgram::m_pyyUnits->push_back(mu);
+		}
+;
+
+_value:
+	LPAREN _value RPAREN
+|	operators
+|	NUMBER
+		{
+			MACHINE_UNIT mu;
+			mu.num = $1.getNum();
+			mu.udt = UDT_NUM;
+			CProgram::m_pyyUnits->push_back(mu);
+		}
+|	STRING
+		{
+			MACHINE_UNIT mu;
+			mu.lit = $1.getLit().substr(1, $1.getLit().length() - 2);
+			mu.udt = UDT_LIT;
+			CProgram::m_pyyUnits->push_back(mu);
+		}
+|	label
+;
+
+params:
+	value COMMA params
+		{ _FOUND_PARAM; }
+|	value
+		{ _FOUND_PARAM; }
+|	/* No parameters. */
+		{ }
+;
+
+function_identifier_bare:
+	IDENTIFIER
+|	IDENTIFIER DOT IDENTIFIER
+		{ $$ = $1.getLit() + _T(".") + $3.getLit(); }
+;
+
+function_identifier:
+	IDENTIFIER
+		{
+			/* Check for redirected functions. */
+			std::map<STD_NATURAL_STRING, STD_NATURAL_STRING>::iterator i =
+				CProgram::m_redirects.find($1.getLit());
+			if (i != CProgram::m_redirects.end())
+			{
+				STD_NATURAL_STRING str = i->second;
+				const STD_NATURAL_STRING::size_type pos = str.find(_T('.'));
+				if (pos != STD_NATURAL_STRING::npos)
+				{
+					/* It's a function of the form x.y */
+					addInclusion(str.substr(0, pos) + _T(".prg"));
+					$$ = str.substr(pos + 1);
+				}
+				else
+				{
+					$$ = str;
+				}
+			}
+		}
+|	IDENTIFIER DOT IDENTIFIER
+		{ addInclusion($1.getLit() + _T(".prg")); $$ = $3; }
+;
+
+function:
+	function_identifier
+		{
+			CProgram::m_params.push_back(0);
+			g_bVarFlag = false;
+		}
+	LPAREN params RPAREN
+		{
+			MACHINE_FUNC pFunc = NULL;
+			if (CProgram::m_functions.count($1.getLit()))
+			{
+				pFunc = CProgram::m_functions[$1.getLit()];
+			}
+			else
+			{
+				MACHINE_UNIT mu;
+				mu.udt = UDT_ID;
+				mu.lit = $1.getLit();
+				mu.num = -1;
+				CProgram::m_pyyUnits->push_back(mu);
+				_FOUND_PARAM;
+				pFunc = CProgram::methodCall;
+			}
+			_MACHINE_UNIT(pFunc, CProgram::m_params.back());
+			CProgram::m_params.pop_back();
+		}
+;
+
+/**
+ * This rule is only only for operator overloading. For storing
+ * the method name, the character of each operator is required;
+ * in the interest of speed, they are duplicated only here.
+ */
+operator:
+	XOR_ASSIGN { $$ = _T("`="); }
+|	OR_ASSIGN { $$ = _T("|="); }
+|	AND_ASSIGN { $$ = _T("&="); }
+|	RS_ASSIGN { $$ = _T(">>="); }
+|	LS_ASSIGN { $$ = _T("<<="); }
+|	SUB_ASSIGN { $$ = _T("-="); }
+|	ADD_ASSIGN { $$ = _T("+="); }
+|	MOD_ASSIGN { $$ = _T("%="); }
+|	DIV_ASSIGN { $$ = _T("/="); }
+|	MUL_ASSIGN { $$ = _T("*="); }
+|	POW_ASSIGN { $$ = _T("^="); }
+|	ASSIGN { $$ = _T("="); }
+|	LOR { $$ = _T("||"); }
+|	LAND { $$ = _T("&&"); }
+|	OR { $$ = _T("|"); }
+|	XOR { $$ = _T("`"); }
+|	AND { $$ = _T("&"); }
+|	IEQ { $$ = _T("~="); }
+|	EQ { $$ = _T("=="); }
+|	GTE { $$ = _T(">="); }
+|	LTE { $$ = _T("<="); }
+|	GT { $$ = _T(">"); }
+|	LT { $$ = _T("<"); }
+|	RS { $$ = _T(">>"); }
+|	LS { $$ = _T("<<"); }
+|	SUB { $$ = _T("-"); }
+|	ADD { $$ = _T("+"); }
+|	MOD { $$ = _T("%"); }
+|	DIV { $$ = _T("/"); }
+|	MUL { $$ = _T("*"); }
+|	POW { $$ = _T("^"); }
+|	NOT { $$ = _T("!"); }
+|	BNOT { $$ = _T("~"); }
+|	INC { $$ = _T("++"); }
+|	DEC { $$ = _T("--"); }
+|	LARRAY RARRAY { $$ = _T("[]"); }
+;
+
+operators:
+	INC identifier %prec PREF_INC
+		{ _MACHINE_UNIT(operators::prefixIncrement, 1); }
+|	identifier INC %prec POST_INC
+		{ _MACHINE_UNIT(operators::postfixIncrement, 1); }
+|	DEC identifier %prec PREF_DEC
+		{ _MACHINE_UNIT(operators::prefixDecrement, 1); }
+|	identifier DEC %prec POST_DEC
+		{ _MACHINE_UNIT(operators::postfixDecrement, 1); }
+|	SUB value %prec NEG
+		{ _MACHINE_UNIT(operators::unaryNegation, 1); }
+|	BNOT value
+		{ _MACHINE_UNIT(operators::bnot, 1); }
+|	NOT value
+		{ _MACHINE_UNIT(operators::lnot, 1); }
+|	identifier XOR_ASSIGN value
+		{ _MACHINE_UNIT(operators::xor_assign, 2); }
+|	identifier OR_ASSIGN value
+		{ _MACHINE_UNIT(operators::or_assign, 2); }
+|	identifier AND_ASSIGN value
+		{ _MACHINE_UNIT(operators::and_assign, 2); }
+|	identifier RS_ASSIGN value
+		{ _MACHINE_UNIT(operators::rs_assign, 2); }
+|	identifier LS_ASSIGN value
+		{ _MACHINE_UNIT(operators::ls_assign, 2); }
+|	identifier SUB_ASSIGN value
+		{ _MACHINE_UNIT(operators::sub_assign, 2); }
+|	identifier ADD_ASSIGN value
+		{ _MACHINE_UNIT(operators::add_assign, 2); }
+|	identifier MOD_ASSIGN value
+		{ _MACHINE_UNIT(operators::mod_assign, 2); }
+|	identifier DIV_ASSIGN value
+		{ _MACHINE_UNIT(operators::div_assign, 2); }
+|	identifier MUL_ASSIGN value
+		{ _MACHINE_UNIT(operators::mul_assign, 2); }
+|	identifier POW_ASSIGN value
+		{ _MACHINE_UNIT(operators::pow_assign, 2); }
+|	identifier ASSIGN value
+		{ _MACHINE_UNIT(operators::assign, 2); }
+|	value LOR value
+		{ _MACHINE_UNIT(operators::lor, 2); }
+|	value LAND value
+		{ _MACHINE_UNIT(operators::land, 2); }
+|	value OR value
+		{ _MACHINE_UNIT(operators::bor, 2); }
+|	value XOR value
+		{ _MACHINE_UNIT(operators::bxor, 2); }
+|	value AND value
+		{ _MACHINE_UNIT(operators::band, 2); }
+|	value IEQ value
+		{ _MACHINE_UNIT(operators::ieq, 2); }
+|	value EQ value
+		{ _MACHINE_UNIT(operators::eq, 2); }
+|	value GTE value
+		{ _MACHINE_UNIT(operators::gte, 2); }
+|	value LTE value
+		{ _MACHINE_UNIT(operators::lte, 2); }
+|	value GT value
+		{ _MACHINE_UNIT(operators::gt, 2); }
+|	value LT value
+		{ _MACHINE_UNIT(operators::lt, 2); }
+|	value RS value
+		{ _MACHINE_UNIT(operators::rs, 2); }
+|	value LS value
+		{ _MACHINE_UNIT(operators::ls, 2); }
+|	value SUB value
+		{ _MACHINE_UNIT(operators::sub, 2); }
+|	value ADD value
+		{ _MACHINE_UNIT(operators::add, 2); }
+|	value MOD value
+		{ _MACHINE_UNIT(operators::mod, 2); }
+|	value DIV value
+		{ _MACHINE_UNIT(operators::div, 2); }
+|	value MUL value
+		{ _MACHINE_UNIT(operators::mul, 2); }
+|	value POW value
+		{ _MACHINE_UNIT(operators::pow, 2); }
+|	value QUESTION value COLON value %prec CONDITIONAL
+		{ _MACHINE_UNIT(operators::tertiary, 3); }
+;
+
+line_terminator:
+	SEMICOLON
+|	LCURL
+		{
+			_END_LINE;
+			++g_depth;
+			MACHINE_UNIT &back = CProgram::m_pyyUnits->back();
+			bool bVerify = false;
+			if ((back.udt & UDT_FUNC) && (back.func == CProgram::skipMethod))
+			{
+				bVerify = true;
+			}
+			MACHINE_UNIT mu;
+			mu.udt = UDT_OPEN;
+			CProgram::m_pyyUnits->push_back(mu);
+			if (bVerify)
+			{
+				std::map<STD_NATURAL_STRING, int> &params = g_methods.back();
+				std::map<STD_NATURAL_STRING, int>::iterator i = params.begin();
+				for (; i != params.end(); ++i)
+				{
+					const STD_NATURAL_STRING &strParam = i->first;
+					unsigned int space = strParam.find(_T(' '));
+					if (space != -1)
+					{
+						const STD_NATURAL_STRING type = strParam.substr(0, space);
+						const STD_NATURAL_STRING name = strParam.substr(space + 1);
+						params.insert(std::pair<STD_NATURAL_STRING, int>(name, i->second));
+
+						// Verify that the parameter is the requested type.
+						MACHINE_UNIT param;
+						param.udt = UDT_ID;
+						param.lit = STD_NATURAL_STRING(_T(" ")) + TCHAR(i->second + 1);
+						CProgram::m_pyyUnits->push_back(param);
+
+						param.udt = UDT_LIT;
+						param.lit = type;
+						CProgram::m_pyyUnits->push_back(param);
+
+						_MACHINE_UNIT(CProgram::verifyType, 2);
+					}
+				}
+			}
+		}
+|	RCURL
+		{
+			_END_LINE;
+			--g_depth;
+			MACHINE_UNIT mu;
+			mu.udt = UDT_CLOSE;
+			/* Find the corresponding opening brace. */
+			POS i = CProgram::m_pyyUnits->end() - 1;
+			int depth = 0;
+			for (; i != CProgram::m_pyyUnits->begin(); --i)
+			{
+				if ((i->udt & UDT_OPEN) && (depth++ == 0))
+				{
+					unsigned long *const pLines = (unsigned long *)&mu.num;
+					pLines[0] = i - CProgram::m_pyyUnits->begin();
+					if ((i - 1)->udt & UDT_FUNC)
+					{
+						if ((i - 1)->func == CProgram::forLoop)
+						{
+							CONST_POS j = CProgram::m_yyFors.back().begin();
+							for (; j != CProgram::m_yyFors.back().end(); ++j)
+							{
+								CProgram::m_pyyUnits->push_back(*j);
+							}
+							CProgram::m_yyFors.pop_back();
+						}
+						else if ((i - 1)->func == CProgram::skipMethod)
+						{
+							g_methods.pop_back();
+						}
+						else if ((i - 1)->func == CProgram::skipClass)
+						{
+							MACHINE_UNIT &mu = *(CProgram::m_pyyUnits->end() - 1);
+							if ((mu.udt & UDT_FUNC) && (mu.func == CProgram::skipMethod) && g_methods.size())
+							{
+								g_pClass->second.methods.back().first.i = NAMED_METHOD::m_methods.back().i = 0xffffff;
+								g_methods.pop_back();
+							}
+							g_pClass = NULL;
+						}
+						else if ((i - 1)->func == switchFunc)
+						{
+							--g_switch;
+							g_switchFirst.pop_back();
+							/**************************************************************/
+							// Note that this leaves pointless calls to some nonexistent
+							// function switch() calls kicking around.
+							// Tbd: Do something about this.
+							/**************************************************************/
+						}
+					}
+					i->num = CProgram::m_pyyUnits->size();
+					for (; i != CProgram::m_pyyUnits->begin(); --i)
+					{
+						if ((i->udt & UDT_LINE) && (++depth == 3)) break;
+					}
+					pLines[1] = i - CProgram::m_pyyUnits->begin() + 1;
+					break;
+				}
+				else if (i->udt & UDT_CLOSE) --depth;
+			}
+			CProgram::m_pyyUnits->push_back(mu);
+		}
+;
+
+line_terminators:
+	line_terminator line_terminators
+|	line_terminator
+;
+
+finale:
+	line_terminators
+		{
+			_END_LINE;
+			if (CProgram::m_pyyUnits->size() > 1)
+			{
+				MACHINE_UNIT &mu = *(CProgram::m_pyyUnits->end() - 1);
+				if (g_pClass && (mu.udt & UDT_FUNC) && (mu.func == CProgram::skipMethod) && !(CProgram::m_pyyUnits->back().udt & UDT_OPEN))
+				{
+					g_pClass->second.methods.back().first.i = NAMED_METHOD::m_methods.back().i = 0xffffff;
+					g_methods.pop_back();
+				}
+			}
+		}
+;
+
+inner_method_param:
+	IDENTIFIER IDENTIFIER
+		{ $$ = $1.getLit() + _T(' ') + $2.getLit(); }
+|	IDENTIFIER
+;
+
+method_param:
+	inner_method_param tdc
+		{ }
+|	AND inner_method_param tdc
+		{
+			$$ = _T('&') + $2.getLit();
+		}
+;
+
+method_rule:
+	method_param COMMA method_params
+|	method_param
+;
+
+method_params:
+	method_rule
+		{
+			STD_NATURAL_STRING param = $1.getLit();
+			if (param[0] == '&')
+			{
+				param = param.substr(1);
+				g_byref |= (1 << g_methods.back().size());
+			}
+			g_methods.back()[param] = g_methods.back().size();
+		}
+|	/* No parameters. */
+		{ }
+;
+
+method_name:
+	IDENTIFIER
+|	IDENTIFIER COLON COLON method_name
+		{ $$ = $1.getLit() + _T("::") + $4.getLit(); }
+|	method_name operator
+		{
+			$$ = $1.getLit() + $2.getLit();
+		}
+;
+
+method_declarator:
+	METHOD
+|	INLINE METHOD
+		{ g_bInline = true; }
+;
+
+method:
+	method_declarator method_name LPAREN
+		{
+			g_methods.push_back(std::map<STD_NATURAL_STRING, int>());
+			g_byref = 0;
+		}
+	method_params
+		{
+			const STD_NATURAL_STRING name = (g_pClass ? (g_pClass->first + _T("::")) : _T("")) + $2.getLit();
+			if (NAMED_METHOD::locate(name, g_methods.back().size(), false))
+			{
+				char str[255];
+				itoa(g_methods.back().size(), str, 10);
+				char line[255];
+				itoa(g_lines + 1, line, 10);
+				CProgram::debugger(STD_NATURAL_STRING(_T("Line ")) + line + _T(": Method \"") + name + _T("\" with a parameter count of ") + str + _T(" already exists."));
+			}
+			else
+			{
+				const STD_NATURAL_STRING::size_type pos = name.find(_T("::"));
+				if (!g_pClass && (pos != STD_NATURAL_STRING::npos))
+				{
+					const STD_NATURAL_STRING clsName = name.substr(0, pos);
+					const STD_NATURAL_STRING method = name.substr(pos + 2);
+					LPNAMED_METHOD p = NAMED_METHOD::locate(name, g_methods.back().size(), true);
+					if (p)
+					{
+						(*CProgram::m_pClasses)[clsName].locate(method, g_methods.back().size(), CV_PRIVATE)->i =
+							p->i = CProgram::m_pyyUnits->end() - CProgram::m_pyyUnits->begin();
+					}
+					else
+					{
+						char str[255];
+						itoa(g_methods.back().size(), str, 10);
+						char line[255];
+						itoa(g_lines + 1, line, 10);
+						CProgram::debugger(STD_NATURAL_STRING(_T("Line ")) + line + _T(": Class \"") + clsName + _T("\" has no method \"") + method + _T("\" with a parameter count of ") + str + _T("."));
+					}
+				}
+				else
+				{
+					NAMED_METHOD method;
+					method.name = name;
+					method.params = g_methods.back().size();
+					method.i = CProgram::m_pyyUnits->end() - CProgram::m_pyyUnits->begin();
+					method.bInline = g_bInline;
+					method.byref = g_byref;
+					NAMED_METHOD::m_methods.push_back(method);
+					if (g_pClass)
+					{
+						method.name = $2.getLit();
+						g_pClass->second.methods.push_back(std::pair<NAMED_METHOD, CLASS_VISIBILITY>(method, g_vis));
+					}
+				}
+			}
+			_MACHINE_UNIT(CProgram::skipMethod, 0);
+			CProgram::m_pyyUnits->back().lit = name;
+			CProgram::m_pyyUnits->back().num = g_methods.back().size();
+
+			g_bInline = false;
+		}
+	RPAREN
+;
+
+for_loop_value:
+	value
+|	/* Empty section. */
+		{ }
+;
+
+for_loop_value_centre:
+	value
+|	/* Empty section. */
+		{
+			MACHINE_UNIT mu;
+			mu.udt = UDT_NUM;
+			mu.num = 1;
+			CProgram::m_pyyUnits->push_back(mu);
+		}
+;
+
+for_loop:
+	FOR LPAREN for_loop_value
+		{ _END_LINE; }
+	SEMICOLON for_loop_value_centre SEMICOLON
+		{
+			g_yyOldUnits = CProgram::m_pyyUnits;
+			CProgram::m_yyFors.push_back(MACHINE_UNITS());
+			CProgram::m_pyyUnits = &CProgram::m_yyFors.back();
+		}
+	for_loop_value
+		{
+			_END_LINE;
+			CProgram::m_pyyUnits = g_yyOldUnits;
+			_MACHINE_UNIT(CProgram::forLoop, 1);
+		}
+	RPAREN
+;
+
+_return_reference:
+	RETURN AND identifier
+|	RETURN LPAREN AND identifier RPAREN
+;
+
+return_val:
+	RETURN value
+		{ _MACHINE_UNIT(CProgram::returnVal, 1); }
+|	_return_reference
+		{ _MACHINE_UNIT(CProgram::returnReference, 1); }
+;
+
+inherit_class:
+	IDENTIFIER
+		{ g_pClass->second.inherits.push_back($1.getLit()); }
+;
+
+class_list:
+	inherit_class COMMA class_list
+|	inherit_class
+;
+
+inherits:
+	COLON class_list
+|	/* Inherits nothing. */
+		{ }
+;
+
+class_declarator:
+	CLASS
+		{ g_vis = CV_PRIVATE; }
+|	STRUCT
+		{ g_vis = CV_PUBLIC; }
+;
+
+class:
+	class_declarator IDENTIFIER
+		{
+			const STD_NATURAL_STRING clsName = $2.getLit();
+			g_pClass = &*CProgram::m_pClasses->insert(std::map<STD_NATURAL_STRING, tagClass>::value_type(clsName, tagClass())).first;
+			_MACHINE_UNIT(CProgram::skipClass, 0);
+			MACHINE_UNIT &mu = CProgram::m_pyyUnits->back();
+			mu.num = g_vis;
+			mu.lit = clsName;
+		}
+	inherits
+;
+
+array_part:
+	LARRAY RARRAY
+|	LARRAY NUMBER RARRAY
+;
+
+multidimensional_array:
+	array_part
+|	array_part multidimensional_array
+;
+
+/**
+ * A class member can have any of the following syntaxes:
+ * - var identifier
+ * - var identifier[]
+ * - var identifier[n] where n is a constant
+ * In the third syntax, the upper bound of the array is not respected.
+ */
+_class_member:
+	IDENTIFIER tdc
+|	IDENTIFIER multidimensional_array tdc
+;
+
+class_member:
+	_class_member
+		{
+			if (g_pClass)
+			{
+				g_pClass->second.members.push_back(std::pair<STD_NATURAL_STRING, CLASS_VISIBILITY>($1.getLit(), g_vis));
+			}
+		}
+;
+
+var_list:
+	class_member COMMA var_list
+|	class_member
+;
+
+class_members:
+	VAR var_list
+;
+
+inclusion:
+	INCLUDE STRING
+		{ addInclusion($2.getLit().substr(1, $2.getLit().length() - 2)); }
+|	INCLUDE LPAREN STRING RPAREN
+		{ addInclusion($3.getLit().substr(1, $3.getLit().length() - 2)); }
+|	INCLUDE LPAREN value RPAREN
+		{ _MACHINE_UNIT(CProgram::runtimeInclusion, 1); }
+;
+
+redirection:
+	REDIRECT LPAREN function_identifier_bare COMMA function_identifier_bare RPAREN
+		{ CProgram::addRedirect($3.getLit(), $5.getLit()); }
+|	REDIRECT LPAREN STRING COMMA STRING RPAREN
+		{
+			CProgram::addRedirect(
+				lcase($3.getLit().substr(1, $3.getLit().length() - 2)),
+				lcase($5.getLit().substr(1, $5.getLit().length() - 2))
+			);
+		}
+;
+
+kill_redirection:
+	KILL_REDIRECT LPAREN function_identifier_bare RPAREN
+		{ CProgram::removeRedirect($3.getLit()); }
+|	KILL_REDIRECT LPAREN STRING RPAREN
+		{ CProgram::removeRedirect(lcase($3.getLit().substr(1, $3.getLit().length() - 2))); }
+;
+
+clear_redirections:
+	KILL_ALL_REDIRECTS
+		{ CProgram::clearRedirects(); }
+|	KILL_ALL_REDIRECTS LPAREN RPAREN
+		{ CProgram::clearRedirects(); }
+;
+
+switch_construct:
+	SWITCH LPAREN
+		{
+			MACHINE_UNIT mu;
+			++g_switch;
+			getSwitchIdentifier(mu);
+			CProgram::m_pyyUnits->push_back(mu);
+			g_switchFirst.push_back(false);
+		}
+	value
+		{
+			_MACHINE_UNIT(operators::assign, 2);
+
+			// For reference purposes later.
+			_MACHINE_UNIT(switchFunc, 0);
+		}
+	RPAREN
+;
+
+_switch_case:
+	CASE value
+|	CASE value COLON
+;
+
+switch_default:
+	DEFAULT
+|	DEFAULT COLON
+;
+
+switch_case:
+	_switch_case
+		{
+			MACHINE_UNIT &prevMu = CProgram::m_pyyUnits->back();
+			if ((prevMu.udt & UDT_ID) && (lcase(prevMu.lit) == _T("else")))
+			{
+				prevMu.udt = UDT_FUNC;
+				prevMu.func = CProgram::skipElse;
+				prevMu.params = 0;
+			}
+			else
+			{
+				MACHINE_UNIT mu;
+				getSwitchIdentifier(mu);
+				CProgram::m_pyyUnits->push_back(mu);
+				_MACHINE_UNIT(operators::eq, 2);
+
+				if (g_switchFirst.back())
+				{
+					_MACHINE_UNIT(CProgram::elseIf, 1);
+				}
+				else
+				{
+					*(g_switchFirst.end() - 1) = true;
+					_MACHINE_UNIT(CProgram::conditional, 1);
+				}
+			}
+		}
+|	switch_default
+		{
+			_MACHINE_UNIT(CProgram::skipElse, 0);
+		}
+;
+
+_error_handler:
+|	RESUME_NEXT
+		{
+			_MACHINE_UNIT(setResumeNextHandler, 0);
+		}
+|	GOTO label
+		{
+			_MACHINE_UNIT(setErrorHandler, 1);
+		}
+;
+
+error_handler:
+	ON_ERROR { g_bErrorHandler = true; } _error_handler { g_bErrorHandler = false; }
+|	RESUME_NEXT
+		{
+			_MACHINE_UNIT(resumeNext, 0);
+		}
+;
+
+statement:
+	return_val
+|	method
+|	class
+|	class_members
+|	PRIVATE COLON
+		{
+			MACHINE_UNIT mu;
+			mu.udt = UNIT_DATA_TYPE(UDT_ID | UDT_NUM);
+			mu.num = g_vis = CV_PRIVATE;
+			CProgram::m_pyyUnits->push_back(mu);
+		}
+|	PUBLIC COLON
+		{
+			MACHINE_UNIT mu;
+			mu.udt = UNIT_DATA_TYPE(UDT_ID | UDT_NUM);
+			mu.num = g_vis = CV_PUBLIC;
+			CProgram::m_pyyUnits->push_back(mu);
+		}
+|	inclusion
+|	redirection
+|	kill_redirection
+|	clear_redirections
+|	for_loop
+|	switch_construct
+|	switch_case
+|	error_handler
+|	value
+;
+
+line:
+	statement finale
+|	line_terminators statement finale
+;
+
+begin:
+	/* Empty. */
+|	line begin
+|	statement
+;
+
+%%
+
+#include "lex.yy.c"
+#include "../../tkCommon/strings.h"
+
+extern void setErrorHandler(CALL_DATA &params);
+extern void setResumeNextHandler(CALL_DATA &params);
+extern void resumeNext(CALL_DATA &params);
+
+LPMACHINE_UNITS g_yyOldUnits = NULL;
+std::deque<std::map<STD_NATURAL_STRING, int> > g_methods;
+unsigned int g_byref;
+std::map<STD_NATURAL_STRING, tagClass>::value_type *g_pClass = NULL;
+CLASS_VISIBILITY g_vis = CV_PRIVATE;
+bool g_bInline = false, g_bVarFlag = false;
+std::deque<bool> g_switchFirst;
+unsigned int g_switch = 0;
+unsigned int g_depth = 0;
+bool g_bErrorHandler = false;
+
+void resetState()
+{
+	g_yyOldUnits = NULL;
+	g_methods.clear();
+	g_pClass = NULL;
+	g_vis = CV_PRIVATE;
+	g_bInline = false;
+	g_bVarFlag = false;
+	g_switchFirst.clear();
+	g_switch = 0;
+	g_depth = 0;
+}
+
+void switchFunc(CALL_DATA &)
+{
+	// Only for addressing purposes.
+}
+
+// Create a unit for the current switch block variable.
+/*****************************************************/
+// Note: This variable is not really too unique.
+// Problems could hypothetically arise if a 'case'
+// structure calls a function that was included and
+// itself contains a switch block.
+/*****************************************************/
+void getSwitchIdentifier(MACHINE_UNIT &mu)
+{
+	mu.udt = UDT_ID;
+	STRINGSTREAM ss;
+	ss << "-switch" << g_switch;
+	mu.lit = ss.str();
+}
+
+// Include a file, but don't allow the same file to be included twice.
+inline void addInclusion(const STD_NATURAL_STRING file)
+{
+	std::vector<STD_NATURAL_STRING>::const_iterator i = CProgram::m_pInclusions->begin();
+	for (; i != CProgram::m_pInclusions->end(); ++i)
+	{
+		if (*i == file) return;
+	}
+	CProgram::m_pInclusions->push_back(file);
+}

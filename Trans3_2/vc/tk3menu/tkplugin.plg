@@ -1,0 +1,57 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: tkplugin - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\Users\Matthew\AppData\Local\Temp\RSPB19C.tmp" with contents
+[
+/nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_WINDLL" /D "_AFXDLL" /D "_MBCS" /D "_USRDLL" /FR"Release/" /Fp"Release/tkplugin.pch" /Yu"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"C:\Users\Matthew\Downloads\310_snapshot\vc\tk3menu\menu.cpp"
+]
+Creating command line "cl.exe @C:\Users\Matthew\AppData\Local\Temp\RSPB19C.tmp" 
+Creating temporary file "C:\Users\Matthew\AppData\Local\Temp\RSPB19D.tmp" with contents
+[
+/nologo /subsystem:windows /dll /incremental:no /pdb:"Release/tk3menu.pdb" /machine:I386 /def:".\tkplugin.def" /out:"Release/tk3menu.dll" /implib:"Release/tk3menu.lib" 
+.\Release\menu.obj
+.\Release\StdAfx.obj
+.\Release\tkplugin.obj
+.\Release\tkpluginFight.obj
+.\Release\tkpluginMenu.obj
+.\Release\tkpluginRPGCode.obj
+.\Release\tkplugcallbacks.obj
+.\Release\tkpluginbase.obj
+.\Release\tkpluglocalfns.obj
+.\Release\tkplugin.res
+]
+Creating command line "link.exe @C:\Users\Matthew\AppData\Local\Temp\RSPB19D.tmp"
+<h3>Output Window</h3>
+Compiling...
+menu.cpp
+Linking...
+   Creating library Release/tk3menu.lib and object Release/tk3menu.exp
+Creating temporary file "C:\Users\Matthew\AppData\Local\Temp\RSPC185.tmp" with contents
+[
+/nologo /o"Release/tkplugin.bsc" 
+.\Release\StdAfx.sbr
+.\Release\menu.sbr
+.\Release\tkplugin.sbr
+.\Release\tkpluginFight.sbr
+.\Release\tkpluginMenu.sbr
+.\Release\tkpluginRPGCode.sbr
+.\Release\tkplugcallbacks.sbr
+.\Release\tkpluginbase.sbr
+.\Release\tkpluglocalfns.sbr]
+Creating command line "bscmake.exe @C:\Users\Matthew\AppData\Local\Temp\RSPC185.tmp"
+Creating browse info file...
+<h3>Output Window</h3>
+
+
+
+<h3>Results</h3>
+tk3menu.dll - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

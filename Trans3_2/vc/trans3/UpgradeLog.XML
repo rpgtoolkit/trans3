@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type='text/xsl' href='_UpgradeReport_Files/UpgradeReport.xslt'?><UpgradeLog>
+<Properties><Property Name="Solution" Value="trans3">
+</Property><Property Name="Solution File" Value="F:\jackyboy\Source VC2005\vc\trans3\trans3.sln">
+</Property><Property Name="Date" Value="Friday, January 04, 2013">
+</Property><Property Name="Time" Value="10:48 AM">
+</Property></Properties><Event ErrorLevel="0" Project="trans3" Source="trans3.vcproj" Description="ATL Server support has been removed from this version of Visual Studio. In case your ATL Project uses any ATL Server functionality, your project may not build. Please consult the MSDN documentation for a list of alternatives.">
+</Event><Event ErrorLevel="0" Project="trans3" Source="trans3.vcproj" Description="The _ATL_MIN_CRT preprocessor definition is no longer supported in ATL. The setting ‘Minimize CRT Use in ATL’ has been removed from your project.">
+</Event><Event ErrorLevel="0" Project="trans3" Source="trans3.vcproj" Description="Web deployment to the local IIS server is no longer supported. The Web Deployment build tool has been removed from your project settings.">
+</Event><Event ErrorLevel="1" Project="trans3" Source="trans3.vcproj" Description="This application has been updated to include settings related to the User Account Control (UAC) feature of Windows Vista. By default, when run on Windows Vista with UAC enabled, this application is marked to run with the same privileges as the process that launched it. This marking also disables the application from running with virtualization. You can change UAC related settings from the Property Pages of the project.">
+</Event><Event ErrorLevel="2" Project="trans3" Source="trans3.vcproj" Description="Failed to upgrade project file 'F:\jackyboy\Source VC2005\vc\trans3\trans3.vcproj'.  Please make sure the file exists and is not write-protected.">
+</Event><Event ErrorLevel="2" Project="trans3" Source="trans3.vcproj" Description="Project upgrade failed.">
+</Event><Event ErrorLevel="3" Project="trans3" Source="trans3.vcproj" Description="Not Converted">
+</Event><Event ErrorLevel="2" Project="" Source="trans3.sln" Description="Error saving converted file: F:\jackyboy\Source VC2005\vc\trans3\trans3.sln">
+</Event><Event ErrorLevel="3" Project="" Source="trans3.sln" Description="Not Converted">
+</Event></UpgradeLog>
