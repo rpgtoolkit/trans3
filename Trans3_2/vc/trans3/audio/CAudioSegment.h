@@ -44,11 +44,12 @@
 
 class CAudioSegment
 {
+	bool openMIDI(STRING handle);
 public:
 	static void initLoader();
 	static void freeLoader();
-	CAudioSegment() { init(); }
-	CAudioSegment(const STRING file);
+	CAudioSegment() { init("BGM"); }
+	CAudioSegment(const STRING file, STRING handle);
 	~CAudioSegment();
 	bool open(const STRING file);
 	void play(const bool repeat);
@@ -62,21 +63,22 @@ public:
 protected:
 	CAudioSegment(const CAudioSegment &rhs);			// No implementation.
 	CAudioSegment &operator=(const CAudioSegment &rhs); // No implementation.
-	void init();
+	void init(STRING handle);
 	bool isPlaying();
 	void setVolume(const int percent);
 	static DWORD WINAPI eventManager(LPVOID lpv);
 
-//	static IDirectMusicLoader8 *m_pLoader;
 	static HANDLE m_notify;
-//	IDirectMusicPerformance8 *m_pPerformance;
-//	IDirectMusicSegment8 *m_pSegment;
 	audiere::AudioDevicePtr m_device;
 	audiere::OutputStreamPtr m_outputStream;
 	bool m_audiere;
+	unsigned char m_ucDriver;
 	STRING m_file;
-
-	IDirectSoundBuffer8 *m_pBufferSecondary;
+	STRING m_handle;
+	char m_mciErr[130];
+	int m_mciErrLen;
+	bool m_mci;
+	long m_volume; // for MCI
 };
 
 #endif

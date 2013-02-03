@@ -855,7 +855,7 @@ void runFight(const std::vector<STRING> enemies, const STRING background)
 	}
 
 	// Revert back to the previous music.
-	g_bkgMusic->stop();
+	//g_bkgMusic->stop(); Redundant. Destructor already stops music
 	g_music.free(g_bkgMusic);
 	(g_bkgMusic = pOldMusic)->play(true);
 

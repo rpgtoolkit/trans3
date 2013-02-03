@@ -34,25 +34,50 @@
 #include "../common/paths.h"
 #include "../rpgcode/parser/parser.h"
 #include <mmsystem.h>
-#include <dsound.h>
 #include <string>
 
+#define DRIVER_NONE 0
+#define DRIVER_AUDIERE 2
+#define DRIVER_MCI 1
 HANDLE CAudioSegment::m_notify = NULL;
 static CAudioSegment *g_pSoundEffect = NULL;
-static bool g_bDirectMusic = false;
-static IDirectSound8 *m_pDSound = NULL;
-static IDirectSoundBuffer *m_pBufferPrimary = NULL;
 
 /*
  * Construct and load a file.
  */
-CAudioSegment::CAudioSegment(const STRING file)
+CAudioSegment::CAudioSegment(const STRING file, STRING handle)
 {
-	init();
-	open(file);
+	init(handle);
+	if (file != "")
+		open(file);
 }
 
 #include "../common/mbox.h"
+
+bool CAudioSegment::openMIDI(STRING file)
+{
+	extern STRING g_projectPath;
+
+	int rc;
+	STRING path = resolve(g_projectPath + MEDIA_PATH + file);
+	STRING command = getAsciiString("open \"" + path + "\" type sequencer alias " + m_handle + " wait");
+
+	rc = mciSendString(command.c_str(), NULL, 0, 0);
+	if (rc != 0)
+	{
+		mciGetErrorString(rc, m_mciErr, m_mciErrLen);
+		messageBox("Error opening file: " + path + " code: " + m_mciErr);
+		m_ucDriver = DRIVER_NONE;
+		return false;
+	}
+
+	// Set volume - DOESN'T WORK FOR MIDIS!
+	//char buf[10];
+	//ltoa(m_volume, buf, 10);
+	//STRING cmd = "setaudio " + m_handle + " volume to " + buf;
+	//rc = mciSendString(cmd.c_str(), 0, 0, 0);//midiOutSetVolume(m_handle, db);
+	return true;
+}
 
 /*
  * Open a file.
@@ -68,35 +93,31 @@ bool CAudioSegment::open(const STRING file)
 	}
 	stop();
 	const STRING ext = parser::uppercase(getExtension(file));
-/*
-	if (g_bDirectMusic &&
-			(ext == _T("MID")) || (ext == _T("MIDI")) || (ext == _T("RMI")) || (ext == _T("MPL")) || (ext == _T("WAV")))
+
+	m_ucDriver = DRIVER_NONE;
+	// If MDI file, use MCI functions
+	if (ext == "MID")
 	{
-		if (m_pSegment)
+
+		if (openMIDI(file))
 		{
-			m_pSegment->Unload(m_pPerformance);
-			m_pSegment->Release();
-		}
-		m_audiere = false;
-		WCHAR wstrFile[MAX_PATH + 1];
-		MultiByteToWideChar(CP_ACP, 0, resolve(g_projectPath + MEDIA_PATH + file).c_str(), -1, wstrFile, MAX_PATH);
-		if (SUCCEEDED(m_pLoader->LoadObjectFromFile(CLSID_DirectMusicSegment, IID_IDirectMusicSegment8, wstrFile, (void **)&m_pSegment)))
-		{
-			m_pSegment->Download(m_pPerformance);
+			m_audiere = false;
 			m_file = file;
+			m_ucDriver = DRIVER_MCI;
+			m_mci = true;
 			return true;
 		}
-		m_pSegment = NULL;
-		m_file = _T("");
 		return false;
 	}
-*/
-	m_audiere = true;
-	extern STRING g_projectPath;
-	if (m_outputStream = audiere::OpenSound(m_device, getAsciiString(resolve(g_projectPath + MEDIA_PATH + file)).c_str(), true))
-	{
-		m_file = file;
-		return true;
+	else
+	{		
+		if (m_outputStream = audiere::OpenSound(m_device, getAsciiString(resolve(g_projectPath + MEDIA_PATH + file)).c_str(), true))
+		{
+			m_audiere = true;
+			m_file = file;
+			m_ucDriver = DRIVER_AUDIERE;
+			return true;
+		}
 	}
 	m_file = _T("");
 	return false;
@@ -108,24 +129,30 @@ bool CAudioSegment::open(const STRING file)
 void CAudioSegment::play(const bool repeat)
 {
 	if (isPlaying()) return;
-	if (m_audiere)
+	switch(m_ucDriver)
 	{
-		if (m_outputStream)
+	case DRIVER_AUDIERE:
+		if (m_audiere)
 		{
-			m_outputStream->setRepeat(repeat);
-			m_outputStream->play();
+			if (m_outputStream)
+			{
+				m_outputStream->setRepeat(repeat);
+				m_outputStream->play();
+			}
 		}
-	}
-/*
-	else
-	{
-		if (m_pSegment)
+		break;
+	case DRIVER_MCI:
+		int rc;
+
+		rc = mciSendString(getAsciiString("play " + m_handle).c_str(), NULL, 0, 0);
+		if (rc != 0)
 		{
-			m_pSegment->SetRepeats(repeat ? DMUS_SEG_REPEAT_INFINITE : 0);
-			m_pPerformance->PlaySegmentEx(m_pSegment, NULL, NULL, 0, 0, NULL, NULL, NULL);
+			mciGetErrorString(rc, m_mciErr, m_mciErrLen);
+			messageBox("Error playing file: " + m_file + " code: " + m_mciErr);
+			m_ucDriver = DRIVER_NONE;
 		}
+		break;
 	}
-*/
 }
 
 /*
@@ -133,18 +160,30 @@ void CAudioSegment::play(const bool repeat)
  */
 void CAudioSegment::stop()
 {
-	if (m_audiere)
+	switch(m_ucDriver)
 	{
-		if (m_outputStream)
+	case DRIVER_AUDIERE:
+		if (m_audiere)
 		{
-			m_outputStream->stop();
-			m_outputStream->reset();
+			if (m_outputStream)
+			{
+				m_outputStream->stop();
+				m_outputStream->reset();
+			}
 		}
-	}/*
-	else
-	{
-		if (m_pPerformance) m_pPerformance->Stop(NULL, NULL, 0, 0);
-	}*/
+		break;
+	case DRIVER_MCI:
+		int rc;
+		rc = mciSendString(getAsciiString("close " + m_handle).c_str(), NULL, 0, 0);
+		m_mci = false;
+		if (rc != 0)
+		{
+			mciGetErrorString(rc, m_mciErr, m_mciErrLen);
+			messageBox("Error stopping file: " + m_file + " code: " + m_mciErr);
+			m_ucDriver = DRIVER_NONE;
+		}
+		break;
+	}
 }
 
 /*
@@ -152,29 +191,51 @@ void CAudioSegment::stop()
  */
 bool CAudioSegment::isPlaying()
 {
-	if (m_audiere)
+	switch(m_ucDriver)
 	{
-		return (m_outputStream ? m_outputStream->isPlaying() : false);
+	case DRIVER_AUDIERE:
+		if (m_audiere)
+		{
+			return (m_outputStream ? m_outputStream->isPlaying() : false);
+		}
+		break;
+	case DRIVER_MCI:
+		int rc;
+		char buf[20];
+		if (!m_mci)
+		{
+			openMIDI(m_file);
+		}
+		rc = mciSendString(getAsciiString("status " + m_handle + " ready").c_str(), buf, 19, 0);
+		if (rc != 0)
+		{
+			mciGetErrorString(rc, m_mciErr, m_mciErrLen);
+			messageBox("Error getting status for file: " + m_file + " code: " + m_mciErr);
+			return true;
+		}
+		STRING temp = buf;
+		// Ready was true, isPlaying returns FALSE
+		if (temp == "true")
+			return false;
+		else
+			return true;
+		break;
 	}
-	//return (m_pPerformance ? (m_pPerformance->IsPlaying(m_pSegment, NULL) == S_OK) : false);
+	return false;
 }
 
 /*
  * Initialize this audio segment.
  */
-void CAudioSegment::init()
+void CAudioSegment::init(STRING handle)
 {
 	HRESULT result;
 	
-	// Set up DirectSound.
-	m_pBufferSecondary = NULL;
-	if (g_bDirectMusic)
-	{
-		// Set up the secondary buffer here
-	}
-
-	//m_pSegment = NULL;
+	m_handle = handle;
+	m_mciErrLen = sizeof(m_mciErr);
 	m_audiere = false;
+	m_mci = false;
+	m_ucDriver = DRIVER_NONE;
 	// Set up Audiere.
 	m_device = audiere::OpenDevice();
 }
@@ -300,76 +361,22 @@ void CAudioSegment::setVolume(const int percent)
 		// between -100dB and +10dB (-30dB is quiet enough, though).
 		// Note this is not really a linear relationship!
 		long db = (percent - 100) * 30;
-		//if (m_pPerformance) m_pPerformance->SetGlobalParam(GUID_PerfMasterVolume, (void *)&db, sizeof(db));
-		m_pBufferPrimary->SetVolume(db);
+		m_volume = db;
 	}	
 }
 
 /*
- * Initialize the DirectSound loader.
+ * Initialize the Audio loader.
  */
 void CAudioSegment::initLoader()
 {
 	extern STRING g_projectPath;
 	HRESULT result;
-	DSBUFFERDESC bufferDesc;
-	WAVEFORMATEX waveFormat;
 
 	// Not loader related, but I don't feel like making another function.
 	m_notify = CreateEvent(NULL, FALSE, FALSE, NULL);
 
 	// Loader related stuff starts now.
-	//if (m_pDSound) return;
-	//CoCreateInstance(CLSID_DirectSound, NULL, CLSCTX_INPROC, IID_IDirectSound, (void **)&m_pDSound);
-
-	//g_bDirectMusic = true;
-	result = DirectSoundCreate8(NULL, &m_pDSound, NULL);
-	if(FAILED(result))
-	{
-		messageBox(_T("We were unable to initialise the DirectSound loader.\n\nThe game will attempt to run without DirectSound, but it may not be able to play all music and sound effects successfully. Please make sure that you have the latest version of DirectX and then try again."));
-		return;
-	}
- 
-	// Set the cooperative level to priority so the format of the primary sound buffer can be modified.
-	extern HWND g_hHostWnd;
-	result = m_pDSound->SetCooperativeLevel(g_hHostWnd, DSSCL_PRIORITY);
-	if(FAILED(result))
-	{
-		messageBox(_T("We were unable to initialise the DirectSound loader.\n\nThe game will attempt to run without DirectSound, but it may not be able to play all music and sound effects successfully. Please make sure that you have the latest version of DirectX and then try again."));
-		return;
-	}
-
-	// Setup the primary buffer description.
-	bufferDesc.dwSize = sizeof(DSBUFFERDESC);
-	bufferDesc.dwFlags = DSBCAPS_PRIMARYBUFFER | DSBCAPS_CTRLVOLUME;
-	bufferDesc.dwBufferBytes = 0;
-	bufferDesc.dwReserved = 0;
-	bufferDesc.lpwfxFormat = NULL;
-	bufferDesc.guid3DAlgorithm = GUID_NULL;
- 
-	// Get control of the primary sound buffer on the default sound device.
-	result = m_pDSound->CreateSoundBuffer(&bufferDesc, &m_pBufferPrimary, NULL);
-	if(FAILED(result))
-	{
-		m_pBufferPrimary = 0;;
-	}
-
-	// Setup the format of the primary sound bufffer.
-	// In this case it is a .WAV file recorded at 44,100 samples per second in 16-bit stereo (cd audio format).
-	waveFormat.wFormatTag = WAVE_FORMAT_PCM;
-	waveFormat.nSamplesPerSec = 44100;
-	waveFormat.wBitsPerSample = 16;
-	waveFormat.nChannels = 2;
-	waveFormat.nBlockAlign = (waveFormat.wBitsPerSample / 8) * waveFormat.nChannels;
-	waveFormat.nAvgBytesPerSec = waveFormat.nSamplesPerSec * waveFormat.nBlockAlign;
-	waveFormat.cbSize = 0;
- 
-	// Set the primary buffer to be the wave format specified.
-	result = m_pBufferPrimary->SetFormat(&waveFormat);
-	if(FAILED(result))
-	{
-		m_pBufferPrimary = 0;;
-	}
 #ifndef _UNICODE
 	WCHAR searchPath[MAX_PATH + 1];
 	MultiByteToWideChar(CP_ACP, 0, resolve(g_projectPath + MEDIA_PATH).c_str(), -1, searchPath, MAX_PATH);
@@ -379,7 +386,7 @@ void CAudioSegment::initLoader()
 #endif
 
 	// Initialise after CoCreateInstance().
-	g_pSoundEffect = new CAudioSegment();
+	g_pSoundEffect = new CAudioSegment("", "SFX");
 }
 
 /*
@@ -388,17 +395,6 @@ void CAudioSegment::initLoader()
 void CAudioSegment::freeLoader()
 {
 	delete g_pSoundEffect;
-	if (m_pBufferPrimary)
-	{
-		m_pBufferPrimary->Release();
-		m_pBufferPrimary = NULL;
-	}
-
-	if (m_pDSound)
-	{
-		m_pDSound->Release();
-		m_pDSound = NULL;
-	}
 }
 
 /*
@@ -407,10 +403,4 @@ void CAudioSegment::freeLoader()
 CAudioSegment::~CAudioSegment()
 {
 	stop();
-
-	if (m_pBufferSecondary)
-	{
-		m_pBufferSecondary->Release();
-		m_pBufferSecondary = NULL;
-	}
 }
