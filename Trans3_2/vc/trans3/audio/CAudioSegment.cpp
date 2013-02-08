@@ -70,12 +70,18 @@ bool CAudioSegment::openMIDI(STRING file)
 		m_ucDriver = DRIVER_NONE;
 		return false;
 	}
-
-	// Set volume - DOESN'T WORK FOR MIDIS!
-	//char buf[10];
-	//ltoa(m_volume, buf, 10);
-	//STRING cmd = "setaudio " + m_handle + " volume to " + buf;
-	//rc = mciSendString(cmd.c_str(), 0, 0, 0);//midiOutSetVolume(m_handle, db);
+	int result;
+	MIDIOUTCAPS caps;
+	result = midiOutGetNumDevs();
+	int id = mciGetDeviceID(m_handle.c_str());
+result = midiOutGetDevCaps(
+  (UINT_PTR)(id - 1),
+  &caps,
+  sizeof(caps)
+);
+	// Set volume
+	int midiVOL = 0x0000;//(m_volume / 100) * 0xFFFF;
+	int ret = midiOutSetVolume((HMIDIOUT)(MCI_ALL_DEVICE_ID), midiVOL);
 	return true;
 }
 
