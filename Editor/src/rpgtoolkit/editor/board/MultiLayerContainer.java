@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package rpgtoolkit.editor.board;
 
 import java.awt.Rectangle;
@@ -13,12 +9,12 @@ import java.util.Vector;
 
 /**
  *
- * @author jmd
+ * @author Joshua Michael Daly
  */
 public class MultiLayerContainer 
 {
     private ArrayList<BoardLayer> layers;
-    protected Rectangle bounds;          //in tiles
+    protected Rectangle bounds;          // in tiles
 
     /**
      * Default constructor.
@@ -61,10 +57,19 @@ public class MultiLayerContainer
 
         Rectangle layerBounds = new Rectangle();
 
-        for (int i = 0; i < layers.size(); i++) {
-            getLayer(i).getBounds(layerBounds);
-            if (width < layerBounds.width) width = layerBounds.width;
-            if (height < layerBounds.height) height = layerBounds.height;
+        for (int i = 0; i < layers.size(); i++) 
+	{
+            	getLayer(i).getBounds(layerBounds);
+
+ 		if (width < layerBounds.width)
+		{ 
+			width = layerBounds.width;
+		}
+
+            	if (height < layerBounds.height)
+		{ 
+			height = layerBounds.height;
+		}
         }
 
         bounds.width = width;
