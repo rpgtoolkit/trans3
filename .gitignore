@@ -41,5 +41,8 @@ Thumbs.db
 # NetBeans Specific #
 #####################
 
+build.xml
+manifest.mf
+/Editor/nbproject/
 /Editor/nbproject/private/
 /Editor/build/
