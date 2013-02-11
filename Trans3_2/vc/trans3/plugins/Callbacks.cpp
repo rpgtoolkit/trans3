@@ -69,8 +69,9 @@
 #include "../../tkCommon/board/coords.h"
 #include "../../tkCommon/tkDirectX/platform.h"
 #include "../../tkCommon/tkCanvas/GDICanvas.h"
-#include "../../tkCommon/strings.h"
+//#include "../../tkCommon/strings.h"
 #include <map>
+#include "SystemFont.h"
 
 extern CAllocationHeap<CCanvas> g_canvases;
 extern CDirectDraw *g_pDirectDraw;
@@ -82,6 +83,117 @@ SPCMOVE g_spc;
 std::vector<STRING> g_specials;
 std::vector<ITEM> g_items;
 CProgram *g_prg = NULL;
+
+long g_crTextColor = RGB(255, 240, 230);	//text color to use
+SystemFont g_fntMenuMain("Arial", 24, g_crTextColor, RGB(255, 255, 0), RGB(128, 128, 128), true, false, false, true, false);
+SystemFont g_fntMenuStats("Arial", 18, g_crTextColor, RGB(255, 255, 0), RGB(128, 128, 128), true, false, false, false, false);
+SystemFont g_fntMenuInfo("Arial", 16, g_crTextColor, RGB(255, 255, 0), RGB(128, 128, 128), true, false, false, false, false);
+SystemFont g_fntMenuOptions("Times New Roman", 20, RGB(255, 0, 0), RGB(255, 255, 0), RGB(128, 128, 128), true, false, false, true, false);
+SystemFont g_fntMenuLists("Arial", 20, g_crTextColor, RGB(255, 255, 0), RGB(128, 128, 128), true, false, false, false, false);
+
+void* GetMenuFontProperty(int iFont, int iProperty)
+{
+	SystemFont *p;
+	switch(iFont)
+	{
+	case SLOT_MENUFONT_INFO:
+		p = &g_fntMenuInfo;
+		break;
+	case SLOT_MENUFONT_LSTS:
+		p = &g_fntMenuLists;
+		break;
+	case SLOT_MENUFONT_MAIN:
+		p = &g_fntMenuMain;
+		break;
+	case SLOT_MENUFONT_OPTS:
+		p = &g_fntMenuOptions;
+		break;
+	case SLOT_MENUFONT_STATS:
+		p = &g_fntMenuStats;
+		break;
+	}
+
+	switch(iProperty)
+	{
+	case GEN_MENUFONT_BOLD:
+		return &p->bBold;
+	case GEN_MENUFONT_CENTER:
+		return &p->bCenter;
+	case GEN_MENUFONT_DEFCOLOR:
+		return &p->lColorDefault;
+	case GEN_MENUFONT_DISCOLOR:
+		return &p->lColorDisable;
+	case GEN_MENUFONT_HICOLOR:
+		return &p->lColorHighlight;
+	case GEN_MENUFONT_FACE:
+		return (char*)p->strFont.c_str();
+	case GEN_MENUFONT_ITALICS:
+		return &p->bItalics;
+	case GEN_MENUFONT_OUTLINE:
+		return &p->bOutline;
+	case GEN_MENUFONT_SIZE:
+		return &p->iSize;
+	case GEN_MENUFONT_UNDERLINE:
+		return &p->bUnderline;
+	}
+}
+
+void SetMenuFontProperty(int iFont, int iProperty, void *value)
+{
+	SystemFont *p;
+	switch(iFont)
+	{
+	case SLOT_MENUFONT_INFO:
+		p = &g_fntMenuInfo;
+		break;
+	case SLOT_MENUFONT_LSTS:
+		p = &g_fntMenuLists;
+		break;
+	case SLOT_MENUFONT_MAIN:
+		p = &g_fntMenuMain;
+		break;
+	case SLOT_MENUFONT_OPTS:
+		p = &g_fntMenuOptions;
+		break;
+	case SLOT_MENUFONT_STATS:
+		p = &g_fntMenuStats;
+		break;
+	}
+
+	switch(iProperty)
+	{
+	case GEN_MENUFONT_BOLD:
+		p->bBold = (bool)value;
+		break;
+	case GEN_MENUFONT_CENTER:
+		p->bCenter = (bool)value;
+		break;
+	case GEN_MENUFONT_DEFCOLOR:
+		p->lColorDefault = (long)value;
+		break;
+	case GEN_MENUFONT_DISCOLOR:
+		p->lColorDisable = (long)value;
+		break;
+	case GEN_MENUFONT_HICOLOR:
+		p->lColorHighlight = (long)value;
+		break;
+	case GEN_MENUFONT_FACE:
+		p->strFont = std::string((char*)value);
+		break;
+	case GEN_MENUFONT_ITALICS:
+		p->bItalics = (bool)value;
+		break;
+	case GEN_MENUFONT_OUTLINE:
+		p->bOutline = (bool)value;
+		break;
+	case GEN_MENUFONT_SIZE:
+		p->iSize = (int)value;
+		break;
+	case GEN_MENUFONT_UNDERLINE:
+		p->bUnderline = (bool)value;
+		break;
+	}
+}
 
 template <class T>
 inline T bounds(const T val, const T low, const T high)
@@ -730,6 +842,9 @@ STDMETHODIMP CCallbacks::CBGetGeneralString(int infoCode, int arrayPos, int play
 	BSTR bstr = NULL;
 	switch (infoCode)
 	{
+		case GEN_MENUFONT_FACE:
+			bstr = getString(STRING((char*)GetMenuFontProperty(arrayPos, infoCode)));
+			break;
 		case GEN_PLAYERHANDLES:
 			if (pPlayer) bstr = getString(pPlayer->name());
 			break;
@@ -852,6 +967,25 @@ STDMETHODIMP CCallbacks::CBGetGeneralNum(int infoCode, int arrayPos, int playerS
 
 	switch (infoCode)
 	{
+		case GEN_MENUFONT_BOLD:
+		case GEN_MENUFONT_ITALICS:
+		case GEN_MENUFONT_UNDERLINE:
+		case GEN_MENUFONT_OUTLINE:
+		case GEN_MENUFONT_CENTER:
+			{
+			bool *p = (bool*)GetMenuFontProperty(arrayPos, infoCode);
+			*pRet = (int)*p;
+			}
+			break;
+		case GEN_MENUFONT_SIZE:
+		case GEN_MENUFONT_HICOLOR:
+		case GEN_MENUFONT_DEFCOLOR:
+		case GEN_MENUFONT_DISCOLOR:
+			{
+			int *p = (int*)GetMenuFontProperty(arrayPos, infoCode);
+			*pRet = *p;
+			}
+			break;
 		case GEN_INVENTORY_NUM:
 			extern CInventory g_inv;
 			*pRet = g_inv.quantityAt(arrayPos);
@@ -959,6 +1093,9 @@ STDMETHODIMP CCallbacks::CBSetGeneralString(int infoCode, int arrayPos, int play
 
 	switch (infoCode)
 	{
+		case GEN_MENUFONT_FACE:
+			SetMenuFontProperty(arrayPos, GEN_MENUFONT_FACE, newVal);
+			break;
 		case GEN_PLAYERHANDLES:
 			if (pPlayer) pPlayer->name(getString(newVal));
 			break;
@@ -1081,6 +1218,17 @@ STDMETHODIMP CCallbacks::CBSetGeneralNum(int infoCode, int arrayPos, int playerS
 
 	switch (infoCode)
 	{
+		case GEN_MENUFONT_BOLD:
+		case GEN_MENUFONT_ITALICS:
+		case GEN_MENUFONT_UNDERLINE:
+		case GEN_MENUFONT_OUTLINE:
+		case GEN_MENUFONT_CENTER:
+		case GEN_MENUFONT_SIZE:
+		case GEN_MENUFONT_HICOLOR:
+		case GEN_MENUFONT_DEFCOLOR:
+		case GEN_MENUFONT_DISCOLOR:
+			SetMenuFontProperty(arrayPos, infoCode, &newVal);
+			break;
 		case GEN_INVENTORY_NUM:
 			extern CInventory g_inv;
 			g_inv.quantityAt(arrayPos, (unsigned int)newVal);

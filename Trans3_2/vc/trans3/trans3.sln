@@ -2,8 +2,11 @@
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual C++ Express 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "trans3", "trans3.vcproj", "{4C6CA8EE-9963-40E8-9722-28329930915D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E3858B82-8BCC-438C-90E4-92B3C9F0E34E} = {E3858B82-8BCC-438C-90E4-92B3C9F0E34E}
+	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tkplugin", "..\tk3menu\tkplugin.vcproj", "{E3858B82-8BCC-438C-90E4-92B3C9F0E34E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tk3defaults", "..\tk3defaults\tk3defaults.vcproj", "{E3858B82-8BCC-438C-90E4-92B3C9F0E34E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -85,7 +85,7 @@ typedef long (__stdcall *VERSION_PROC)();
 typedef int (__stdcall *INIT_PROC)(int *pCbArray, int nCallbacks);
 typedef void (__stdcall *BEGIN_PROC)();
 typedef int (__stdcall *QUERY_PROC)(char *pstrQuery);
-typedef int (__stdcall *EXECUTE_PROC)(char *pstrCommand);
+typedef int (__stdcall *EXECUTE_PROC)(char *pstrCommand, int &retValDt, char *retValLit, double &retValNum, const short usingReturn);//(char *pstrCommand);
 typedef void (__stdcall *END_PROC)();
 typedef int (__stdcall *TYPE_PROC)(int nRequestedFeature);
 typedef int (__stdcall *MENU_PROC)(int nRequestedMenu);
@@ -672,8 +672,13 @@ bool COldPlugin::execute(const STRING line, int &retValDt, STRING &retValLit, do
 	if (!m_hModule) return false;
 	retValDt = 0;
 	retValNum = 0.0;
+	retValLit = "";
+	char retLit[255];
+	memset(retLit, 0, sizeof(retLit));
 #pragma warning (disable : 4800) // forcing value to bool 'true' or 'false' (performance warning)
-	return m_plugExecute((char *)getAsciiString(line).c_str());
+	bool ret = m_plugExecute((char*)getAsciiString(line).c_str(), retValDt, retLit, retValNum, usingReturn);//((char *)getAsciiString(line).c_str());
+	retValLit = std::string(retLit);
+	return ret;
 #pragma warning (default : 4800) // forcing value to bool 'true' or 'false' (performance warning)
 }
 

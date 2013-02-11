@@ -1466,6 +1466,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\SystemFont.h"
+					>
+				</File>
+				<File
 					RelativePath="rpgcode\virtualvar.h"
 					>
 				</File>

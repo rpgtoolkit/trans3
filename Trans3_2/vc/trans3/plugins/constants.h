@@ -137,9 +137,27 @@
 #define GEN_CURSOR_MOVESOUND	18		// Filename of the cursor move sound
 #define GEN_CURSOR_SELSOUND		19		// Filename of the cursor selection sound
 #define GEN_CURSOR_CANCELSOUND	20		// Filename of the cursor cancel sound
+#define GEN_MENUFONT_FACE       21      // Font face of the menu font (nArrayPos = SLOT_MENUFONT_*)
+
+// Slots for menu fonts
+/////////////////////////////////////////////////////////////////////////////
+#define SLOT_MENUFONT_MAIN  0      // main menu font
+#define SLOT_MENUFONT_STATS  1      // stats font
+#define SLOT_MENUFONT_INFO   2      // info font
+#define SLOT_MENUFONT_OPTS   3      // options font
+#define SLOT_MENUFONT_LSTS   4      // lists font
 
 // Numerical general info
 /////////////////////////////////////////////////////////////////////////////
+#define GEN_MENUFONT_SIZE       29      // Size of the menu font (nArrayPos = SLOT_MENUFONT_*)
+#define GEN_MENUFONT_DEFCOLOR   30      // Default color of the menu font (nArrayPos = SLOT_MENUFONT_*)
+#define GEN_MENUFONT_HICOLOR    31      // Highlight color of the menu font (nArrayPos = SLOT_MENUFONT_*)
+#define GEN_MENUFONT_DISCOLOR   32      // Disabled color of the menu font (nArrayPos = SLOT_MENUFONT_*)
+#define GEN_MENUFONT_BOLD       33      // Bold setting of the menu font (nArrayPos = SLOT_MENUFONT_*)
+#define GEN_MENUFONT_ITALICS    34      // Italics setting of the menu font (nArrayPos = SLOT_MENUFONT_*)
+#define GEN_MENUFONT_UNDERLINE  35      // Underline setting of the menu font (nArrayPos = SLOT_MENUFONT_*)
+#define GEN_MENUFONT_CENTER     36      // Centered setting of the menu font (nArrayPos = SLOT_MENUFONT_*)
+#define GEN_MENUFONT_OUTLINE    37      // Outline setting of the menu font (nArrayPos = SLOT_MENUFONT_*)
 #define GEN_INVENTORY_NUM		0		// Number of each item in inventory (nArrayPos 0-500)
 #define GEN_EQUIP_HPADD			1		// Amount of hp added to player by equipment (nPlayerslot 0-4)
 #define GEN_EQUIP_SMPADD		2		// Amount of smp added to player by equipment (nPlayerslot 0-4)
