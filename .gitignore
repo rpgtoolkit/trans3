@@ -46,3 +46,17 @@ manifest.mf
 /Editor/nbproject/
 /Editor/nbproject/private/
 /Editor/build/
+
+# Visual Studio Specific #
+##########################
+*.obj
+*.sbr
+*.dep
+*.trg
+*.bsc
+*.manifest
+*.res
+*.ilk
+*.pdb
+*.pch
+*.idb
