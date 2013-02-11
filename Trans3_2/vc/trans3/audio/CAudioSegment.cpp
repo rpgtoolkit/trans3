@@ -70,18 +70,10 @@ bool CAudioSegment::openMIDI(STRING file)
 		m_ucDriver = DRIVER_NONE;
 		return false;
 	}
-	int result;
-	MIDIOUTCAPS caps;
-	result = midiOutGetNumDevs();
-	int id = mciGetDeviceID(m_handle.c_str());
-result = midiOutGetDevCaps(
-  (UINT_PTR)(id - 1),
-  &caps,
-  sizeof(caps)
-);
-	// Set volume
-	int midiVOL = 0x0000;//(m_volume / 100) * 0xFFFF;
-	int ret = midiOutSetVolume((HMIDIOUT)(MCI_ALL_DEVICE_ID), midiVOL);
+
+	// Set volume for L/R channels
+	int midiVOL = ((m_volume / 100) * 0xFF00) | ((m_volume / 100) * 0x00FF);
+	int ret = midiOutSetVolume((HMIDIOUT)m_handle.c_str(), midiVOL);
 	return true;
 }
 
@@ -142,6 +134,7 @@ void CAudioSegment::play(const bool repeat)
 		{
 			if (m_outputStream)
 			{
+				m_outputStream->setVolume(m_volume / 100.0);
 				m_outputStream->setRepeat(repeat);
 				m_outputStream->play();
 			}
@@ -356,18 +349,22 @@ void CAudioSegment::setMasterVolume(int percent)
  */
 void CAudioSegment::setVolume(const int percent)
 {
+	m_volume = percent;
 	if (m_audiere)
 	{
 		// Volume is a float between 0.0 and 1.0.
-		if (m_outputStream) m_outputStream->setVolume(percent / 100.0);
+		if (m_outputStream)
+		{			
+			m_outputStream->setVolume(percent / 100.0);
+		}
 	}
 	else
 	{
 		// MasterVolume is a value in 1/100ths of a decibel ranging
 		// between -100dB and +10dB (-30dB is quiet enough, though).
 		// Note this is not really a linear relationship!
-		long db = (percent - 100) * 30;
-		m_volume = db;
+		//long db = (percent - 100) * 30;
+		//m_volume = db;
 	}	
 }
 
