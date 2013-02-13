@@ -267,7 +267,7 @@ public final class BoardLayer implements Cloneable
                 }
                 else
                 {
-                    g.setColor(Color.BLACK);
+                    g.setColor(Color.white);
                 }
             }
         }

@@ -10,6 +10,7 @@ import javax.swing.KeyStroke;
 import rpgtoolkit.editor.main.MainWindow;
 import rpgtoolkit.editor.main.menus.actions.ZoomInAction;
 import rpgtoolkit.editor.main.menus.actions.ZoomOutAction;
+import rpgtoolkit.editor.main.menus.listeners.ShowGridItemListener;
 
 /**
  *
@@ -22,8 +23,11 @@ public final class ViewMenu extends JMenu
     private JMenuItem zoomInMenuItem;
     private JMenuItem zoomOutMenuItem;
     private JCheckBoxMenuItem showGridMenuItem;
-    private JMenuItem projectExplorerMenuItem;
     
+    /**
+     * 
+     * @param parent 
+     */
     public ViewMenu(MainWindow parent)
     {
         super("View");
@@ -33,53 +37,52 @@ public final class ViewMenu extends JMenu
         
         this.configureZoomInMenuItem();
         this.configureZoomOutMenuItem();
-        this.configureProjectExplorerMenuItem();
+        this.configureShowGridMenuItem();
         
         this.add(zoomInMenuItem);
         this.add(zoomOutMenuItem);
-        this.add(projectExplorerMenuItem);
+        this.add(showGridMenuItem);
     }
     
+    /**
+     * 
+     */
     public void configureZoomInMenuItem()
     {
         zoomInMenuItem = new JMenuItem("Zoom In");
         zoomInMenuItem.setIcon(new ImageIcon(getClass()
                 .getResource("/rpgtoolkit/editor/resources/zoom-in.png")));
         zoomInMenuItem.setAccelerator(
-                KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, ActionEvent.CTRL_MASK));
+                KeyStroke.getKeyStroke(KeyEvent.VK_ADD, ActionEvent.CTRL_MASK));
         zoomInMenuItem.setMnemonic(KeyEvent.VK_PLUS);
         zoomInMenuItem.addActionListener(new ZoomInAction(parent));
     }
     
+    /**
+     * 
+     */
     public void configureZoomOutMenuItem()
     {
         zoomOutMenuItem = new JMenuItem("Zoom Out");
         zoomOutMenuItem.setIcon(new ImageIcon(getClass()
                 .getResource("/rpgtoolkit/editor/resources/zoom-out.png")));
         zoomOutMenuItem.setAccelerator(
-                KeyStroke.getKeyStroke(KeyEvent.VK_M, ActionEvent.CTRL_MASK));
+                KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, ActionEvent.CTRL_MASK));
         zoomOutMenuItem.setMnemonic(KeyEvent.VK_MINUS);
         zoomOutMenuItem.addActionListener(new ZoomOutAction(parent));
     }
     
+    /**
+     * 
+     */
     public void configureShowGridMenuItem()
     {
-        zoomOutMenuItem = new JMenuItem("Zoom Out");
-        zoomOutMenuItem.setIcon(new ImageIcon(getClass()
+        showGridMenuItem = new JCheckBoxMenuItem("Show Grid");
+        showGridMenuItem.setIcon(new ImageIcon(getClass()
                 .getResource("/rpgtoolkit/editor/resources/grid.png")));
-        zoomOutMenuItem.setAccelerator(
-                KeyStroke.getKeyStroke(KeyEvent.VK_M, ActionEvent.CTRL_MASK));
-        zoomOutMenuItem.setMnemonic(KeyEvent.VK_MINUS);
-        zoomOutMenuItem.addActionListener(new ZoomOutAction(parent));
-    }
-    
-    public void configureProjectExplorerMenuItem()
-    {
-        projectExplorerMenuItem = new JCheckBoxMenuItem("Show Grid");
-        projectExplorerMenuItem.setIcon(new ImageIcon(getClass()
-                .getResource("/rpgtoolkit/editor/resources/project-explorer.png")));
-        projectExplorerMenuItem.setAccelerator(
-                KeyStroke.getKeyStroke(KeyEvent.VK_E, ActionEvent.CTRL_MASK));
-        projectExplorerMenuItem.setMnemonic(KeyEvent.VK_P);
+        showGridMenuItem.setAccelerator(
+                KeyStroke.getKeyStroke(KeyEvent.VK_G, ActionEvent.CTRL_MASK));
+        showGridMenuItem.setMnemonic(KeyEvent.VK_G);
+        showGridMenuItem.addItemListener(new ShowGridItemListener(parent));
     }
 }

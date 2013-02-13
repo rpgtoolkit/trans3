@@ -85,12 +85,17 @@ public final class BoardView extends AbstractBoardView
         Graphics2D g = bufferedImage.createGraphics();
 
         // Draw background image first
-        g.setColor(Color.BLACK);
+        g.setColor(Color.white);
         g.fillRect(0, 0, (board.getWidth() * 32) * this.zoomLevel, 
                 (board.getHeight() * 32) * this.zoomLevel);
         
         this.paintLayers(g);
-        this.paintGrid(g);
+        
+        if (this.showGrid)
+        {
+            this.paintGrid(g);
+        }
+            
         this.paintVectors(g);
         this.paintCoordinates(g);
         

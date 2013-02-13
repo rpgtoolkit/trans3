@@ -66,7 +66,7 @@ public class Tile extends WritableRaster
                 for (int y = 0; y < 32; y++)
                 {
                     g.setColor(this.getPixel(x, y));
-                    g.fillRect((x * zoom + 1), (y * zoom + 1), zoom, zoom);
+                    g.fillRect((x * zoom), (y * zoom), zoom, zoom);
                     
                     //if (zoom > 5)
                     //{

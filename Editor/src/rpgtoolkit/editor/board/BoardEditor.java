@@ -60,4 +60,9 @@ public class BoardEditor extends JInternalFrame
     {
         boardController.performZoomOut();
     }
+    
+    public void toogleGrid(boolean isVisible)
+    {
+        boardController.toogleGrid(isVisible);
+    }
 }

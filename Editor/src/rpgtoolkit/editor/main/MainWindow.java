@@ -52,7 +52,7 @@ public class MainWindow extends JFrame
             {
                 super.paintComponent(g);
                 //ImageIcon icon = new ImageIcon(getClass().getResource("/uk.co.tkce.toolkit/assets/palm.png"));
-                // g.drawImage(icon.getImage(),0,0,this);
+                //g.drawImage(icon.getImage(),0,0,this);
             }
         }
 
@@ -338,6 +338,15 @@ public class MainWindow extends JFrame
         {
             BoardEditor editor = (BoardEditor)desktopPane.getSelectedFrame();
             editor.zoomOut();
+        }
+    }
+    
+    public void toogleGridOnBoardEditor(boolean isVisible)
+    {
+        if (desktopPane.getSelectedFrame() instanceof BoardEditor)
+        {
+            BoardEditor editor = (BoardEditor)desktopPane.getSelectedFrame();
+            editor.toogleGrid(isVisible);
         }
     }
 }

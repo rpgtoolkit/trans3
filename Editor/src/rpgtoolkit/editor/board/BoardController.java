@@ -167,4 +167,9 @@ public final class BoardController extends MultiLayerContainer
     {
         boardView.zoomOut();
     }
+    
+    public void toogleGrid(boolean isVisible)
+    {
+        boardView.setShowGrid(isVisible);
+    }
 }
