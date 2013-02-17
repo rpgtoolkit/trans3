@@ -69,7 +69,7 @@ extern GAME_TIME g_gameTime;
 extern MESSAGE_WINDOW g_mwin;
 
 extern STRING g_menuButtonGraphic;
-extern long g_menuButtonColor;
+extern long g_menuBackgroundColor;
 extern SystemFont g_fntMenuMain;
 extern SystemFont g_fntMenuStats;
 extern SystemFont g_fntMenuInfo;
@@ -580,7 +580,7 @@ void loadSaveState(const STRING str)
 	{
 		INT i;
 		file >> i;
-		i = g_menuButtonColor;
+		i = g_menuBackgroundColor;
 		file >> g_menuButtonGraphic;
 		file >> g_fntMenuInfo;
 		file >> g_fntMenuLists;
@@ -936,7 +936,7 @@ void saveSaveState(const STRING fileName)
 	file << CSprite::getLoopOffset();
 
 	// Introduced in 3.5
-	file << g_menuButtonColor;
+	file << (INT)g_menuBackgroundColor;
 	file << g_menuButtonGraphic;
 	file << g_fntMenuInfo;
 	file << g_fntMenuLists;

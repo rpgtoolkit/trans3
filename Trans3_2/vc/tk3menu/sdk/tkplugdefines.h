@@ -132,7 +132,7 @@
 #define GEN_MENUFONT_UNDERLINE  35      // Underline setting of the menu font (nArrayPos = SLOT_MENUFONT_*)
 #define GEN_MENUFONT_CENTER     36      // Centered setting of the menu font (nArrayPos = SLOT_MENUFONT_*)
 #define GEN_MENUFONT_OUTLINE    37      // Outline setting of the menu font (nArrayPos = SLOT_MENUFONT_*)
-#define GEN_MENUBUTTON_COLOR    38      // Fill color for menu buttons
+#define GEN_MENUBACKGROUND_COLOR    38      // Default background color
 #define GEN_INVENTORY_NUM		0		//number of each item in inventory (nArrayPos 0-500)
 #define GEN_EQUIP_HPADD			1		//amount of hp added to player by equipment (nPlayerslot 0-4)
 #define GEN_EQUIP_SMPADD		2		//amount of smp added to player by equipment (nPlayerslot 0-4)

@@ -79,7 +79,7 @@ extern std::vector<CPlayer *> g_players;
 static HDC g_hScreenDc = NULL;
 std::map<unsigned int, PLUGIN_ENEMY> g_enemies;
 STRING g_menuGraphic, g_fightMenuGraphic, g_menuButtonGraphic;
-long g_menuButtonColor = 0;
+long g_menuBackgroundColor = 0;
 SPCMOVE g_spc;
 std::vector<STRING> g_specials;
 std::vector<ITEM> g_items;
@@ -142,6 +142,10 @@ void* GetMenuFontProperty(int iFont, int iProperty)
 void SetMenuFontProperty(int iFont, int iProperty, void *value)
 {
 	SystemFont *p;
+	long *l;
+	bool *b;
+	int *i;
+
 	switch(iFont)
 	{
 	case SLOT_MENUFONT_INFO:
@@ -164,34 +168,43 @@ void SetMenuFontProperty(int iFont, int iProperty, void *value)
 	switch(iProperty)
 	{
 	case GEN_MENUFONT_BOLD:
-		p->bBold = (bool)value;
+		b = (bool*)value;
+		p->bBold = *b;
 		break;
 	case GEN_MENUFONT_CENTER:
-		p->bCenter = (bool)value;
+		b = (bool*)value;
+		p->bCenter = *b;
 		break;
 	case GEN_MENUFONT_DEFCOLOR:
-		p->lColorDefault = (long)value;
+		l = (long*)value;
+		p->lColorDefault = *l;
 		break;
 	case GEN_MENUFONT_DISCOLOR:
-		p->lColorDisable = (long)value;
+		l = (long*)value;
+		p->lColorDisable = *l;
 		break;
 	case GEN_MENUFONT_HICOLOR:
-		p->lColorHighlight = (long)value;
+		l = (long*)value;
+		p->lColorHighlight = *l;
 		break;
 	case GEN_MENUFONT_FACE:
 		p->strFont = std::string((char*)value);
 		break;
 	case GEN_MENUFONT_ITALICS:
-		p->bItalics = (bool)value;
+		b = (bool*)value;
+		p->bItalics = *b;
 		break;
 	case GEN_MENUFONT_OUTLINE:
-		p->bOutline = (bool)value;
+		b = (bool*)value;
+		p->bOutline = *b;
 		break;
 	case GEN_MENUFONT_SIZE:
-		p->iSize = (int)value;
+		i = (int*)value;
+		p->iSize = *i;
 		break;
 	case GEN_MENUFONT_UNDERLINE:
-		p->bUnderline = (bool)value;
+		b = (bool*)value;
+		p->bUnderline = *b;
 		break;
 	}
 }
@@ -990,8 +1003,8 @@ STDMETHODIMP CCallbacks::CBGetGeneralNum(int infoCode, int arrayPos, int playerS
 			*pRet = *p;
 			}
 			break;
-		case GEN_MENUBUTTON_COLOR:
-			*pRet = g_menuButtonColor;
+		case GEN_MENUBACKGROUND_COLOR:
+			*pRet = g_menuBackgroundColor;
 			break;
 		case GEN_INVENTORY_NUM:
 			extern CInventory g_inv;
@@ -1239,8 +1252,8 @@ STDMETHODIMP CCallbacks::CBSetGeneralNum(int infoCode, int arrayPos, int playerS
 		case GEN_MENUFONT_DISCOLOR:
 			SetMenuFontProperty(arrayPos, infoCode, &newVal);
 			break;
-		case GEN_MENUBUTTON_COLOR:
-			g_menuButtonColor = newVal;
+		case GEN_MENUBACKGROUND_COLOR:
+			g_menuBackgroundColor = newVal;
 			break;
 		case GEN_INVENTORY_NUM:
 			extern CInventory g_inv;

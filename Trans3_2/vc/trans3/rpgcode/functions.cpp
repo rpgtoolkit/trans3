@@ -104,6 +104,30 @@ const CLSID CLSID_REGEXP = {0x3F4DACA4, 0x160D, 0x11D2, {0xA8, 0xE9, 0x00, 0x10,
  * Rpgcode flags.
  */
 
+// Slots for menu fonts
+typedef enum tkMNUFNT_SLOTS
+{
+	tkMNUFNT_MAIN   = 0,      // main menu font
+	tkMNUFNT_STATS  = 1,      // stats font
+	tkMNUFNT_INFO   = 2,      // info font
+	tkMNUFNT_OPTS   = 3,      // options font
+	tkMNUFNT_LSTS   = 4      // lists font
+};
+
+// Font property constants
+typedef enum tkMNU_PROPERTIES
+{
+	tkMNUFNT_PROP_SIZE       = 29,      // Size of the menu font
+	tkMNUFNT_PROP_DEFCOLOR   = 30,      // Default color of the menu font
+	tkMNUFNT_PROP_HICOLOR    = 31,      // Highlight color of the menu font
+	tkMNUFNT_PROP_DISCOLOR   = 32,      // Disabled color of the menu font
+	tkMNUFNT_PROP_BOLD       = 33,      // Bold setting of the menu font
+	tkMNUFNT_PROP_ITALICS    = 34,      // Italics setting of the menu font
+	tkMNUFNT_PROP_UNDERLINE  = 35,      // Underline setting of the menu font
+	tkMNUFNT_PROP_CENTER     = 36,      // Centered setting of the menu font
+	tkMNUFNT_PROP_OUTLINE    = 37      // Outline setting of the menu font
+};
+
 // Vector type constants.
 typedef enum tkVT_CONSTANTS
 {
@@ -4342,6 +4366,88 @@ void ai(CALL_DATA &params)
 }
 
 /*
+ * void menufont(int fontSlot, int property, variant value, ...)
+ * 
+ * Change a menu font property
+ */
+void menufont(CALL_DATA &params)
+{
+	extern void SetMenuFontProperty(int iFont, int iProperty, void *value);
+
+	if (params.params < 3)
+	{
+		throw CError(_T("MenuFont() requires at least three parameters."));
+	}
+	if (params[1].getNum() == tkMNUFNT_PROP_DEFCOLOR || 
+		params[1].getNum() == tkMNUFNT_PROP_DISCOLOR ||
+		params[1].getNum() == tkMNUFNT_PROP_HICOLOR)
+	{
+		if (params.params != 5)
+		{
+			throw CError(_T("MenuFont() tkMNUFNT_PROP_COLOR requires at five parameters."));
+		}
+		else
+		{
+			long l = RGB(params[2].getNum(), params[3].getNum(), params[4].getNum());
+			SetMenuFontProperty(params[0].getNum(), params[1].getNum(), &l);
+		}
+	}
+	else
+	{
+		UNIT_DATA_TYPE t = params[2].getType();
+		switch(t)
+		{
+		case UDT_LIT:
+			{
+			char *s = new char[params[2].getLit().size()];
+			strcpy(s, params[2].getLit().c_str());
+			SetMenuFontProperty(params[0].getNum(), params[1].getNum(), s);
+			delete s;
+			break;
+			}
+		case UDT_NUM:
+			{
+			int d = (int)params[2].getNum();
+			SetMenuFontProperty(params[0].getNum(), params[1].getNum(), &d);
+			}
+			break;
+		}
+	}
+}
+
+/*
+ * void menuButtonGraphic(string image)
+ * 
+ * Choose an image for the menu buttons.
+ */
+void menuButtonGraphic(CALL_DATA &params)
+{
+	extern STRING g_menuButtonGraphic;
+
+	if (params.params != 1)
+	{
+		throw CError(_T("MenuButtonGraphic() requires one parameter."));
+	}
+	g_menuButtonGraphic = params[0].getLit();
+}
+
+/*
+ * void menuColor(int r, int g, int b)
+ * 
+ * Set the default menu color
+ */
+void menucolor(CALL_DATA &params)
+{
+	extern long g_menuBackgroundColor;
+
+	if (params.params != 3)
+	{
+		throw CError(_T("MenuColor() requires three parameters."));
+	}
+	g_menuBackgroundColor = RGB(params[0].getNum(),params[1].getNum(), params[2].getNum());
+}
+
+/*
  * void menuGraphic(string image)
  * 
  * Choose an image for the menu.
@@ -7960,6 +8066,9 @@ void initRpgCode()
 	CProgram::addFunction(_T("getlevel"), getlevel);
 	CProgram::addFunction(_T("ai"), ai);
 	CProgram::addFunction(_T("menugraphic"), menugraphic);
+	CProgram::addFunction(_T("menufont"), menufont);
+	CProgram::addFunction(_T("menucolor"), menucolor);
+	CProgram::addFunction(_T("menubuttongraphic"), menuButtonGraphic);
 	CProgram::addFunction(_T("fightmenugraphic"), fightMenuGraphic);
 	CProgram::addFunction(_T("fightstyle"), fightStyle);
 	CProgram::addFunction(_T("stance"), stance);
@@ -8143,6 +8252,25 @@ void initRpgCode()
 	CProgram::addConstant(_T("tkDIR_NW"), makeNumStackFrame(MV_NW));
 	CProgram::addConstant(_T("tkDIR_N"),  makeNumStackFrame(MV_N));
 	CProgram::addConstant(_T("tkDIR_NE"), makeNumStackFrame(MV_NE));
+
+	// Slots for menu fonts
+	CProgram::addConstant(_T("tkMNUFNT_MAIN"), makeNumStackFrame(tkMNUFNT_MAIN));
+	CProgram::addConstant(_T("tkMNUFNT_STATS"), makeNumStackFrame(tkMNUFNT_STATS));
+	CProgram::addConstant(_T("tkMNUFNT_INFO"), makeNumStackFrame(tkMNUFNT_INFO));
+	CProgram::addConstant(_T("tkMNUFNT_OPTS"), makeNumStackFrame(tkMNUFNT_OPTS));
+	CProgram::addConstant(_T("tkMNUFNT_LSTS"), makeNumStackFrame(tkMNUFNT_LSTS));
+
+	// Font property constants
+	CProgram::addConstant(_T("tkMNUFNT_PROP_SIZE"), makeNumStackFrame(tkMNUFNT_PROP_SIZE));
+	CProgram::addConstant(_T("tkMNUFNT_PROP_DEFCOLOR"), makeNumStackFrame(tkMNUFNT_PROP_DEFCOLOR));
+	CProgram::addConstant(_T("tkMNUFNT_PROP_HICOLOR"), makeNumStackFrame(tkMNUFNT_PROP_HICOLOR));
+	CProgram::addConstant(_T("tkMNUFNT_PROP_DISCOLOR"), makeNumStackFrame(tkMNUFNT_PROP_DISCOLOR));
+	CProgram::addConstant(_T("tkMNUFNT_PROP_BOLD"), makeNumStackFrame(tkMNUFNT_PROP_BOLD));
+	CProgram::addConstant(_T("tkMNUFNT_PROP_ITALICS"), makeNumStackFrame(tkMNUFNT_PROP_ITALICS));
+	CProgram::addConstant(_T("tkMNUFNT_PROP_UNDERLINE"), makeNumStackFrame(tkMNUFNT_PROP_UNDERLINE));
+	CProgram::addConstant(_T("tkMNUFNT_PROP_CENTER"), makeNumStackFrame(tkMNUFNT_PROP_CENTER));
+	CProgram::addConstant(_T("tkMNUFNT_PROP_OUTLINE"), makeNumStackFrame(tkMNUFNT_PROP_OUTLINE));
+	CProgram::addConstant(_T("tkMNUFNT_LSTS"), makeNumStackFrame(tkMNUFNT_LSTS));
 
 	// Error handling.
 	CProgram::addFunction(_T("resumeNext"), resumeNext);

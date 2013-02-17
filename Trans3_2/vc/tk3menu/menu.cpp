@@ -44,7 +44,7 @@ int g_nOffsetY;
 #define _MSGBOX(x) MessageBox(NULL, x, NULL, 0)
 
 CNVID g_cnvButtonGraphic;
-long g_crMenuButtonFillColor;
+long g_crMenuBackgroundColor;
 std::string g_menuButtonGraphic;
 
 void vDrawButton(CNVID cnvButton)
@@ -52,7 +52,7 @@ void vDrawButton(CNVID cnvButton)
 	if(g_menuButtonGraphic == "")
 	{
 		// Fill rect instead
-		CBCanvasFill(cnvButton, g_crMenuButtonFillColor);
+		CBCanvasFill(cnvButton, g_crMenuBackgroundColor);
 	}
 	else
 	{
@@ -94,7 +94,6 @@ void BeginMenu(void)
 	g_cnvButtonGraphic = CBCreateCanvas(BUTTONWIDTH, BUTTONHEIGHT);
 }
 
-
 void vEndMenu(void)
 {
 	if (g_cnvMenu)
@@ -113,12 +112,6 @@ void MainMenu(void)
 	// Calculate the offsets.
 	g_nOffsetX = (CBGetGeneralNum(GEN_RESX, 0, 0) - SIZEX) / 2;
 	g_nOffsetY = (CBGetGeneralNum(GEN_RESY, 0, 0) - SIZEY) / 2;
-	g_crMenuButtonFillColor = CBGetGeneralNum(GEN_MENUBUTTON_COLOR,0,0);
-	g_menuButtonGraphic = CBGetGeneralString(GEN_MENUBUTTONGRAPHIC, 0, 0);
-	if(g_menuButtonGraphic != "")
-	{			
-		CBCanvasLoadSizedImage(g_cnvButtonGraphic, g_menuButtonGraphic);
-	}
 	RenderMainMenu();
 	g_nButton = 0;
 	DrawCursor();
@@ -130,6 +123,12 @@ void MainMenu(void)
 
 void RenderMainMenu(void)
 {
+	g_crMenuBackgroundColor = CBGetGeneralNum(GEN_MENUBACKGROUND_COLOR,0,0);
+	g_menuButtonGraphic = CBGetGeneralString(GEN_MENUBUTTONGRAPHIC, 0, 0);
+	if(g_menuButtonGraphic != "")
+	{			
+		CBCanvasLoadSizedImage(g_cnvButtonGraphic, g_menuButtonGraphic);
+	}
 	CBCanvasLoadSizedImage(g_cnvMenu, CBGetGeneralString(GEN_MENUGRAPHIC, 0, 0));
 
 	//Main Menu text
@@ -2003,7 +2002,6 @@ void RenderPlayerInfo(int nSlot, CNVID cnv)
 	ObtainPlayerInfo(strLine, nSlot);
 
 	//Print name...
-	//CBCanvasDrawText(cnv, strLine[0], "Arial", 22, 3.55, 1, g_crTextColor, 1, 0, 0, true);
 	vDrawText(cnv, strLine[0], SLOT_MENUFONT_MAIN, 3.55, 1);
 
 
@@ -2025,7 +2023,7 @@ void RenderPlayerInfo(int nSlot, CNVID cnv)
 	vDrawText(cnv, strLine[6], SLOT_MENUFONT_INFO, 1.5, 14);
 
 	//Next level box...
-	CBCanvasFillRect(cnv, 6, 223, 106, 235, 0);
+	CBCanvasFillRect(cnv, 6, 223, 106, 235, g_crMenuBackgroundColor);
 	CBCanvasFillRect(cnv, 7, 224, 6 + CBGetPlayerNum(PLAYER_NEXTLEVEL, 0, nSlot), 234, rgb(255, 0, 0));
 }
 

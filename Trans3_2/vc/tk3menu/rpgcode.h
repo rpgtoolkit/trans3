@@ -29,5 +29,3 @@
  * these exceptions from its distribution terms, or you may choose
  * to propagate them.
  */
-
-void SetMenuFontProperty(int iFont, int iProperty, void *value);
