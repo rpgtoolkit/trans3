@@ -6,6 +6,10 @@
  *
  * This file is released under the AC Open License v 1.0
  * See "AC Open License.txt" for details
+ ********************************************************************
+ * Copyright (C) 2013 Lorie Jay C. Gutierrez
+ * piartsco@gmail.com
+ ********************************************************************
  */
 
 /*
@@ -70,5 +74,5 @@ void APIENTRY TKPlugBegin()
 void APIENTRY TKPlugEnd()
 {
 	//TBD: Add finishing code here.
-	EndMenu();
+	vEndMenu();
 }

@@ -177,7 +177,7 @@
 				Name="VCLinkerTool"
 				RegisterOutput="false"
 				PerUserRedirection="false"
-				OutputFile="Debug/tk3defaults.dll"
+				OutputFile="Debug/tk3menu.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				ModuleDefinitionFile=".\tkplugin.def"

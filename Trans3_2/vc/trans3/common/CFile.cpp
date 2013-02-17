@@ -35,6 +35,7 @@
  */
 #include "CFile.h"
 #include "paths.h"
+#include "SystemFont.h"
 
 /*
  * Constructor.
@@ -64,6 +65,34 @@ void CFile::open(const STRING fileName, CONST UINT mode)
  *
  * data (in) - source
  */
+CFile &CFile::operator<<(CONST SystemFont data)
+{
+	BYTE b;
+	INT i;
+	*this << data.strFont;
+	*this << data.iSize;
+	i = (INT)data.lColorDefault;
+	*this << i;
+	i = (INT)data.lColorHighlight;
+	*this << i;
+	i = (INT)data.lColorDefault;
+	*this << i;
+	i = (INT)data.lColorDisable;
+	*this << i;
+	b = (BYTE)data.bBold;
+	*this << b;
+	b = (BYTE)data.bItalics;
+	*this << b;
+	b = (BYTE)data.bUnderline;
+	*this << b;
+	b = (BYTE)data.bCenter;
+	*this << b;
+	b = (BYTE)data.bOutline;
+	*this << b;
+	
+	return *this;
+}
+
 CFile &CFile::operator<<(CONST BYTE data)
 {
 	DWORD write = 0;
@@ -120,6 +149,32 @@ CFile &CFile::operator<<(CONST STRING data)
  *
  * data (out) - destination
  */
+CFile &CFile::operator>>(SystemFont &data)
+{
+	BYTE b;
+	INT i;
+	*this >> data.strFont;
+	*this >> data.iSize;
+	*this >> i;
+	data.lColorDefault = i;
+	*this >> i;
+	data.lColorHighlight = i;
+	*this >> i;
+	data.lColorDefault = i;
+	*this >> i;
+	data.lColorDisable = i;
+	*this >> b;
+	data.bBold = b;
+	*this >> b;
+	data.bItalics = b;
+	*this >> b;
+	data.bUnderline = b;
+	*this >> b;
+	data.bCenter = b;
+	*this >> b;
+	data.bOutline = b;
+	return *this;
+}
 CFile &CFile::operator>>(BYTE &data)
 {
 	DWORD read = 0;

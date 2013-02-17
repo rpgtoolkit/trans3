@@ -49,6 +49,33 @@
 #define INFORM_SOURCE_DEAD		6		//Source fighter has died
 #define INFORM_SOURCE_PARTY_DEFEATED	7		//Source party is all dead
 
+//************************************************************************************
+// Data types
+//************************************************************************************
+typedef enum {
+    DT_NUM = 0,                                      //numerical data element
+    DT_LIT = 1                                      //literal data element
+} RPGC_DT;
+
+typedef struct {         //RPGCode return value
+    RPGC_DT dataType;         //  Type of data we//ve returned (DT_NUM or DT_LIT)
+    double num;               //  Numerical data we//ve returned
+	std::string lit;               //  Literal data we//ve returned
+    bool usingReturnData;  //  Have we been asked to return a value?
+} TYPE_RETVAL;
+
+typedef struct {//  Type of this parameter (DT_NUM or DT_LIT)
+	RPGC_DT dataType;         //  Type of this parameter (DT_NUM or DT_LIT)
+    double num;               //  Numerical data
+	std::string lit;               //  Literal data
+	std::string dat;               //  Un-altered data (quotes et all)
+} PARAM_DETAILS;
+
+typedef struct {          //Detail on all of a command//s parameters
+    long dataCount;           //  Number of data elements
+	std::vector<PARAM_DETAILS> paras; //  Details on each parameter
+} PARAMETERS;
+
 //Fight event -- returned from GetNextFightEvent
 //nCode is the event code (INFORM_****) as defined above
 typedef struct _tagFighter

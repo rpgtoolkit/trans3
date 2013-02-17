@@ -102,7 +102,7 @@ BSTR CharToBSTR(char* x)
 	{
 		bstrRet[0] = 0;
 	}
-	return bstrRet;
+	return (BSTR)bstrRet;
 }
 
 

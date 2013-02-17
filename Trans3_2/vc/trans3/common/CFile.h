@@ -39,6 +39,7 @@
 #include "../../tkCommon/strings.h"
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include "SystemFont.h"
 
 class CFile
 {
@@ -57,6 +58,7 @@ public:
 	CFile &operator<<(CONST UINT data);
 	CFile &operator<<(CONST double data);
 	CFile &operator<<(CONST STRING data);
+	CFile &operator<<(CONST SystemFont data);
 	//
 	// Read.
 	//
@@ -67,6 +69,7 @@ public:
 	CFile &operator>>(UINT &data);
 	CFile &operator>>(double &data);
 	CFile &operator>>(STRING &data);
+	CFile &operator>>(SystemFont &data);
 	STRING line(VOID);
 	//
 	// Misc.

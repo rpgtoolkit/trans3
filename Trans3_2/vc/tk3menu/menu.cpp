@@ -6,10 +6,15 @@
  *
  * This file is released under the AC Open License Derivative v 1.0
  * See "AC Open License Derivative.txt" for details
+ ********************************************************************
+ * Copyright (C) 2013 Lorie Jay C. Gutierrez
+ * piartsco@gmail.com
+ ********************************************************************
  */
 
 #include "stdafx.h"
 #include "menu.h"
+#include "rpgcode.h"
 
 CNVID g_cnvMenu;							//canvas of menu
 long g_crTranspColor;						//transparent color
@@ -33,7 +38,52 @@ int g_nOffsetY;
 #define SIZEX 640			// Dimensions of this menu.
 #define SIZEY 480
 
+#define BUTTONWIDTH 92
+#define BUTTONHEIGHT 30
+
 #define _MSGBOX(x) MessageBox(NULL, x, NULL, 0)
+
+CNVID g_cnvButtonGraphic;
+long g_crMenuButtonFillColor;
+std::string g_menuButtonGraphic;
+
+void vDrawButton(CNVID cnvButton)
+{
+	if(g_menuButtonGraphic == "")
+	{
+		// Fill rect instead
+		CBCanvasFill(cnvButton, g_crMenuButtonFillColor);
+	}
+	else
+	{
+		// Draw image
+		CBCanvas2CanvasBltTransparent(g_cnvButtonGraphic, cnvButton, 0, 0, g_crTranspColor);				
+	}
+}
+
+void vDrawText(CNVID cnvDest, std::string text, int font, double x, double y, int iUseColor)
+{
+	long lColor;
+	switch (iUseColor)
+	{
+	case 0:
+		lColor = CBGetGeneralNum(GEN_MENUFONT_DEFCOLOR, font, 0);
+		break;
+	case 1:
+		lColor = CBGetGeneralNum(GEN_MENUFONT_HICOLOR, font, 0);
+		break;
+	case 2:
+		lColor = CBGetGeneralNum(GEN_MENUFONT_DISCOLOR, font, 0);
+		break;
+	}
+	CBCanvasDrawText(cnvDest, text, CBGetGeneralString(GEN_MENUFONT_FACE, font, 0),
+		CBGetGeneralNum(GEN_MENUFONT_SIZE, font, 0), x, y, lColor,
+		CBGetGeneralNum(GEN_MENUFONT_BOLD, font, 0), 
+		CBGetGeneralNum(GEN_MENUFONT_ITALICS, font, 0), 
+		CBGetGeneralNum(GEN_MENUFONT_UNDERLINE, font, 0),
+		CBGetGeneralNum(GEN_MENUFONT_CENTER, font, 0),
+		CBGetGeneralNum(GEN_MENUFONT_OUTLINE, font, 0));
+}
 
 void BeginMenu(void)
 {
@@ -41,15 +91,18 @@ void BeginMenu(void)
 	g_crTranspColor = CBGetGeneralNum(GEN_TRANSPARENTCOLOR, 0, 0);
 
 	g_cnvMenu = CBCreateCanvas(SIZEX, SIZEY);
+	g_cnvButtonGraphic = CBCreateCanvas(BUTTONWIDTH, BUTTONHEIGHT);
 }
 
 
-void EndMenu(void)
+void vEndMenu(void)
 {
 	if (g_cnvMenu)
 	{
 		CBDestroyCanvas(g_cnvMenu);
 		g_cnvMenu = 0;
+		CBDestroyCanvas(g_cnvButtonGraphic);
+		g_cnvButtonGraphic = 0;
 	}	
 }
 
@@ -60,6 +113,12 @@ void MainMenu(void)
 	// Calculate the offsets.
 	g_nOffsetX = (CBGetGeneralNum(GEN_RESX, 0, 0) - SIZEX) / 2;
 	g_nOffsetY = (CBGetGeneralNum(GEN_RESY, 0, 0) - SIZEY) / 2;
+	g_crMenuButtonFillColor = CBGetGeneralNum(GEN_MENUBUTTON_COLOR,0,0);
+	g_menuButtonGraphic = CBGetGeneralString(GEN_MENUBUTTONGRAPHIC, 0, 0);
+	if(g_menuButtonGraphic != "")
+	{			
+		CBCanvasLoadSizedImage(g_cnvButtonGraphic, g_menuButtonGraphic);
+	}
 	RenderMainMenu();
 	g_nButton = 0;
 	DrawCursor();
@@ -74,7 +133,7 @@ void RenderMainMenu(void)
 	CBCanvasLoadSizedImage(g_cnvMenu, CBGetGeneralString(GEN_MENUGRAPHIC, 0, 0));
 
 	//Main Menu text
-	CBCanvasDrawText(g_cnvMenu, CBLoadString(1965, "Main Menu"), "Arial", 24, 5.75, 1.75, g_crTextColor, true, false, false, true);
+	vDrawText(g_cnvMenu, CBLoadString(1965, "Main Menu"), SLOT_MENUFONT_MAIN, 5.75, 1.75, 1);
 
 	RenderMainMenuPlayers(g_cnvMenu);
 
@@ -100,39 +159,40 @@ void RenderMainMenuOptions(CNVID cnv)
 	std::string strReturn = " " + CBLoadString(2068, "Return");
 	std::string strExit = " " + CBLoadString(2069, "Quit");
 
-	CNVID cnvButton = CBCreateCanvas(92, 30);
+	CNVID cnvButton = CBCreateCanvas(BUTTONWIDTH, BUTTONHEIGHT);
 	
-	CBCanvasFill(cnvButton, 0);
-	CBCanvasDrawText(cnvButton, strItems, "Times New Roman", 20, 3.3, 1.25, rgb(255, 0, 0), 1, 0, 0, true);
+	vDrawButton(cnvButton);
+	vDrawText(cnvButton, strItems, SLOT_MENUFONT_OPTS, 3.3, 1.25, 0);
 	CBCanvas2CanvasBlt(cnvButton, cnv, 36, 97);
 
-	CBCanvasFill(cnvButton, 0);
-	CBCanvasDrawText(cnvButton, strEquip, "Times New Roman", 20, 3.3, 1.25, rgb(255, 0, 0), 1, 0, 0, true);
+	vDrawButton(cnvButton);
+	vDrawText(cnvButton, strEquip, SLOT_MENUFONT_OPTS, 3.3, 1.25, 0);
 	CBCanvas2CanvasBlt(cnvButton, cnv, 143, 97);
 
-	CBCanvasFill(cnvButton, 0);
-	CBCanvasDrawText(cnvButton, strAbilities, "Times New Roman", 20, 3.3, 1.25, rgb(255, 0, 0), 1, 0, 0, true);
+	vDrawButton(cnvButton);
+	vDrawText(cnvButton, strAbilities, SLOT_MENUFONT_OPTS, 3.3, 1.25, 0);
 	CBCanvas2CanvasBlt(cnvButton, cnv, 250, 97);
 
 
-	CBCanvasFill(cnvButton, 0);
-	CBCanvasDrawText(cnvButton, strReturn, "Times New Roman", 20, 3.3, 1.25, rgb(255, 0, 0), 1, 0, 0, true);
+	vDrawButton(cnvButton);
+	vDrawText(cnvButton, strReturn, SLOT_MENUFONT_OPTS, 3.3, 1.25, 0);
 	CBCanvas2CanvasBlt(cnvButton, cnv, 53, 434);
 
 	// Save game - disable (grey) if progressive saving disabled.
-	CBCanvasFill(cnvButton, 0);
+	vDrawButton(cnvButton);
 	if (CBGetBoardNum(BRD_SAVING_DISABLED, 0, 0, 0) == 1)
-		CBCanvasDrawText(cnvButton, strSaveGame, "Times New Roman", 20, 3.3, 1.25, rgb(128, 128, 128), 1, 0, 0, true);
+		vDrawText(cnvButton, strSaveGame, SLOT_MENUFONT_OPTS, 3.3, 1.25, 2);
 	else
-		CBCanvasDrawText(cnvButton, strSaveGame, "Times New Roman", 20, 3.3, 1.25, rgb(255, 0, 0), 1, 0, 0, true);
+		vDrawText(cnvButton, strSaveGame, SLOT_MENUFONT_OPTS, 3.3, 1.25, 0);
+	
 	CBCanvas2CanvasBlt(cnvButton, cnv, 200, 434);
 
-	CBCanvasFill(cnvButton, 0);
-	CBCanvasDrawText(cnvButton, strLoadGame, "Times New Roman", 20, 3.3, 1.25, rgb(255, 0, 0), 1, 0, 0, true);
+	vDrawButton(cnvButton);
+	vDrawText(cnvButton, strLoadGame, SLOT_MENUFONT_OPTS, 3.3, 1.25, 0);
 	CBCanvas2CanvasBlt(cnvButton, cnv, 347, 434);
 
-	CBCanvasFill(cnvButton, 0);
-	CBCanvasDrawText(cnvButton, strExit, "Times New Roman", 20, 3.3, 1.25, rgb(255, 0, 0), 1, 0, 0, true);
+	vDrawButton(cnvButton);
+	vDrawText(cnvButton, strExit, SLOT_MENUFONT_OPTS, 3.3, 1.25, 0);
 	CBCanvas2CanvasBlt(cnvButton, cnv, 494, 434);
 
 	CBDestroyCanvas(cnvButton);
@@ -147,7 +207,7 @@ int MainMenuScanKeys(void)
 	int nPlayerID = 0;
 	while (!bDone)
 	{
-		CBDoEvents();
+		CBDoEvents();		
 		INPUT_EVENT ie;
 		ie.strKey = "";
 		GetNextInputEvent( &ie );
@@ -267,6 +327,7 @@ int MainMenuScanKeys(void)
 			CBPlaySound(CBGetGeneralString(GEN_CURSOR_MOVESOUND, 0, 0));
 			DrawCursor();
 			Sleep(90);
+			FlushInputEvents();
 		}
 		if (ie.strKey.compare("LEFT") == 0 || CBCheckKey("JOYLEFT"))
 		{
@@ -279,6 +340,7 @@ int MainMenuScanKeys(void)
 			CBPlaySound(CBGetGeneralString(GEN_CURSOR_MOVESOUND, 0, 0));
 			DrawCursor();
 			Sleep(90);
+			FlushInputEvents();
 		}
 		if (ie.strKey.compare("DOWN") == 0 || CBCheckKey("JOYDOWN"))
 		{
@@ -299,6 +361,7 @@ int MainMenuScanKeys(void)
 			CBPlaySound(CBGetGeneralString(GEN_CURSOR_MOVESOUND, 0, 0));
 			DrawCursor();
 			Sleep(90);
+			FlushInputEvents();
 		}
 	}
 	return 1;
@@ -322,7 +385,7 @@ void RenderItemMenu(bool bShowContent)
 	CBCanvasLoadSizedImage(g_cnvMenu, CBGetGeneralString(GEN_MENUGRAPHIC, 0, 0));
 
 	//Main Menu text
-	CBCanvasDrawText(g_cnvMenu, CBLoadString(1961, "Inventory"), "Arial", 24, 5.75, 1.75, g_crTextColor, true, false, false, true);
+	vDrawText(g_cnvMenu, CBLoadString(1961, "Inventory"), SLOT_MENUFONT_MAIN, 5.75, 1.75, 1);
 
 	//create time, GP, etc...
 	RenderMainMenuStats(g_cnvMenu);
@@ -333,7 +396,7 @@ void RenderItemMenu(bool bShowContent)
 	RenderItemOptions(g_cnvMenu);
 
 	//show the item page...
-	CBCanvasDrawText(g_cnvMenu, Int2String(g_nItemPage+1), "Arial", 18, 1.5, 23, g_crTextColor, 0, 0, 0, 0);
+	vDrawText(g_cnvMenu, Int2String(g_nItemPage+1), SLOT_MENUFONT_STATS, 1.5, 23, 0);
 
 	CBDrawCanvas(g_cnvMenu, g_nOffsetX, g_nOffsetY);
 	CBRefreshScreen();
@@ -407,7 +470,7 @@ void RenderItemSublist(int nSublistNumber, CNVID cnv)
 		{
 			//found one...
 			std::string strText = Int2String(CBGetGeneralNum(GEN_INVENTORY_NUM, idx, 0)) + " " + strItems[idx];
-			CBCanvasDrawText(cnv, strText, "Arial", 20, 1.5, y+1, g_crTextColor, 1, 0, 0, false);
+			vDrawText(cnv, strText, SLOT_MENUFONT_LSTS, 1.5, y + 1);
 
 			y++;
 			if (y>=nItemsPerList)
@@ -429,23 +492,22 @@ void RenderItemOptions(CNVID cnv)
 
 	std::string strBack = " " + CBLoadString(2070, "Back");
 
-	CNVID cnvButton = CBCreateCanvas(92, 30);
+	CNVID cnvButton = CBCreateCanvas(BUTTONWIDTH, BUTTONHEIGHT);
 	
-	CBCanvasFill(cnvButton, 0);
-	CBCanvasDrawText(cnvButton, strUse, "Times New Roman", 20, 3.3, 1.25, rgb(255, 0, 0), 1, 0, 0, true);
+	vDrawButton(cnvButton);
+	vDrawText(cnvButton, strUse, SLOT_MENUFONT_OPTS, 3.3, 1.25);
 	CBCanvas2CanvasBlt(cnvButton, cnv, 36, 97);
 
-	CBCanvasFill(cnvButton, 0);
-	CBCanvasDrawText(cnvButton, strInfo, "Times New Roman", 20, 3.3, 1.25, rgb(255, 0, 0), 1, 0, 0, true);
+	vDrawButton(cnvButton);
+	vDrawText(cnvButton, strInfo, SLOT_MENUFONT_OPTS, 3.3, 1.25);
 	CBCanvas2CanvasBlt(cnvButton, cnv, 143, 97);
 
-	CBCanvasFill(cnvButton, 0);
-	CBCanvasDrawText(cnvButton, strDrop, "Times New Roman", 20, 3.3, 1.25, rgb(255, 0, 0), 1, 0, 0, true);
+	vDrawButton(cnvButton);
+	vDrawText(cnvButton, strDrop, SLOT_MENUFONT_OPTS, 3.3, 1.25);
 	CBCanvas2CanvasBlt(cnvButton, cnv, 250, 97);
 
-
-	CBCanvasFill(cnvButton, 0);
-	CBCanvasDrawText(cnvButton, strBack, "Times New Roman", 20, 3.3, 1.25, rgb(255, 0, 0), 1, 0, 0, true);
+	vDrawButton(cnvButton);
+	vDrawText(cnvButton, strBack, SLOT_MENUFONT_OPTS, 3.3, 1.25);
 	CBCanvas2CanvasBlt(cnvButton, cnv, 53, 434);
 
 	CBDestroyCanvas(cnvButton);
@@ -857,7 +919,7 @@ void RenderAbilitiesMenu(int nPlayerID, bool bRenderInfo)
 	CBCanvasLoadSizedImage(g_cnvMenu, CBGetGeneralString(GEN_MENUGRAPHIC, 0, 0));
 
 	//Main Menu text
-	CBCanvasDrawText(g_cnvMenu, CBLoadString(1001, "Player Abilities"), "Arial", 24, 5.75, 1.75, g_crTextColor, true, false, false, true);
+	vDrawText(g_cnvMenu, CBLoadString(1001, "Player Abilities"), SLOT_MENUFONT_MAIN, 5.75, 1.75, 1);
 
 	//create time, GP, etc...
 	RenderMainMenuStats(g_cnvMenu);
@@ -889,10 +951,11 @@ void RenderAbilitiesList(CNVID cnv, int nPlayerID, int nStartPos)
 {
 	CNVID cnvEquip = CBCreateCanvas(445, 240);
 	CBCanvasFill(cnvEquip, 0);
+	int i;
 	
 	std::string abilitiesList[500];
 
-	for (int i = 0; i < g_nSpecialMoveCount; i++)
+	for (i = 0; i < g_nSpecialMoveCount; i++)
 	{
 		std::string strFile = CBGetSpecialMoveListEntry(i);
 		if (strFile.compare("") != 0)
@@ -910,7 +973,7 @@ void RenderAbilitiesList(CNVID cnv, int nPlayerID, int nStartPos)
 	//now add the list to the canvas...
 	for (i=nStartPos; i < idx; i++)
 	{
-		CBCanvasDrawText(cnvEquip, abilitiesList[i], "Arial", 20, 1, i-nStartPos+1, g_crTextColor, 1, 0, 0, false);
+		vDrawText(cnvEquip, abilitiesList[i],SLOT_MENUFONT_LSTS, 1, i-nStartPos+1);
 	}
 
 
@@ -929,19 +992,19 @@ void RenderAbilitiesOptions(CNVID cnv)
 
 	std::string strBack = " " + CBLoadString(2070, "Back");
 
-	CNVID cnvButton = CBCreateCanvas(92, 30);
+	CNVID cnvButton = CBCreateCanvas(BUTTONWIDTH, BUTTONHEIGHT);
 	
-	CBCanvasFill(cnvButton, 0);
-	CBCanvasDrawText(cnvButton, strEquip, "Times New Roman", 20, 3.3, 1.25, rgb(255, 0, 0), 1, 0, 0, true);
+	vDrawButton(cnvButton);
+	vDrawText(cnvButton, strEquip, SLOT_MENUFONT_OPTS, 3.3, 1.25);
 	CBCanvas2CanvasBlt(cnvButton, cnv, 36, 97);
 
-	CBCanvasFill(cnvButton, 0);
-	CBCanvasDrawText(cnvButton, strRemove, "Times New Roman", 20, 3.3, 1.25, rgb(255, 0, 0), 1, 0, 0, true);
+	vDrawButton(cnvButton);
+	vDrawText(cnvButton, strRemove, SLOT_MENUFONT_OPTS, 3.3, 1.25);
 	CBCanvas2CanvasBlt(cnvButton, cnv, 143, 97);
 
 
-	CBCanvasFill(cnvButton, 0);
-	CBCanvasDrawText(cnvButton, strBack, "Times New Roman", 20, 3.3, 1.25, rgb(255, 0, 0), 1, 0, 0, true);
+	vDrawButton(cnvButton);
+	vDrawText(cnvButton, strBack, SLOT_MENUFONT_OPTS, 3.3, 1.25);
 	CBCanvas2CanvasBlt(cnvButton, cnv, 53, 434);
 
 	CBDestroyCanvas(cnvButton);
@@ -1229,8 +1292,7 @@ void RenderEquipMenu(int nPlayerID)
 	CBCanvasLoadSizedImage(g_cnvMenu, CBGetGeneralString(GEN_MENUGRAPHIC, 0, 0));
 
 	//Main Menu text
-	CBCanvasDrawText(g_cnvMenu, CBLoadString(1913, "Equip Player"), "Arial", 24, 5.75, 1.75, g_crTextColor, true, false, false, true);
-
+	vDrawText(g_cnvMenu, CBLoadString(1913, "Equip Player"), SLOT_MENUFONT_MAIN, 5.75, 1.75, 1);
 	//create time, GP, etc...
 	RenderMainMenuStats(g_cnvMenu);
 
@@ -1262,8 +1324,9 @@ void RenderEquipList(CNVID cnv, int nPlayerID, int nStartPos)
 	//create list of equipment...
 	std::string strEquipList[20];
 	int idx = 0;
+	int i;
 
-	for (int i = 1; i <=6; i++)
+	for (i = 1; i <=6; i++)
 	{
 		if (CBGetPlayerNum(PLAYER_ARMOURS, i, nPlayerID) == 1)
 		{
@@ -1319,7 +1382,7 @@ void RenderEquipList(CNVID cnv, int nPlayerID, int nStartPos)
 	//now add the list to the canvas...
 	for (i=nStartPos; i < idx; i++)
 	{
-		CBCanvasDrawText(cnvEquip, strEquipList[i], "Arial", 20, 1, i-nStartPos+1, g_crTextColor, 1, 0, 0, false);
+		vDrawText(cnvEquip, strEquipList[i], SLOT_MENUFONT_LSTS, 1, i-nStartPos+1);
 	}
 
 
@@ -1337,19 +1400,19 @@ void RenderEquipOptions(CNVID cnv)
 
 	std::string strBack = " " + CBLoadString(2070, "Back");
 
-	CNVID cnvButton = CBCreateCanvas(92, 30);
+	CNVID cnvButton = CBCreateCanvas(BUTTONWIDTH, BUTTONHEIGHT);
 	
-	CBCanvasFill(cnvButton, 0);
-	CBCanvasDrawText(cnvButton, strEquip, "Times New Roman", 20, 3.3, 1.25, rgb(255, 0, 0), 1, 0, 0, true);
+	vDrawButton(cnvButton);
+	vDrawText(cnvButton, strEquip, SLOT_MENUFONT_OPTS, 3.3, 1.25);
 	CBCanvas2CanvasBlt(cnvButton, cnv, 36, 97);
 
-	CBCanvasFill(cnvButton, 0);
-	CBCanvasDrawText(cnvButton, strRemove, "Times New Roman", 20, 3.3, 1.25, rgb(255, 0, 0), 1, 0, 0, true);
+	vDrawButton(cnvButton);
+	vDrawText(cnvButton, strRemove, SLOT_MENUFONT_OPTS, 3.3, 1.25);
 	CBCanvas2CanvasBlt(cnvButton, cnv, 143, 97);
 
 
-	CBCanvasFill(cnvButton, 0);
-	CBCanvasDrawText(cnvButton, strBack, "Times New Roman", 20, 3.3, 1.25, rgb(255, 0, 0), 1, 0, 0, true);
+	vDrawButton(cnvButton);
+	vDrawText(cnvButton, strBack, SLOT_MENUFONT_OPTS, 3.3, 1.25);
 	CBCanvas2CanvasBlt(cnvButton, cnv, 53, 434);
 
 	CBDestroyCanvas(cnvButton);
@@ -1434,7 +1497,8 @@ int SelectEquip(int nPlayerID)
 	//selected in list is in nRet--
 	//correspond that to a positionin the equip array (1-16)
 	int nCount = 0;
-	for (int i = 1; i <=6; i++)
+	int i;
+	for (i = 1; i <=6; i++)
 	{
 		if (CBGetPlayerNum(PLAYER_ARMOURS, i, nPlayerID) == 1)
 		{
@@ -1690,7 +1754,7 @@ void RenderEquipItems(CNVID cnv, int nCount, int nStartPos)
 	//now add the list to the canvas...
 	for (int i=nStartPos; i < nCount; i++)
 	{
-		CBCanvasDrawText(cnvEquip, g_strList[i], "Arial", 20, 1, i-nStartPos+1, g_crTextColor, 1, 0, 0, false);
+		vDrawText(cnvEquip, g_strList[i], SLOT_MENUFONT_LSTS, 1, i-nStartPos+1);
 	}
 
 
@@ -1862,14 +1926,14 @@ void RenderMainMenuStats(CNVID cnv)
 	ObtainOtherInfo(strLine);
 
 	//gp and steps
-	CBCanvasDrawText(cnv, strLine[0], "Arial", 18, 22, 5, g_crTextColor, 1, 0, 0, false);
-	CBCanvasDrawText(cnv, strLine[1], "Arial", 18, 22, 6, g_crTextColor, 1, 0, 0, false);
-	CBCanvasDrawText(cnv, strLine[2], "Arial", 18, 22, 7, g_crTextColor, 1, 0, 0, false);
-	CBCanvasDrawText(cnv, strLine[3], "Arial", 18, 22, 8, g_crTextColor, 1, 0, 0, false);
+	vDrawText(cnv, strLine[0], SLOT_MENUFONT_STATS, 22, 5);
+	vDrawText(cnv, strLine[1], SLOT_MENUFONT_STATS, 22, 6);
+	vDrawText(cnv, strLine[2], SLOT_MENUFONT_STATS, 22, 7);
+	vDrawText(cnv, strLine[3], SLOT_MENUFONT_STATS, 22, 8);
 
 	//time
-	CBCanvasDrawText(cnv, strLine[4], "Arial", 18, 28, 5, g_crTextColor, 1, 0, 0, false);
-	CBCanvasDrawText(cnv, strLine[5], "Arial", 18, 28, 6, g_crTextColor, 1, 0, 0, false);
+	vDrawText(cnv, strLine[4], SLOT_MENUFONT_STATS, 28, 5);
+	vDrawText(cnv, strLine[5], SLOT_MENUFONT_STATS, 28, 6);
 }
 
 
@@ -1939,7 +2003,8 @@ void RenderPlayerInfo(int nSlot, CNVID cnv)
 	ObtainPlayerInfo(strLine, nSlot);
 
 	//Print name...
-	CBCanvasDrawText(cnv, strLine[0], "Arial", 22, 3.55, 1, g_crTextColor, 1, 0, 0, true);
+	//CBCanvasDrawText(cnv, strLine[0], "Arial", 22, 3.55, 1, g_crTextColor, 1, 0, 0, true);
+	vDrawText(cnv, strLine[0], SLOT_MENUFONT_MAIN, 3.55, 1);
 
 
 	//load profile image...
@@ -1950,14 +2015,14 @@ void RenderPlayerInfo(int nSlot, CNVID cnv)
 	CBDestroyCanvas(cnvPlayer);
 
 
-	CBCanvasDrawText(cnv, strLine[1], "Arial", 16, 1.5, 9, g_crTextColor, 1, 0, 0, false);
-	CBCanvasDrawText(cnv, strLine[2], "Arial", 16, 1.5, 10, g_crTextColor, 1, 0, 0, false);
-	CBCanvasDrawText(cnv, strLine[3], "Arial", 16, 1.5, 11, g_crTextColor, 1, 0, 0, false);
+	vDrawText(cnv, strLine[1], SLOT_MENUFONT_INFO, 1.5, 9);
+	vDrawText(cnv, strLine[2], SLOT_MENUFONT_INFO, 1.5, 10);
+	vDrawText(cnv, strLine[3], SLOT_MENUFONT_INFO, 1.5, 11);
 
-	CBCanvasDrawText(cnv, strLine[4], "Arial", 16, 1.5, 12, g_crTextColor, 1, 0, 0, false);
-	CBCanvasDrawText(cnv, strLine[5], "Arial", 16, 1.5, 13, g_crTextColor, 1, 0, 0, false);
+	vDrawText(cnv, strLine[4], SLOT_MENUFONT_INFO, 1.5, 12);
+	vDrawText(cnv, strLine[5], SLOT_MENUFONT_INFO, 1.5, 13);
 
-	CBCanvasDrawText(cnv, strLine[6], "Arial", 16, 1.5, 14, g_crTextColor, 1, 0, 0, false);
+	vDrawText(cnv, strLine[6], SLOT_MENUFONT_INFO, 1.5, 14);
 
 	//Next level box...
 	CBCanvasFillRect(cnv, 6, 223, 106, 235, 0);
@@ -2024,7 +2089,8 @@ int SelectPlayer(bool bDrawPlayers)
 	DrawCursor();
 
 	int nMaxPlayers = -1;
-	for (int i = 0; i < 5; i++)
+	int i;
+	for (i = 0; i < 5; i++)
 	{
 		std::string strPlayerFile = CBGetGeneralString(GEN_PLAYERFILES, 0, i);
 		if (strPlayerFile.compare("") != 0)

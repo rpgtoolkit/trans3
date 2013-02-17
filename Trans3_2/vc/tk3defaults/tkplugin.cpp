@@ -23,9 +23,9 @@
 #include "menu.h"
 
 //you can provide a one-line description of this plugin here:
-PLUGIN_DESCRIPTION = "Default systems for TK3";
+PLUGIN_DESCRIPTION = "Default menu system for TK3";
 //here is where you declare the capabilities of the plugin.
-PLUGIN_TYPE = PT_MENU | PT_RPGCODE;
+PLUGIN_TYPE = PT_MENU;
 
 
 /*********************************************************************/

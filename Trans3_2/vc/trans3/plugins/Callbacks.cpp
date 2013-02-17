@@ -78,7 +78,8 @@ extern CDirectDraw *g_pDirectDraw;
 extern std::vector<CPlayer *> g_players;
 static HDC g_hScreenDc = NULL;
 std::map<unsigned int, PLUGIN_ENEMY> g_enemies;
-STRING g_menuGraphic, g_fightMenuGraphic;
+STRING g_menuGraphic, g_fightMenuGraphic, g_menuButtonGraphic;
+long g_menuButtonColor = 0;
 SPCMOVE g_spc;
 std::vector<STRING> g_specials;
 std::vector<ITEM> g_items;
@@ -889,6 +890,9 @@ STDMETHODIMP CCallbacks::CBGetGeneralString(int infoCode, int arrayPos, int play
 		case GEN_MENUGRAPHIC:
 			bstr = getString(g_menuGraphic);
 			break;
+		case GEN_MENUBUTTONGRAPHIC:
+			bstr = getString(g_menuButtonGraphic);
+			break;
 		case GEN_FIGHTMENUGRAPHIC:
 			bstr = getString(g_fightMenuGraphic);
 			break;
@@ -985,6 +989,9 @@ STDMETHODIMP CCallbacks::CBGetGeneralNum(int infoCode, int arrayPos, int playerS
 			int *p = (int*)GetMenuFontProperty(arrayPos, infoCode);
 			*pRet = *p;
 			}
+			break;
+		case GEN_MENUBUTTON_COLOR:
+			*pRet = g_menuButtonColor;
 			break;
 		case GEN_INVENTORY_NUM:
 			extern CInventory g_inv;
@@ -1143,6 +1150,9 @@ STDMETHODIMP CCallbacks::CBSetGeneralString(int infoCode, int arrayPos, int play
 			g_pBoard->open(g_projectPath + BRD_PATH + getString(newVal));
 			g_pSelectedPlayer->send();
 			break;
+		case GEN_MENUBUTTONGRAPHIC:
+			g_menuButtonGraphic = getString(newVal);
+			break;
 		case GEN_MENUGRAPHIC:
 			g_menuGraphic = getString(newVal);
 			break;
@@ -1228,6 +1238,9 @@ STDMETHODIMP CCallbacks::CBSetGeneralNum(int infoCode, int arrayPos, int playerS
 		case GEN_MENUFONT_DEFCOLOR:
 		case GEN_MENUFONT_DISCOLOR:
 			SetMenuFontProperty(arrayPos, infoCode, &newVal);
+			break;
+		case GEN_MENUBUTTON_COLOR:
+			g_menuButtonColor = newVal;
 			break;
 		case GEN_INVENTORY_NUM:
 			extern CInventory g_inv;

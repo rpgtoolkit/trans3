@@ -47,6 +47,7 @@
 #include "../movement/CPlayer/CPlayer.h"
 #include "../movement/CItem/CItem.h"
 #include <vector>
+#include "SystemFont.h"
 
 extern std::vector<CPlayer *> g_players;
 extern CInventory g_inv;
@@ -67,6 +68,13 @@ extern STRING g_menuGraphic, g_fightMenuGraphic;
 extern GAME_TIME g_gameTime;
 extern MESSAGE_WINDOW g_mwin;
 
+extern STRING g_menuButtonGraphic;
+extern long g_menuButtonColor;
+extern SystemFont g_fntMenuMain;
+extern SystemFont g_fntMenuStats;
+extern SystemFont g_fntMenuInfo;
+extern SystemFont g_fntMenuOptions;
+extern SystemFont g_fntMenuLists;
 #include "mbox.h"
 
 void loadSaveState(const STRING str)
@@ -567,6 +575,20 @@ void loadSaveState(const STRING str)
 		CSprite::setLoopOffset(loopOffset);
 	}
 
+	// Introduced in 3.5
+	if (majorVer >= 3 && minorVer >= 5)
+	{
+		INT i;
+		file >> i;
+		i = g_menuButtonColor;
+		file >> g_menuButtonGraphic;
+		file >> g_fntMenuInfo;
+		file >> g_fntMenuLists;
+		file >> g_fntMenuMain;
+		file >> g_fntMenuOptions;
+		file >> g_fntMenuStats;
+	}
+
 	g_pSelectedPlayer->setActive(true);
 	g_pSelectedPlayer->send();
 }
@@ -578,7 +600,7 @@ void saveSaveState(const STRING fileName)
 	// Header
 	file << _T("RPGTLKIT SAVE");
 	file << short(3);				// Major version
-	file << short(4);				// Minor version - 4 as of 3.1.0
+	file << short(5);				// Minor version - 5 as of 3.2.0
 
 	unsigned int i = 0;
 
@@ -913,4 +935,12 @@ void saveSaveState(const STRING fileName)
 	// Loop offset (game speed modifier).
 	file << CSprite::getLoopOffset();
 
+	// Introduced in 3.5
+	file << g_menuButtonColor;
+	file << g_menuButtonGraphic;
+	file << g_fntMenuInfo;
+	file << g_fntMenuLists;
+	file << g_fntMenuMain;
+	file << g_fntMenuOptions;
+	file << g_fntMenuStats;
 }

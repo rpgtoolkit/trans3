@@ -6,16 +6,21 @@
  *
  * This file is released under the AC Open License Derivative v 1.0
  * See "AC Open License Derivative.txt" for details
+ ********************************************************************
+ * Copyright (C) 2013 Lorie Jay C. Gutierrez
+ * piartsco@gmail.com
+ ********************************************************************
  */
 
 #include "sdk\tkplugin.h"
+#include "constants.h"
 
 #ifndef MENU_H
 #define MENU_H
 
 void BeginMenu(void);
 
-void EndMenu(void);
+void vEndMenu(void);
 
 void MainMenu(void);
 void RenderMainMenu(void);
@@ -66,5 +71,6 @@ int SelectPlayer(bool bDrawPlayers);
 void FrameCanvas(CNVID cnv);
 
 void DrawCursor(void);
+void vDrawText(CNVID cnvDest, std::string text, int font, double x, double y, int iUseColor = 0);
 
 #endif

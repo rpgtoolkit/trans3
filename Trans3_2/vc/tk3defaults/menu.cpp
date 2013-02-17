@@ -297,6 +297,7 @@ int MainMenuScanKeys(void)
 			CBPlaySound(CBGetGeneralString(GEN_CURSOR_MOVESOUND, 0, 0));
 			DrawCursor();
 			Sleep(90);
+			FlushInputEvents();
 		}
 		if (ie.strKey.compare("LEFT") == 0 || CBCheckKey("JOYLEFT"))
 		{
@@ -309,6 +310,7 @@ int MainMenuScanKeys(void)
 			CBPlaySound(CBGetGeneralString(GEN_CURSOR_MOVESOUND, 0, 0));
 			DrawCursor();
 			Sleep(90);
+			FlushInputEvents();
 		}
 		if (ie.strKey.compare("DOWN") == 0 || CBCheckKey("JOYDOWN"))
 		{
@@ -329,6 +331,7 @@ int MainMenuScanKeys(void)
 			CBPlaySound(CBGetGeneralString(GEN_CURSOR_MOVESOUND, 0, 0));
 			DrawCursor();
 			Sleep(90);
+			FlushInputEvents();
 		}
 	}
 	return 1;
