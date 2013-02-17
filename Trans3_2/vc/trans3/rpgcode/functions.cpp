@@ -117,6 +117,7 @@ typedef enum tkMNUFNT_SLOTS
 // Font property constants
 typedef enum tkMNU_PROPERTIES
 {
+	tkMNUFNT_PROP_FACE       = 21,      // Font face of the menu font
 	tkMNUFNT_PROP_SIZE       = 29,      // Size of the menu font
 	tkMNUFNT_PROP_DEFCOLOR   = 30,      // Default color of the menu font
 	tkMNUFNT_PROP_HICOLOR    = 31,      // Highlight color of the menu font
@@ -4378,38 +4379,46 @@ void menufont(CALL_DATA &params)
 	{
 		throw CError(_T("MenuFont() requires at least three parameters."));
 	}
-	if (params[1].getNum() == tkMNUFNT_PROP_DEFCOLOR || 
-		params[1].getNum() == tkMNUFNT_PROP_DISCOLOR ||
-		params[1].getNum() == tkMNUFNT_PROP_HICOLOR)
+	int g = (int)params[1].getNum();
+	switch(g)
 	{
-		if (params.params != 5)
+	case tkMNUFNT_PROP_DEFCOLOR:
+	case tkMNUFNT_PROP_DISCOLOR:
+	case tkMNUFNT_PROP_HICOLOR:
 		{
-			throw CError(_T("MenuFont() tkMNUFNT_PROP_COLOR requires at five parameters."));
-		}
-		else
-		{
-			long l = RGB(params[2].getNum(), params[3].getNum(), params[4].getNum());
-			SetMenuFontProperty(params[0].getNum(), params[1].getNum(), &l);
-		}
-	}
-	else
-	{
-		UNIT_DATA_TYPE t = params[2].getType();
-		switch(t)
-		{
-		case UDT_LIT:
+			if (params.params != 5)
 			{
-			char *s = new char[params[2].getLit().size()];
+				throw CError(_T("MenuFont() tkMNUFNT_PROP_COLOR requires five parameters."));
+			}
+			else
+			{
+				long l = RGB(params[2].getNum(), params[3].getNum(), params[4].getNum());
+				SetMenuFontProperty(params[0].getNum(), params[1].getNum(), &l);
+			}
+			break;
+		}
+	case tkMNUFNT_PROP_BOLD:
+	case tkMNUFNT_PROP_CENTER:
+	case tkMNUFNT_PROP_ITALICS:
+	case tkMNUFNT_PROP_OUTLINE:
+	case tkMNUFNT_PROP_UNDERLINE:
+		{
+			bool b = params[2].getBool();
+			SetMenuFontProperty(params[0].getNum(), params[1].getNum(), &b);
+			break;
+		}
+	case tkMNUFNT_PROP_FACE:
+		{
+			char *s = new char[params[2].getLit().size() + 1];
 			strcpy(s, params[2].getLit().c_str());
 			SetMenuFontProperty(params[0].getNum(), params[1].getNum(), s);
 			delete s;
 			break;
-			}
-		case UDT_NUM:
-			{
+		}
+	case tkMNUFNT_PROP_SIZE:
+		{
 			int d = (int)params[2].getNum();
 			SetMenuFontProperty(params[0].getNum(), params[1].getNum(), &d);
-			}
 			break;
 		}
 	}
@@ -8270,7 +8279,7 @@ void initRpgCode()
 	CProgram::addConstant(_T("tkMNUFNT_PROP_UNDERLINE"), makeNumStackFrame(tkMNUFNT_PROP_UNDERLINE));
 	CProgram::addConstant(_T("tkMNUFNT_PROP_CENTER"), makeNumStackFrame(tkMNUFNT_PROP_CENTER));
 	CProgram::addConstant(_T("tkMNUFNT_PROP_OUTLINE"), makeNumStackFrame(tkMNUFNT_PROP_OUTLINE));
-	CProgram::addConstant(_T("tkMNUFNT_LSTS"), makeNumStackFrame(tkMNUFNT_LSTS));
+	CProgram::addConstant(_T("tkMNUFNT_PROP_FACE"), makeNumStackFrame(tkMNUFNT_PROP_FACE));
 
 	// Error handling.
 	CProgram::addFunction(_T("resumeNext"), resumeNext);
