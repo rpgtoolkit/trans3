@@ -441,9 +441,11 @@ line_terminator:
 			CProgram::m_pyyUnits->push_back(mu);
 			if (bVerify)
 			{
-				std::map<STD_NATURAL_STRING, int> &params = g_methods.back();
-				std::map<STD_NATURAL_STRING, int>::iterator i = params.begin();
-				for (; i != params.end(); ++i)
+				std::map<STD_NATURAL_STRING, int> *params = &g_methods.back();
+				std::map<STD_NATURAL_STRING, int>::iterator i = params->begin();
+				int count = 0;
+				for (; i != params->end(); ++i)
+				//for (count = 0; count < params.size(); ++count, ++i)
 				{
 					const STD_NATURAL_STRING &strParam = i->first;
 					unsigned int space = strParam.find(_T(' '));
@@ -451,7 +453,10 @@ line_terminator:
 					{
 						const STD_NATURAL_STRING type = strParam.substr(0, space);
 						const STD_NATURAL_STRING name = strParam.substr(space + 1);
-						params.insert(std::pair<STD_NATURAL_STRING, int>(name, i->second));
+						params->insert(std::pair<STD_NATURAL_STRING, int>(name, i->second));
+						params = &g_methods.back();
+						i = params->find(name);
+
 
 						// Verify that the parameter is the requested type.
 						MACHINE_UNIT param;
@@ -476,8 +481,9 @@ line_terminator:
 			mu.udt = UDT_CLOSE;
 			/* Find the corresponding opening brace. */
 			POS i = CProgram::m_pyyUnits->end() - 1;
+			int ictr = CProgram::m_pyyUnits->size(); - 1;
 			int depth = 0;
-			for (; i != CProgram::m_pyyUnits->begin(); --i)
+			for (; i != CProgram::m_pyyUnits->begin(); --i, --ictr)
 			{
 				if ((i->udt & UDT_OPEN) && (depth++ == 0))
 				{
@@ -491,6 +497,7 @@ line_terminator:
 							for (; j != CProgram::m_yyFors.back().end(); ++j)
 							{
 								CProgram::m_pyyUnits->push_back(*j);
+								i = CProgram::m_pyyUnits->begin() + ictr;
 							}
 							CProgram::m_yyFors.pop_back();
 						}
