@@ -1,4 +1,4 @@
-package rpgtoolkit.editor.board;
+package rpgtoolkit.common.editor.types;
 
 import java.awt.Rectangle;
 import java.util.ArrayList;
@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Vector;
+import rpgtoolkit.editor.board.BoardLayer;
 
 /**
  *

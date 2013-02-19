@@ -46,6 +46,8 @@ public final class HelpMenu extends JMenu
                 parent.showHelpMenu();
             }
         });
+        
+        indexMenuItem.setEnabled(false);
     }
     
     public void configureAboutMenuItem()
@@ -63,5 +65,7 @@ public final class HelpMenu extends JMenu
 
             }
         });
+        
+        aboutMenuItem.setEnabled(false);
     }
 }

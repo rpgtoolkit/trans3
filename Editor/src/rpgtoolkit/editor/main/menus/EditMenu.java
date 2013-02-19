@@ -66,6 +66,8 @@ public final class EditMenu extends JMenu
         undoMenuItem.setAccelerator(
                 KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
         undoMenuItem.setMnemonic(KeyEvent.VK_U);
+        
+        undoMenuItem.setEnabled(false);
     }
     
     public void configureRedoMenuItem()
@@ -76,6 +78,8 @@ public final class EditMenu extends JMenu
         redoMenuItem.setAccelerator(
                 KeyStroke.getKeyStroke(KeyEvent.VK_Y, ActionEvent.CTRL_MASK));
         redoMenuItem.setMnemonic(KeyEvent.VK_R);
+        
+        redoMenuItem.setEnabled(false);
     }
     
     public void configureCutMenuItem()
@@ -86,6 +90,8 @@ public final class EditMenu extends JMenu
         cutMenuItem.setAccelerator(
                 KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
         cutMenuItem.setMnemonic(KeyEvent.VK_T);
+        
+        cutMenuItem.setEnabled(false);
     }
     
     public void configureCopyMenuItem()
@@ -96,6 +102,8 @@ public final class EditMenu extends JMenu
         copyMenuItem.setAccelerator(
                 KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
         copyMenuItem.setMnemonic(KeyEvent.VK_C);
+        
+        copyMenuItem.setEnabled(false);
     }
     
     public void configurePasteMenuItem()
@@ -106,6 +114,8 @@ public final class EditMenu extends JMenu
         pasteMenuItem.setAccelerator(
                 KeyStroke.getKeyStroke(KeyEvent.VK_V, ActionEvent.CTRL_MASK));
         pasteMenuItem.setMnemonic(KeyEvent.VK_P);
+        
+        pasteMenuItem.setEnabled(false);
     }
     
     public void configureSelectAllMenuItem()
@@ -114,6 +124,8 @@ public final class EditMenu extends JMenu
         selectAllMenuItem.setAccelerator(
                 KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
         selectAllMenuItem.setMnemonic(KeyEvent.VK_A);
+        
+        selectAllMenuItem.setEnabled(false);
     }
     
     public void configureCommentMenuItem()
@@ -123,6 +135,8 @@ public final class EditMenu extends JMenu
                 KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK
                 + ActionEvent.SHIFT_MASK));
         commentMenuItem.setMnemonic(KeyEvent.VK_M);
+        
+        commentMenuItem.setEnabled(false);
     }
     
     public void configureFindMenuItem()
@@ -133,6 +147,8 @@ public final class EditMenu extends JMenu
         findMenuItem.setAccelerator(
                 KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK));
         findMenuItem.setMnemonic(KeyEvent.VK_F);
+        
+        findMenuItem.setEnabled(false);
     }
     
     public void configureQuickReplaceMenuItem()
@@ -143,5 +159,7 @@ public final class EditMenu extends JMenu
         quickReplaceMenuItem.setAccelerator(
                 KeyStroke.getKeyStroke(KeyEvent.VK_H, ActionEvent.CTRL_MASK));
         quickReplaceMenuItem.setMnemonic(KeyEvent.VK_R);
+        
+        quickReplaceMenuItem.setEnabled(false);
     }
 }

@@ -1,9 +1,9 @@
-package rpgtoolkit.editor.board;
+package rpgtoolkit.editor.board.types;
 
 import java.awt.*;
 import java.util.ArrayList;
 
-public class TKVector
+public class BoardVector
 {
     private int layer;                         //layer the vector is on
     private int attributes;                    //???
@@ -13,7 +13,7 @@ public class TKVector
     private int tileType;
     private Polygon polygon;
 
-    public TKVector()
+    public BoardVector()
     {
         layer = 0;
         attributes = 0;

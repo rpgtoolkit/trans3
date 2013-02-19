@@ -5,8 +5,8 @@ import java.io.File;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import rpgtoolkit.common.types.Tile;
-import rpgtoolkit.common.types.TileSet;
+import rpgtoolkit.common.editor.types.Tile;
+import rpgtoolkit.common.io.types.TileSet;
 
 public class TileEditor extends JInternalFrame
 {

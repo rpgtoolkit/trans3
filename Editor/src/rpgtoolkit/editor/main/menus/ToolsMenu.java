@@ -43,6 +43,8 @@ public final class ToolsMenu extends JMenu
                 parent.openBoardForView();
             }
         });
+        
+        boardViewerMenuItem.setEnabled(false);
     }
     
     public void configureTileSetViewerMenuItem()
@@ -56,5 +58,7 @@ public final class ToolsMenu extends JMenu
                 parent.openTilesetForView();
             }
         });
+        
+        tileSetViewerMenuItem.setEnabled(false);
     }
 }

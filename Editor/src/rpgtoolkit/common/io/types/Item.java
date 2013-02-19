@@ -1,6 +1,6 @@
-package rpgtoolkit.common.types;
+package rpgtoolkit.common.io.types;
 
-import rpgtoolkit.editor.board.TKVector;
+import rpgtoolkit.editor.board.types.BoardVector;
 import uk.co.tkce.toolkit.exceptions.CorruptFileException;
 import rpgtoolkit.common.utilities.BinaryIO;
 
@@ -82,8 +82,8 @@ public class Item extends BasicType
     private double speed;
 
     //private long loopSpeed;   //present in VB code, but never used
-    private TKVector vectorBase;
-    private TKVector vectorActivate;
+    private BoardVector vectorBase;
+    private BoardVector vectorActivate;
 
     //CONSTRUCTOR
     public Item()
@@ -162,9 +162,9 @@ public class Item extends BasicType
         vectorActivate = makeDefaultSpriteVector(false, false);
     }
 
-    private TKVector makeDefaultSpriteVector(boolean isCollisionVector, boolean isIsometric)
+    private BoardVector makeDefaultSpriteVector(boolean isCollisionVector, boolean isIsometric)
     {
-        TKVector toReturn = new TKVector();
+        BoardVector toReturn = new BoardVector();
         if (isCollisionVector)
         {
             if (isIsometric)
@@ -344,13 +344,13 @@ public class Item extends BasicType
                     //vector information
                     if (minorVersion >= 7) //modern item--uses vectors
                     {
-                        TKVector tempV;
+                        BoardVector tempV;
                         long tempX;
                         long tempY;
                         int vectorCount = binaryIO.readBinaryInteger() + 1;
                         for (int i = 0; i != vectorCount; i++)
                         {
-                            tempV = new TKVector();
+                            tempV = new BoardVector();
                             tempMaxArrayVal = binaryIO.readBinaryInteger() + 1;
                             for (int j = 0; j != tempMaxArrayVal; j++)
                             {

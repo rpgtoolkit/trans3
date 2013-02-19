@@ -1,6 +1,7 @@
-package rpgtoolkit.common.types;
+package rpgtoolkit.common.io.types;
 
 //import uk.co.tkce.engine.TileSetCache;
+import rpgtoolkit.common.editor.types.AnimationFrame;
 import java.io.*;
 import java.util.ArrayList;
 import rpgtoolkit.common.utilities.BinaryIO;

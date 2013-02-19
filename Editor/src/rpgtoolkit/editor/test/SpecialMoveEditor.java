@@ -1,6 +1,6 @@
 package uk.co.tkce.toolkit.test;
 
-import rpgtoolkit.common.types.SpecialMove;
+import rpgtoolkit.common.io.types.SpecialMove;
 
 import javax.swing.*;
 import java.io.File;

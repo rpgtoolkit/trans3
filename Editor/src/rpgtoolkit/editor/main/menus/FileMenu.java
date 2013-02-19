@@ -106,6 +106,8 @@ public final class FileMenu extends JMenu
                 parent.newProject();
             }
         });
+        
+        newProjectMenuItem.setEnabled(false);
     }
     
     /**
@@ -162,6 +164,8 @@ public final class FileMenu extends JMenu
         saveMenuItem.setAccelerator(
                 KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
         saveMenuItem.setMnemonic(KeyEvent.VK_N);
+        
+        saveMenuItem.setEnabled(false);
     }
     
     /**
@@ -171,6 +175,8 @@ public final class FileMenu extends JMenu
     {
         saveAsMenuItem = new JMenuItem("Save As");
         saveAsMenuItem.setMnemonic(KeyEvent.VK_A);
+        
+        saveAsMenuItem.setEnabled(false);
     }
     
     /**
@@ -192,6 +198,8 @@ public final class FileMenu extends JMenu
                 parent.saveAll();
             }
         });
+        
+        saveAllMenuItem.setEnabled(false);
     }
     
     /**

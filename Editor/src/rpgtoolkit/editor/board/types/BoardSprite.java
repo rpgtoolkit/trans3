@@ -1,9 +1,9 @@
-package rpgtoolkit.editor.board;
+package rpgtoolkit.editor.board.types;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import rpgtoolkit.common.types.BasicType;
-import rpgtoolkit.common.types.Item;
+import rpgtoolkit.common.io.types.BasicType;
+import rpgtoolkit.common.io.types.Item;
 
 public class BoardSprite extends BasicType
 {
@@ -23,7 +23,7 @@ public class BoardSprite extends BasicType
     private String activationProgram; // Override activation program
     private String multitaskingProgram; // Override multitask program
 
-    private TKVector boardPath; // TK3.10 relic - not used.
+    private BoardVector boardPath; // TK3.10 relic - not used.
 
     public BoardSprite()
     {
@@ -108,7 +108,7 @@ public class BoardSprite extends BasicType
         this.multitaskingProgram = multitaskingProgram;
     }
 
-    public void setBoardPath(TKVector boardPath)
+    public void setBoardPath(BoardVector boardPath)
     {
         this.boardPath = boardPath;
     }
@@ -188,7 +188,7 @@ public class BoardSprite extends BasicType
         return multitaskingProgram;
     }
 
-    public TKVector getBoardPath()
+    public BoardVector getBoardPath()
     {
         return boardPath;
     }

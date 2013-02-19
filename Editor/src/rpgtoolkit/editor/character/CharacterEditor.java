@@ -1,7 +1,7 @@
 package rpgtoolkit.editor.character;
 
 import javax.swing.*;
-import rpgtoolkit.common.types.Player;
+import rpgtoolkit.common.io.types.Player;
 import rpgtoolkit.editor.main.MainWindow;
 import rpgtoolkit.editor.main.ToolkitEditorWindow;
 

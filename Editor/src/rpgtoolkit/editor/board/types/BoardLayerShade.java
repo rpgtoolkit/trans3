@@ -1,4 +1,4 @@
-package rpgtoolkit.editor.board;
+package rpgtoolkit.editor.board.types;
 
 import java.awt.*;
 

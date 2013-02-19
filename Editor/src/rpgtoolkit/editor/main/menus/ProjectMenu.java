@@ -65,6 +65,8 @@ public final class ProjectMenu extends JMenu
                 parent.newAnimation();
             }
         });
+        
+        addAnimationMenuItem.setEnabled(false);
     }
     
     public void configureBoardMenuItem()
@@ -73,6 +75,8 @@ public final class ProjectMenu extends JMenu
         addBoardMenuItem.setIcon(new ImageIcon(getClass()
                 .getResource("/rpgtoolkit/editor/resources/new-board.png")));
         addBoardMenuItem.setMnemonic(KeyEvent.VK_B);
+        
+        addBoardMenuItem.setEnabled(false);
     }
     
     public void configureCharacterMenuItem()
@@ -81,6 +85,8 @@ public final class ProjectMenu extends JMenu
         addCharacterMenuItem.setIcon(new ImageIcon(getClass()
                 .getResource("/rpgtoolkit/editor/resources/new-character.png")));
         addCharacterMenuItem.setMnemonic(KeyEvent.VK_C);
+        
+        addCharacterMenuItem.setEnabled(false);
     }
     
     public void configureItemMenuItem()
@@ -97,6 +103,8 @@ public final class ProjectMenu extends JMenu
                 parent.newItem();
             }
         });
+        
+        addItemMenuItem.setEnabled(false);
     }
     
     public void configureProgramMenuItem()
@@ -113,6 +121,8 @@ public final class ProjectMenu extends JMenu
                 parent.newProgram();
             }
         });
+        
+        addProgramMenuItem.setEnabled(false);
     }
     
     public void configureSpecialMoveMenuItem()
@@ -121,6 +131,8 @@ public final class ProjectMenu extends JMenu
         addSpecialMoveMenuItem.setIcon(new ImageIcon(getClass()
                 .getResource("/rpgtoolkit/editor/resources/new-special-move.png")));
         addSpecialMoveMenuItem.setMnemonic(KeyEvent.VK_S);
+        
+        addSpecialMoveMenuItem.setEnabled(false);
     }
     
     public void configureStatusEffectMenuItem()
@@ -129,6 +141,8 @@ public final class ProjectMenu extends JMenu
         addStatusEffectMenuItem.setIcon(new ImageIcon(getClass()
                 .getResource("/rpgtoolkit/editor/resources/new-status-effect.png")));
         addStatusEffectMenuItem.setMnemonic(KeyEvent.VK_E);
+        
+        addStatusEffectMenuItem.setEnabled(false);
     }
     
     public void configureTileMenuItem()
@@ -137,5 +151,7 @@ public final class ProjectMenu extends JMenu
         addTileMenuItem.setIcon(new ImageIcon(getClass()
                 .getResource("/rpgtoolkit/editor/resources/new-tile.png")));
         addTileMenuItem.setMnemonic(KeyEvent.VK_T);
+        
+        addTileMenuItem.setEnabled(false);
     }
 }

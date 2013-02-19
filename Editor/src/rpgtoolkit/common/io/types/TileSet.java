@@ -1,5 +1,6 @@
-package rpgtoolkit.common.types;
+package rpgtoolkit.common.io.types;
 
+import rpgtoolkit.common.editor.types.Tile;
 import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;

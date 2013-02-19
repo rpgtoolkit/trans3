@@ -5,7 +5,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.*;
-import rpgtoolkit.common.types.EditorButton;
+import rpgtoolkit.common.editor.types.EditorButton;
 import rpgtoolkit.editor.main.MainWindow;
 
 public class MainToolBar extends JToolBar
@@ -170,6 +170,27 @@ public class MainToolBar extends JToolBar
         helpButton = new EditorButton();
         helpButton.setIcon(new ImageIcon(getClass()
                 .getResource("/rpgtoolkit/editor/resources/help.png")));
+        
+        // Disable all the buttons for now
+        newButton.setEnabled(false);
+        openButton.setEnabled(false);
+        saveButton.setEnabled(false);
+        saveAllButton.setEnabled(false);
+        cutButton.setEnabled(false);
+        copyButton.setEnabled(false);
+        pasteButton.setEnabled(false);
+        deleteButton.setEnabled(false);
+        undoButton.setEnabled(false);
+        redoButton.setEnabled(false);
+        pencilButton.setEnabled(false);
+        rectangleButton.setEnabled(false);
+        ellipseButton.setEnabled(false);
+        bucketButton.setEnabled(false);
+        zoomInButton.setEnabled(false);
+        zoomOutButton.setEnabled(false);
+        runButton.setEnabled(false);
+        stopButton.setEnabled(false);
+        helpButton.setEnabled(false);
         
         this.add(newButton);
         this.add(openButton);

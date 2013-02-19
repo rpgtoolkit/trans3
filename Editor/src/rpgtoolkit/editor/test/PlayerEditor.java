@@ -1,6 +1,6 @@
 package uk.co.tkce.toolkit.test;
 
-import rpgtoolkit.common.types.Player;
+import rpgtoolkit.common.io.types.Player;
 
 import javax.swing.*;
 import java.io.File;

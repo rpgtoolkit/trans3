@@ -1,11 +1,13 @@
 package rpgtoolkit.editor.board;
 
+import rpgtoolkit.common.editor.types.MultiLayerContainer;
+import rpgtoolkit.editor.board.types.BoardVector;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.util.ArrayList;
-import rpgtoolkit.common.types.Board;
-import rpgtoolkit.common.types.Tile;
+import rpgtoolkit.common.io.types.Board;
+import rpgtoolkit.common.editor.types.Tile;
 import uk.co.tkce.toolkit.exceptions.TilePixelOutOfRangeException;
 
 /**
@@ -276,9 +278,9 @@ public final class BoardLayer implements Cloneable
     public void drawVectors(Graphics2D g, int zoom)
     {
         // Draw Vectors
-        ArrayList<TKVector> vectors = parentBoard.getVectors();
+        ArrayList<BoardVector> vectors = parentBoard.getVectors();
         
-        for (TKVector vector : vectors)
+        for (BoardVector vector : vectors)
         {
             // Draw lines from points 0 > 1 , 1 > 2, 2 > 3 etc..
             int count = vector.getPointCount();

@@ -1,7 +1,7 @@
 package uk.co.tkce.toolkit.test;
 
-import rpgtoolkit.common.types.Tile;
-import rpgtoolkit.common.types.TileSet;
+import rpgtoolkit.common.editor.types.Tile;
+import rpgtoolkit.common.io.types.TileSet;
 
 import javax.swing.*;
 import java.awt.*;

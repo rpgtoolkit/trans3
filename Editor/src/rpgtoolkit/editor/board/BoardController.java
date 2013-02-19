@@ -1,7 +1,8 @@
 package rpgtoolkit.editor.board;
 
+import rpgtoolkit.common.editor.types.MultiLayerContainer;
 import java.io.File;
-import rpgtoolkit.common.types.Board;
+import rpgtoolkit.common.io.types.Board;
 import rpgtoolkit.common.utilities.TileSetCache;
 import rpgtoolkit.editor.main.menus.actions.ZoomInAction;
 import rpgtoolkit.editor.main.menus.actions.ZoomOutAction;

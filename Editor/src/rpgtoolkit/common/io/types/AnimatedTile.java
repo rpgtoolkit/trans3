@@ -1,4 +1,4 @@
-package rpgtoolkit.common.types;
+package rpgtoolkit.common.io.types;
 
 import uk.co.tkce.toolkit.exceptions.CorruptFileException;
 import rpgtoolkit.common.utilities.BinaryIO;

@@ -8,7 +8,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import rpgtoolkit.common.types.Tile;
+import rpgtoolkit.common.editor.types.Tile;
 import uk.co.tkce.toolkit.exceptions.TilePixelOutOfRangeException;
 
 /**

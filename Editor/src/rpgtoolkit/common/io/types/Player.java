@@ -1,8 +1,9 @@
-package rpgtoolkit.common.types;
+package rpgtoolkit.common.io.types;
 
 //import uk.co.tkce.engine.Texture;
 //import uk.co.tkce.engine.TextureLoader;
-import rpgtoolkit.editor.board.TKVector;
+import rpgtoolkit.common.editor.types.PlayerSpecialMove;
+import rpgtoolkit.editor.board.types.BoardVector;
 import java.awt.*;
 import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
@@ -77,8 +78,8 @@ public class Player extends BasicType
     private double idleTimeBeforeStanding;
     private double frameRate;
     private long loopSpeed;
-    private TKVector baseVector;
-    private TKVector activationVector;
+    private BoardVector baseVector;
+    private BoardVector activationVector;
     private Area baseArea;
 
     // Engine Variables
@@ -112,12 +113,12 @@ public class Player extends BasicType
         return name;
     }
 
-    public TKVector getBaseVector()
+    public BoardVector getBaseVector()
     {
         return baseVector;
     }
 
-    public TKVector getActivationVector()
+    public BoardVector getActivationVector()
     {
         return activationVector;
     }
@@ -133,8 +134,8 @@ public class Player extends BasicType
             customGraphics = new ArrayList<>();
             customGraphicNames = new ArrayList<>();
             standingGraphics = new ArrayList<>();
-            baseVector = new TKVector();
-            activationVector = new TKVector();
+            baseVector = new BoardVector();
+            activationVector = new BoardVector();
 
             if (binaryIO.readBinaryString().equals(FILE_HEADER)) // Valid header
             {
@@ -243,7 +244,7 @@ public class Player extends BasicType
                             for (int i = 0; i < collisionCount + 1; i++)
                             {
                                 int pointCount = binaryIO.readBinaryInteger();
-                                TKVector tempVect = new TKVector();
+                                BoardVector tempVect = new BoardVector();
 
                                 for (int j = 0; j < pointCount + 1; j++)
                                 {

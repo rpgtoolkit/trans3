@@ -1,10 +1,12 @@
-package rpgtoolkit.common.types;
+package rpgtoolkit.common.io.types;
 
+import rpgtoolkit.common.editor.types.EnemySkillPair;
 import uk.co.tkce.toolkit.exceptions.CorruptFileException;
 import rpgtoolkit.common.utilities.BinaryIO;
 
 import java.io.*;
 import java.util.ArrayList;
+import rpgtoolkit.common.editor.types.RunTimeKey;
 
 /**
  * This class manages the GAM filetype for the RPG Toolkit

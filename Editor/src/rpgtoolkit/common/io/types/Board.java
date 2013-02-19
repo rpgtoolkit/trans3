@@ -1,16 +1,17 @@
-package rpgtoolkit.common.types;
+package rpgtoolkit.common.io.types;
 
+import rpgtoolkit.common.editor.types.Tile;
 import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import rpgtoolkit.common.utilities.TileSetCache;
-import rpgtoolkit.editor.board.BoardImage;
-import rpgtoolkit.editor.board.BoardLayerShade;
-import rpgtoolkit.editor.board.BoardLight;
-import rpgtoolkit.editor.board.BoardProgram;
-import rpgtoolkit.editor.board.BoardSprite;
-import rpgtoolkit.editor.board.TKVector;
+import rpgtoolkit.editor.board.types.BoardImage;
+import rpgtoolkit.editor.board.types.BoardLayerShade;
+import rpgtoolkit.editor.board.types.BoardLight;
+import rpgtoolkit.editor.board.types.BoardProgram;
+import rpgtoolkit.editor.board.types.BoardSprite;
+import rpgtoolkit.editor.board.types.BoardVector;
 import uk.co.tkce.toolkit.exceptions.CorruptFileException;
 
 public final class Board extends BasicType
@@ -43,7 +44,7 @@ public final class Board extends BasicType
     private long backgroundColour;
     private ArrayList<BoardProgram> programs;
     private ArrayList<BoardLight> lights;
-    private ArrayList<TKVector> vectors;
+    private ArrayList<BoardVector> vectors;
     private ArrayList<BoardSprite> sprites;
     private ArrayList<String> threads;
     private ArrayList<String> constants;
@@ -226,7 +227,7 @@ public final class Board extends BasicType
                 int numberVectors = binaryIO.readBinaryInteger();
                 for (int i = 0; i < numberVectors + 1; i++)
                 {
-                    TKVector newVector = new TKVector();
+                    BoardVector newVector = new BoardVector();
                     // How Many Points in said vector?
                     int numberPoints = binaryIO.readBinaryInteger();
                     for (int j = 0; j < numberPoints + 1; j++)
@@ -261,7 +262,7 @@ public final class Board extends BasicType
                     newProgram.setDistanceRepeat(binaryIO.readBinaryInteger());
                     newProgram.setLayer(binaryIO.readBinaryInteger());
 
-                    TKVector programVector = new TKVector();
+                    BoardVector programVector = new BoardVector();
 
                     int numberPoints = binaryIO.readBinaryInteger();
                     for (int j = 0; j < numberPoints + 1; j++)
@@ -442,7 +443,7 @@ public final class Board extends BasicType
         return layers;
     }
 
-    public ArrayList<TKVector> getVectors()
+    public ArrayList<BoardVector> getVectors()
     {
         return vectors;
     }

@@ -1,6 +1,6 @@
-package rpgtoolkit.editor.board;
+package rpgtoolkit.editor.board.types;
 
-import rpgtoolkit.common.types.BasicType;
+import rpgtoolkit.common.io.types.BasicType;
 
 public class BoardProgram extends BasicType
 {
@@ -14,7 +14,7 @@ public class BoardProgram extends BasicType
     private String finalValue;
     private long activationType;
 
-    private TKVector vector;
+    private BoardVector vector;
     private long distanceRepeat;
 
     public BoardProgram()
@@ -67,7 +67,7 @@ public class BoardProgram extends BasicType
         return activationType;
     }
 
-    public TKVector getVector()
+    public BoardVector getVector()
     {
         return vector;
     }
@@ -122,7 +122,7 @@ public class BoardProgram extends BasicType
         this.activationType = activationType;
     }
 
-    public void setVector(TKVector vector)
+    public void setVector(BoardVector vector)
     {
         this.vector = vector;
     }

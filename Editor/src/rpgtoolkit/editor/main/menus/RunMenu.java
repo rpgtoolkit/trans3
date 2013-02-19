@@ -39,6 +39,8 @@ public final class RunMenu extends JMenu
 //        debugProgramMenuItem.setAccelerator(
 //                KeyStroke.getKeyStroke(KeyEvent.VK_F5, ActionEvent.ACTION_PERFORMED));
         debugProgramMenuItem.setMnemonic(KeyEvent.VK_D);
+        
+        debugProgramMenuItem.setEnabled(false);
     }
     
     public void configureRunProjectMenuItem()
@@ -49,5 +51,7 @@ public final class RunMenu extends JMenu
 //        runProjectMenuItem.setAccelerator(
 //                KeyStroke.getKeyStroke(KeyEvent.VK_F11, ActionEvent.ACTION_FIRST));
         runProjectMenuItem.setMnemonic(KeyEvent.VK_N);
+        
+        runProjectMenuItem.setEnabled(false);
     }
 }

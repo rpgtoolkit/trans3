@@ -3,8 +3,8 @@ package rpgtoolkit.editor.project;
 import rpgtoolkit.editor.main.ToolkitEditorWindow;
 import rpgtoolkit.editor.main.MainWindow;
 import rpgtoolkit.editor.menus.ProjectEditorMenu;
-import rpgtoolkit.common.types.Background;
-import rpgtoolkit.common.types.Project;
+import rpgtoolkit.common.io.types.Background;
+import rpgtoolkit.common.io.types.Project;
 
 import javax.swing.*;
 import javax.swing.border.Border;

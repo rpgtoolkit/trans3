@@ -1,4 +1,4 @@
-package rpgtoolkit.common.types;
+package rpgtoolkit.common.editor.types;
 
 //import uk.co.tkce.engine.Texture;
 //import uk.co.tkce.engine.TextureLoader;
@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+import rpgtoolkit.common.io.types.TileSet;
 
 /**
  * This class stores the necessary data for a single frame, Animations are made up of an

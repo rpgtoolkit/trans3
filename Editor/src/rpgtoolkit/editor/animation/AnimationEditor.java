@@ -2,8 +2,8 @@ package rpgtoolkit.editor.animation;
 
 import rpgtoolkit.editor.main.ToolkitEditorWindow;
 import rpgtoolkit.editor.main.MainWindow;
-import rpgtoolkit.common.types.Animation;
-import rpgtoolkit.common.types.Tile;
+import rpgtoolkit.common.io.types.Animation;
+import rpgtoolkit.common.editor.types.Tile;
 
 import javax.swing.*;
 import javax.swing.border.Border;

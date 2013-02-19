@@ -1,6 +1,6 @@
 package uk.co.tkce.toolkit.test;
 
-import rpgtoolkit.common.types.StatusEffect;
+import rpgtoolkit.common.io.types.StatusEffect;
 
 import javax.swing.*;
 import java.io.File;

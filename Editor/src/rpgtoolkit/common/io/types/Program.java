@@ -1,4 +1,4 @@
-package rpgtoolkit.common.types;
+package rpgtoolkit.common.io.types;
 
 import java.io.File;
 import java.io.FileNotFoundException;

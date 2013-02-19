@@ -1,4 +1,4 @@
-package rpgtoolkit.common.types;
+package rpgtoolkit.common.editor.types;
 
 import javax.swing.*;
 

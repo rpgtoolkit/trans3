@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.SwingConstants;
-import rpgtoolkit.common.types.Board;
+import rpgtoolkit.common.io.types.Board;
 import uk.co.tkce.toolkit.exceptions.TilePixelOutOfRangeException;
 
 /**

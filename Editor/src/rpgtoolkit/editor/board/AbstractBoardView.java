@@ -7,7 +7,7 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 import javax.swing.Scrollable;
-import rpgtoolkit.common.types.Board;
+import rpgtoolkit.common.io.types.Board;
 import rpgtoolkit.editor.main.menus.actions.ZoomInAction;
 import rpgtoolkit.editor.main.menus.actions.ZoomOutAction;
 
