@@ -10,6 +10,7 @@ import javax.swing.KeyStroke;
 import rpgtoolkit.editor.main.MainWindow;
 import rpgtoolkit.editor.main.menus.actions.ZoomInAction;
 import rpgtoolkit.editor.main.menus.actions.ZoomOutAction;
+import rpgtoolkit.editor.main.menus.listeners.ShowCoordinatesItemListener;
 import rpgtoolkit.editor.main.menus.listeners.ShowGridItemListener;
 
 /**
@@ -23,6 +24,8 @@ public final class ViewMenu extends JMenu
     private JMenuItem zoomInMenuItem;
     private JMenuItem zoomOutMenuItem;
     private JCheckBoxMenuItem showGridMenuItem;
+    private JCheckBoxMenuItem showCoordinatesMenuItem;
+    private JCheckBoxMenuItem showVectorsMenuItem;
     
     /**
      * 
@@ -38,10 +41,12 @@ public final class ViewMenu extends JMenu
         this.configureZoomInMenuItem();
         this.configureZoomOutMenuItem();
         this.configureShowGridMenuItem();
+        this.configureShowCoordinatesMenuItem();
         
         this.add(zoomInMenuItem);
         this.add(zoomOutMenuItem);
         this.add(showGridMenuItem);
+        this.add(showCoordinatesMenuItem);
     }
     
     /**
@@ -84,5 +89,33 @@ public final class ViewMenu extends JMenu
                 KeyStroke.getKeyStroke(KeyEvent.VK_G, ActionEvent.CTRL_MASK));
         showGridMenuItem.setMnemonic(KeyEvent.VK_G);
         showGridMenuItem.addItemListener(new ShowGridItemListener(parent));
+    }
+    
+    /**
+     * 
+     */
+    public void configureShowCoordinatesMenuItem()
+    {
+        showCoordinatesMenuItem = new JCheckBoxMenuItem("Show Coordinates");
+        //showGridMenuItem.setIcon(new ImageIcon(getClass()
+        //        .getResource("/rpgtoolkit/editor/resources/grid.png")));
+        //showGridMenuItem.setAccelerator(
+        //        KeyStroke.getKeyStroke(KeyEvent.VK_G, ActionEvent.CTRL_MASK));
+        //showGridMenuItem.setMnemonic(KeyEvent.VK_G);
+        showCoordinatesMenuItem.addItemListener(new ShowCoordinatesItemListener(parent));
+    }
+    
+    /**
+     * 
+     */
+    public void configureShowVectorsMenuItem()
+    {
+        showVectorsMenuItem = new JCheckBoxMenuItem("Show Vectors");
+        //showGridMenuItem.setIcon(new ImageIcon(getClass()
+        //        .getResource("/rpgtoolkit/editor/resources/grid.png")));
+        //showGridMenuItem.setAccelerator(
+        //        KeyStroke.getKeyStroke(KeyEvent.VK_G, ActionEvent.CTRL_MASK));
+        //showGridMenuItem.setMnemonic(KeyEvent.VK_G);
+        showVectorsMenuItem.addItemListener(new ShowCoordinatesItemListener(parent));
     }
 }

@@ -65,4 +65,9 @@ public class BoardEditor extends JInternalFrame
     {
         boardController.toogleGrid(isVisible);
     }
+    
+    public void toogleCoordinates(boolean isVisible)
+    {
+        boardController.toogleCoordinates(isVisible);
+    }
 }

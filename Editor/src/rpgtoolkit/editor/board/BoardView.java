@@ -95,10 +95,17 @@ public final class BoardView extends AbstractBoardView
         {
             this.paintGrid(g);
         }
-            
-        this.paintVectors(g);
-        this.paintCoordinates(g);
         
+        if (this.showVectors)
+        {
+            this.paintVectors(g);
+        }
+        
+        if (this.showCoordinates)
+        {
+            this.paintCoordinates(g);
+        }
+            
         g.dispose();
     }
     

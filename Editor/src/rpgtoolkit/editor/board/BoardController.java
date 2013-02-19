@@ -172,4 +172,9 @@ public final class BoardController extends MultiLayerContainer
     {
         boardView.setShowGrid(isVisible);
     }
+    
+    public void toogleCoordinates(boolean isVisible)
+    {
+        boardView.setShowCoordinates(isVisible);
+    }
 }

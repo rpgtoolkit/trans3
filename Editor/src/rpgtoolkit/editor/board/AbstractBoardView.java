@@ -38,6 +38,9 @@ public abstract class AbstractBoardView extends JPanel implements Scrollable
     protected Color gridColor;
     protected int gridOpacity;
     
+    protected boolean showCoordinates;
+    protected boolean showVectors;
+    
     protected static final Color DEFAULT_GRID_COLOR = Color.black;
     private static final Color DEFAULT_BACKGROUND_COLOR = new Color(64, 64, 64);
     
@@ -138,6 +141,30 @@ public abstract class AbstractBoardView extends JPanel implements Scrollable
     public void setShowGrid(boolean showGrid)
     {
         this.showGrid = showGrid;
+        this.revalidate();
+        this.repaint();
+    }
+    
+    public boolean isShowCoordinates() 
+    {
+        return showCoordinates;
+    }
+
+    public void setShowCoordinates(boolean showCoordinates) 
+    {
+        this.showCoordinates = showCoordinates;
+        this.revalidate();
+        this.repaint();
+    }
+    
+    public boolean isShowVectors() 
+    {
+        return showVectors;
+    }
+
+    public void setShowVectors(boolean showVectors) 
+    {
+        this.showVectors = showVectors;
         this.revalidate();
         this.repaint();
     }

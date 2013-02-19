@@ -9,43 +9,33 @@ import rpgtoolkit.editor.main.MainWindow;
  *
  * @author Joshua Michael Daly
  */
-public class ShowGridItemListener implements ItemListener
+public class ShowCoordinatesItemListener implements ItemListener
 {
     private MainWindow parent;
-
-    /**
-     * 
-     */
-    public ShowGridItemListener()
+    
+    public ShowCoordinatesItemListener()
     {
         
     }
     
-    /**
-     * 
-     * @param parent 
-     */
-    public ShowGridItemListener(MainWindow parent)
+    public ShowCoordinatesItemListener(MainWindow parent)
     {
         this.parent = parent;
     }
 
-    /**
-     * 
-     * @param ie 
-     */
     @Override
     public void itemStateChanged(ItemEvent e) 
     {
-        JCheckBoxMenuItem showGridMenuItem = (JCheckBoxMenuItem)e.getItem();
+        JCheckBoxMenuItem showCoordinatesMenuItem = (JCheckBoxMenuItem)e.getItem();
         
-        if (showGridMenuItem.isSelected())
+        if (showCoordinatesMenuItem.isSelected())
         {
-            parent.toogleGridOnBoardEditor(true);
+            parent.toogleCoordinatesOnBoardEditor(true);
         }
         else
         {
-            parent.toogleGridOnBoardEditor(false);
+            parent.toogleCoordinatesOnBoardEditor(false);
         }
     }
+    
 }

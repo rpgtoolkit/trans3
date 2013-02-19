@@ -349,4 +349,13 @@ public class MainWindow extends JFrame
             editor.toogleGrid(isVisible);
         }
     }
+    
+    public void toogleCoordinatesOnBoardEditor(boolean isVisible)
+    {
+        if (desktopPane.getSelectedFrame() instanceof BoardEditor)
+        {
+            BoardEditor editor = (BoardEditor)desktopPane.getSelectedFrame();
+            editor.toogleCoordinates(isVisible);
+        }
+    }
 }
