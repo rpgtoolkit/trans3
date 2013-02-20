@@ -1,6 +1,5 @@
 package rpgtoolkit.common.io.types;
 
-import rpgtoolkit.common.editor.types.Tile;
 import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -8,8 +7,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.swing.*;
-import uk.co.tkce.toolkit.exceptions.TilePixelOutOfRangeException;
+import rpgtoolkit.common.editor.types.Tile;
 import rpgtoolkit.common.utilities.DOSColors;
+import rpgtoolkit.editor.exceptions.TilePixelOutOfRangeException;
 
 /**
  * This class is responsible for managing a tilset inside the editor
@@ -178,7 +178,7 @@ public class TileSet extends BasicType
      *
      * @return true if the file could be opened correctly, false if not
      */
-    private boolean open()
+    private boolean open()    
     {
         try
         {
@@ -330,6 +330,7 @@ public class TileSet extends BasicType
         }
         catch (TilePixelOutOfRangeException e)
         {
+            
         }
 
         return false; // Should not get here! error if we do

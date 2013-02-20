@@ -1,14 +1,14 @@
 package rpgtoolkit.editor.board;
 
-import rpgtoolkit.common.editor.types.MultiLayerContainer;
-import rpgtoolkit.editor.board.types.BoardVector;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.util.ArrayList;
-import rpgtoolkit.common.io.types.Board;
+import rpgtoolkit.common.editor.types.MultiLayerContainer;
 import rpgtoolkit.common.editor.types.Tile;
-import uk.co.tkce.toolkit.exceptions.TilePixelOutOfRangeException;
+import rpgtoolkit.common.io.types.Board;
+import rpgtoolkit.editor.board.types.BoardVector;
+import rpgtoolkit.editor.exceptions.TilePixelOutOfRangeException;
 
 /**
  *

@@ -1,7 +1,5 @@
 package rpgtoolkit.editor.main.menus;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import javax.swing.ImageIcon;
 import javax.swing.JMenu;
@@ -57,15 +55,6 @@ public final class ProjectMenu extends JMenu
         addAnimationMenuItem.setIcon(new ImageIcon(getClass()
                 .getResource("/rpgtoolkit/editor/resources/new-animation.png")));
         addAnimationMenuItem.setMnemonic(KeyEvent.VK_A);
-        addAnimationMenuItem.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                parent.newAnimation();
-            }
-        });
-        
         addAnimationMenuItem.setEnabled(false);
     }
     
@@ -75,7 +64,6 @@ public final class ProjectMenu extends JMenu
         addBoardMenuItem.setIcon(new ImageIcon(getClass()
                 .getResource("/rpgtoolkit/editor/resources/new-board.png")));
         addBoardMenuItem.setMnemonic(KeyEvent.VK_B);
-        
         addBoardMenuItem.setEnabled(false);
     }
     
@@ -85,7 +73,6 @@ public final class ProjectMenu extends JMenu
         addCharacterMenuItem.setIcon(new ImageIcon(getClass()
                 .getResource("/rpgtoolkit/editor/resources/new-character.png")));
         addCharacterMenuItem.setMnemonic(KeyEvent.VK_C);
-        
         addCharacterMenuItem.setEnabled(false);
     }
     
@@ -95,15 +82,6 @@ public final class ProjectMenu extends JMenu
         addItemMenuItem.setIcon(new ImageIcon(getClass()
                 .getResource("/rpgtoolkit/editor/resources/new-item.png")));
         addItemMenuItem.setMnemonic(KeyEvent.VK_I);
-        addItemMenuItem.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                parent.newItem();
-            }
-        });
-        
         addItemMenuItem.setEnabled(false);
     }
     
@@ -113,15 +91,6 @@ public final class ProjectMenu extends JMenu
         addProgramMenuItem.setIcon(new ImageIcon(getClass()
                 .getResource("/rpgtoolkit/editor/resources/new-program.png")));
         addProgramMenuItem.setMnemonic(KeyEvent.VK_P);
-        addProgramMenuItem.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                parent.newProgram();
-            }
-        });
-        
         addProgramMenuItem.setEnabled(false);
     }
     
@@ -131,7 +100,6 @@ public final class ProjectMenu extends JMenu
         addSpecialMoveMenuItem.setIcon(new ImageIcon(getClass()
                 .getResource("/rpgtoolkit/editor/resources/new-special-move.png")));
         addSpecialMoveMenuItem.setMnemonic(KeyEvent.VK_S);
-        
         addSpecialMoveMenuItem.setEnabled(false);
     }
     
@@ -140,8 +108,7 @@ public final class ProjectMenu extends JMenu
         addStatusEffectMenuItem = new JMenuItem("Add Status Effect");
         addStatusEffectMenuItem.setIcon(new ImageIcon(getClass()
                 .getResource("/rpgtoolkit/editor/resources/new-status-effect.png")));
-        addStatusEffectMenuItem.setMnemonic(KeyEvent.VK_E);
-        
+        addStatusEffectMenuItem.setMnemonic(KeyEvent.VK_E); 
         addStatusEffectMenuItem.setEnabled(false);
     }
     
@@ -151,7 +118,6 @@ public final class ProjectMenu extends JMenu
         addTileMenuItem.setIcon(new ImageIcon(getClass()
                 .getResource("/rpgtoolkit/editor/resources/new-tile.png")));
         addTileMenuItem.setMnemonic(KeyEvent.VK_T);
-        
         addTileMenuItem.setEnabled(false);
     }
 }

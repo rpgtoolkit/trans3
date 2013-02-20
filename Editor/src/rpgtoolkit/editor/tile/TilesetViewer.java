@@ -1,5 +1,6 @@
-package uk.co.tkce.toolkit.test;
+package rpgtoolkit.editor.tile;
 
+import rpgtoolkit.editor.tile.TilesetCanvas;
 import rpgtoolkit.editor.main.MainWindow;
 import rpgtoolkit.common.io.types.TileSet;
 

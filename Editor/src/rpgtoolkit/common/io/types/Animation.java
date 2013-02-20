@@ -5,7 +5,7 @@ import rpgtoolkit.common.editor.types.AnimationFrame;
 import java.io.*;
 import java.util.ArrayList;
 import rpgtoolkit.common.utilities.BinaryIO;
-import uk.co.tkce.toolkit.exceptions.CorruptFileException;
+import rpgtoolkit.editor.exceptions.CorruptFileException;
 
 /**
  * This class is responsible for reading and writing RPG Toolkit 3.1 compatible

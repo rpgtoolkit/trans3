@@ -98,15 +98,6 @@ public final class FileMenu extends JMenu
         newProjectMenuItem.setAccelerator(
                 KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
         newProjectMenuItem.setMnemonic(KeyEvent.VK_N);
-        newProjectMenuItem.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                parent.newProject();
-            }
-        });
-        
         newProjectMenuItem.setEnabled(false);
     }
     
@@ -164,7 +155,6 @@ public final class FileMenu extends JMenu
         saveMenuItem.setAccelerator(
                 KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
         saveMenuItem.setMnemonic(KeyEvent.VK_N);
-        
         saveMenuItem.setEnabled(false);
     }
     
@@ -175,7 +165,6 @@ public final class FileMenu extends JMenu
     {
         saveAsMenuItem = new JMenuItem("Save As");
         saveAsMenuItem.setMnemonic(KeyEvent.VK_A);
-        
         saveAsMenuItem.setEnabled(false);
     }
     
@@ -190,15 +179,6 @@ public final class FileMenu extends JMenu
         saveAllMenuItem.setAccelerator(
                 KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK +
                 ActionEvent.SHIFT_MASK));
-        saveAllMenuItem.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                parent.saveAll();
-            }
-        });
-        
         saveAllMenuItem.setEnabled(false);
     }
     

@@ -1,4 +1,4 @@
-package uk.co.tkce.toolkit.test;
+package rpgtoolkit.editor.tile;
 
 import rpgtoolkit.common.editor.types.Tile;
 import rpgtoolkit.common.io.types.TileSet;

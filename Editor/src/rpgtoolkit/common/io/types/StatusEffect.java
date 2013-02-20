@@ -1,6 +1,6 @@
 package rpgtoolkit.common.io.types;
 
-import uk.co.tkce.toolkit.exceptions.CorruptFileException;
+import rpgtoolkit.editor.exceptions.CorruptFileException;
 
 import java.io.File;
 import java.io.FileOutputStream;

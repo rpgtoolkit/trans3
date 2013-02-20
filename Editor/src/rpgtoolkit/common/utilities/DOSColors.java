@@ -3,13 +3,18 @@ package rpgtoolkit.common.utilities;
 import java.awt.*;
 import java.util.ArrayList;
 
+/**
+ * 
+ * @author Geoff Wilson
+ * @author Joshua Michael Daly
+ */
 public class DOSColors
 {
     private ArrayList<Color> colors;
 
     public DOSColors()
     {
-        colors = new ArrayList<Color>();
+        colors = new ArrayList<>();
         // 00: black
         colors.add(new Color(0, 0, 0));
         // 01: blue

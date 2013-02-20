@@ -3,13 +3,18 @@ package rpgtoolkit.editor.board.types;
 import java.awt.*;
 import java.util.ArrayList;
 
+/**
+ * 
+ * @author Geoff Wilson
+ * @author Joshua Michael Daly
+ */
 public class BoardVector
 {
-    private int layer;                         //layer the vector is on
-    private int attributes;                    //???
-    private boolean isClosed;                   //whether the vector is closed
+    private int layer;                  //layer the vector is on
+    private int attributes;             //???
+    private boolean isClosed;           //whether the vector is closed
     private ArrayList<Point> points;    //the points in the vector
-    private String handle;                      //vector's handle
+    private String handle;              //vector's handle
     private int tileType;
     private Polygon polygon;
 
@@ -18,7 +23,7 @@ public class BoardVector
         layer = 0;
         attributes = 0;
         isClosed = true;
-        points = new ArrayList<Point>();
+        points = new ArrayList<>();
         handle = "";
         polygon = new Polygon();
     }

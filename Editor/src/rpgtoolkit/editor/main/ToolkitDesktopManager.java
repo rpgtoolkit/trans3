@@ -1,6 +1,5 @@
 package rpgtoolkit.editor.main;
 
-import rpgtoolkit.editor.main.MainWindow;
 import javax.swing.*;
 
 public class ToolkitDesktopManager extends DefaultDesktopManager

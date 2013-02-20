@@ -1,5 +1,10 @@
 package rpgtoolkit.common.editor.types;
 
+/**
+ * 
+ * @author Geoff Wilson
+ * @author Joshua Michael Daly
+ */
 public class RunTimeKey
 {
     private int key;

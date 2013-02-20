@@ -9,7 +9,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import rpgtoolkit.common.editor.types.Tile;
-import uk.co.tkce.toolkit.exceptions.TilePixelOutOfRangeException;
+import rpgtoolkit.editor.exceptions.TilePixelOutOfRangeException;
 
 /**
  * TileCanvas class is responsible for managing the drawing

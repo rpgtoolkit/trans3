@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
-import uk.co.tkce.toolkit.exceptions.CorruptFileException;
+import rpgtoolkit.editor.exceptions.CorruptFileException;
 
 public class Player extends BasicType
 {

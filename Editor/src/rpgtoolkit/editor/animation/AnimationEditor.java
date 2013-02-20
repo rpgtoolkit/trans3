@@ -1,17 +1,21 @@
 package rpgtoolkit.editor.animation;
 
-import rpgtoolkit.editor.main.ToolkitEditorWindow;
-import rpgtoolkit.editor.main.MainWindow;
-import rpgtoolkit.common.io.types.Animation;
-import rpgtoolkit.common.editor.types.Tile;
-
-import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.EtchedBorder;
+import rpgtoolkit.common.editor.types.Tile;
+import rpgtoolkit.common.io.types.Animation;
+import rpgtoolkit.editor.main.MainWindow;
+import rpgtoolkit.editor.main.ToolkitEditorWindow;
 
+/**
+ * 
+ * @author Geoff Wilson
+ * @author Joshua Michael Daly
+ */
 public class AnimationEditor extends JInternalFrame implements ToolkitEditorWindow
 {
     private final int JTF_HEIGHT = 24;

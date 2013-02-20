@@ -1,7 +1,5 @@
 package rpgtoolkit.editor.main.menus;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import javax.swing.ImageIcon;
 import javax.swing.JMenu;
@@ -38,15 +36,6 @@ public final class HelpMenu extends JMenu
         indexMenuItem = new JMenuItem("Index");     // Help Index Menu (browser based?)
         indexMenuItem.setIcon(new ImageIcon(getClass()
                 .getResource("/rpgtoolkit/editor/resources/help.png")));
-        indexMenuItem.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                parent.showHelpMenu();
-            }
-        });
-        
         indexMenuItem.setEnabled(false);
     }
     
@@ -56,16 +45,6 @@ public final class HelpMenu extends JMenu
         aboutMenuItem.setIcon(new ImageIcon(getClass()
                 .getResource("/rpgtoolkit/editor/resources/information.png")));
         aboutMenuItem.setMnemonic(KeyEvent.VK_A);
-        aboutMenuItem.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                parent.showAbout();
-
-            }
-        });
-        
         aboutMenuItem.setEnabled(false);
     }
 }

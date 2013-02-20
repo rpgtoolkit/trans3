@@ -12,7 +12,7 @@ import rpgtoolkit.editor.board.types.BoardLight;
 import rpgtoolkit.editor.board.types.BoardProgram;
 import rpgtoolkit.editor.board.types.BoardSprite;
 import rpgtoolkit.editor.board.types.BoardVector;
-import uk.co.tkce.toolkit.exceptions.CorruptFileException;
+import rpgtoolkit.editor.exceptions.CorruptFileException;
 
 public final class Board extends BasicType
 {

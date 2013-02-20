@@ -1,5 +1,10 @@
 package rpgtoolkit.common.editor.types;
 
+/**
+ * 
+ * @author Geoff Wilson
+ * @author Joshua Michael Daly
+ */
 public class EnemySkillPair
 {
     private String enemy; // Could in the future be changed to the actual enemey file

@@ -10,6 +10,8 @@ public class Driver
         {
             System.out.println(System.getProperty("os.name"));
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            
+            // Don't make the mainWindow visible by default...
             MainWindow mainWindow = new MainWindow();
         }
         catch (Exception e)

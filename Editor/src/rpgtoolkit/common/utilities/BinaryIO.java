@@ -1,13 +1,12 @@
 package rpgtoolkit.common.utilities;
 
-import uk.co.tkce.toolkit.exceptions.CorruptFileException;
-
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
+import rpgtoolkit.editor.exceptions.CorruptFileException;
 
 /**
  * This class is design to emulate the "CommonBinaryIO.bas" file

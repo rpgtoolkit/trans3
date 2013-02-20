@@ -1,16 +1,14 @@
 package rpgtoolkit.editor.project;
 
-import rpgtoolkit.editor.main.ToolkitEditorWindow;
-import rpgtoolkit.editor.main.MainWindow;
-import rpgtoolkit.editor.menus.ProjectEditorMenu;
-import rpgtoolkit.common.io.types.Background;
-import rpgtoolkit.common.io.types.Project;
-
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
+import rpgtoolkit.common.io.types.Background;
+import rpgtoolkit.common.io.types.Project;
+import rpgtoolkit.editor.main.MainWindow;
+import rpgtoolkit.editor.main.ToolkitEditorWindow;
 
 /**
  * Project File editor
@@ -151,7 +149,7 @@ public class ProjectEditor extends JInternalFrame implements ToolkitEditorWindow
         tabPane.addTab("Graphics", graphicsPanel);
 
         this.add(tabPane);
-        this.setJMenuBar(new ProjectEditorMenu(this.parent));
+        // this.setJMenuBar(new ProjectEditorMenu(this.parent));
     }
 
     private void createProjectSettingsPanel()

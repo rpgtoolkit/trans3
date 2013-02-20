@@ -9,7 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.SwingConstants;
 import rpgtoolkit.common.io.types.Board;
-import uk.co.tkce.toolkit.exceptions.TilePixelOutOfRangeException;
+import rpgtoolkit.editor.exceptions.TilePixelOutOfRangeException;
 
 /**
  * A view for drawing the board onto.

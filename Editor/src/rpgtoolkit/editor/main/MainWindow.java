@@ -13,7 +13,7 @@ import rpgtoolkit.editor.main.menus.MainMenuBar;
 import rpgtoolkit.editor.main.menus.MainToolBar;
 import rpgtoolkit.editor.project.ProjectEditor;
 import rpgtoolkit.editor.tile.TileEditor;
-import uk.co.tkce.toolkit.test.*;
+import rpgtoolkit.editor.tile.TilesetViewer;
 
 /**
  * Currently opening Tilesets, tiles, programs, boards, animations, characters
@@ -24,7 +24,6 @@ import uk.co.tkce.toolkit.test.*;
  */
 public class MainWindow extends JFrame
 {
-    private TileEditor tileEditor;
     private JDesktopPane desktopPane;
     private JPanel debugPane;
     private JTextField debugLog;
@@ -40,23 +39,7 @@ public class MainWindow extends JFrame
 
         activeWindows = new ArrayList();
 
-        class DesktopPaneWithBackground extends JDesktopPane
-        {
-            public DesktopPaneWithBackground()
-            {
-                super();
-            }
-
-            @Override
-            protected void paintComponent(Graphics g)
-            {
-                super.paintComponent(g);
-                //ImageIcon icon = new ImageIcon(getClass().getResource("/uk.co.tkce.toolkit/assets/palm.png"));
-                //g.drawImage(icon.getImage(),0,0,this);
-            }
-        }
-
-        desktopPane = new DesktopPaneWithBackground();
+        desktopPane = new JDesktopPane();
         desktopPane.setDesktopManager(new ToolkitDesktopManager(this));
         desktopPane.setBackground(Color.LIGHT_GRAY);
 
@@ -81,21 +64,9 @@ public class MainWindow extends JFrame
 
         toolBar = new MainToolBar(this);
 
-//        JPanel fileBrowser = new JPanel();
-//        fileBrowser.setPreferredSize(new Dimension(150, 10));
-//        fileBrowser.setMaximumSize(new Dimension(175, 10));
-//        fileBrowser.setLayout(new BorderLayout());
-//        DefaultMutableTreeNode projectNode = new DefaultMutableTreeNode("NULL");
-//        JTree files = new JTree(projectNode);
-//
-//        fileBrowser.add(files, BorderLayout.CENTER);
-//
-//        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, fileBrowser, desktopPane);
-//        splitPane.setDividerSize(10);
-
-        this.add(toolBar, BorderLayout.PAGE_START);
+        this.add(toolBar, BorderLayout.NORTH);
         this.add(desktopPane, BorderLayout.CENTER);
-        this.add(debugPane, BorderLayout.PAGE_END);
+        this.add(debugPane, BorderLayout.SOUTH);
         
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -103,17 +74,6 @@ public class MainWindow extends JFrame
         this.setSize(new Dimension(1024, 768));
         this.setLocationByPlatform(true);
         this.setVisible(true);
-    }
-
-    public void runGame()
-    {
-        
-    }
-
-    public void newProject()
-    {
-        ProjectEditor pe = new ProjectEditor();
-        desktopPane.add(pe, BorderLayout.CENTER);
     }
 
     public void openProject()
@@ -136,11 +96,7 @@ public class MainWindow extends JFrame
     }
     
     public void openFile()
-    {
-       // FileNameExtensionFilter filter = 
-       //         new FileNameExtensionFilter("Supported Files", "*.*");
-       //fileChooser.setFileFilter(filter);
-        
+    { 
         if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
         {
             this.checkFileExtension(fileChooser.getSelectedFile());
@@ -161,35 +117,14 @@ public class MainWindow extends JFrame
         }
         else if (fileName.endsWith(".prg"))
         {
-            this.openProgram();
+            
         }
         else if (fileName.endsWith(".tst"))
         {
-            this.openTilesetForView();
+            this.openTileset();
         }
     }
-
-    public void newProgram()
-    {
-        ProgramEditor testCodeEditor = new ProgramEditor();
-        desktopPane.add(testCodeEditor);
-    }
-
-    public void openProgram()
-    {
-        ProgramEditor testCodeEditor = new ProgramEditor();
-        testCodeEditor.open(fileChooser.getSelectedFile());
-        desktopPane.add(testCodeEditor);
-    }
-
-    /**
-     * Creates a new animation editor window
-     */
-    public void newAnimation()
-    {
-
-    }
-
+    
     /**
      * Creates an animation editor window for modifying the specified animation file.
      */
@@ -206,39 +141,15 @@ public class MainWindow extends JFrame
     }
 
     /**
-     * Creates a new item editor window
-     */
-    public void newItem()
-    {
-
-    }
-
-    /**
-     * Creates an item editor window for modifying the specified item file.
-     */
-    public void openItem()
-    {
-        
-    }
-
-    /**
-     * Creates a new Tile (Tileset) editor window
-     */
-    public void newTileset()
-    {
-
-    }
-
-    /**
      * Creates a tileset editor window for modifying the specified tilset
      */
-    public void openTileset()
+    public void openTile()
     {
         TileEditor testTileEditor = new TileEditor(fileChooser.getSelectedFile());
         desktopPane.add(testTileEditor);
     }
 
-    public void openTilesetForView()
+    public void openTileset()
     {
         TilesetViewer testTileEditor = new TilesetViewer(fileChooser.getSelectedFile());
         desktopPane.add(testTileEditor);
@@ -250,74 +161,7 @@ public class MainWindow extends JFrame
         testBoardEditor.setVisible(true);
         desktopPane.add(testBoardEditor);
     }
-
-    /**
-     * Creates a new character (player) editor window
-     */
-    public void newCharacter()
-    {
-
-    }
-
-    /**
-     * Creates an character editor window for modifying the specified character file.
-     */
-    public void openCharacter()
-    {
-        PlayerEditor testCharEditor = new PlayerEditor();
-        testCharEditor.open(fileChooser.getSelectedFile());
-        desktopPane.add(testCharEditor);
-    }
-
-    public void newSpecialMove()
-    {
-
-    }
-
-    public void openSpecialMove()
-    {
-        SpecialMoveEditor testSpecialEditor = new SpecialMoveEditor();
-        testSpecialEditor.open(fileChooser.getSelectedFile());
-        desktopPane.add(testSpecialEditor);
-    }
-
-    public void newStatusEffect()
-    {
-
-    }
-
-    public void openStatusEffect()
-    {
-        StatusEffectEditor testEffectEditor = new StatusEffectEditor();
-        testEffectEditor.open(fileChooser.getSelectedFile());
-        desktopPane.add(testEffectEditor);
-    }
-
-    public void showHelpMenu()
-    {
-        HelpViewer helpViewer = new HelpViewer();
-        desktopPane.add(helpViewer);
-    }
-
-    public void showAbout()
-    {
-        AboutDialog about = new AboutDialog(this);
-    }
-
-    public boolean saveAll()
-    {
-        for (ToolkitEditorWindow activeWindow : activeWindows)
-        {
-            System.out.println("Saving: " + activeWindow.toString());
-            if (!activeWindow.save())
-            {
-                System.out.println("Failed to Save All");
-                return false;
-            }
-        }
-        return true;
-    }
-
+    
     public void removeActiveWindow(ToolkitEditorWindow window)
     {
         activeWindows.remove(window);

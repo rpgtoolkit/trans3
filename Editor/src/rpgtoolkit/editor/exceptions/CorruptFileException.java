@@ -1,4 +1,4 @@
-package uk.co.tkce.toolkit.exceptions;
+package rpgtoolkit.editor.exceptions;
 
 public class CorruptFileException extends Throwable
 {

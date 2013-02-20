@@ -4,8 +4,13 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
-import uk.co.tkce.toolkit.exceptions.TilePixelOutOfRangeException;
+import rpgtoolkit.editor.exceptions.TilePixelOutOfRangeException;
 
+/**
+ * 
+ * @author Geoff Wilson
+ * @author Joshua Daly
+ */
 public class Tile extends WritableRaster
 {
     private int previousZoomLevel;

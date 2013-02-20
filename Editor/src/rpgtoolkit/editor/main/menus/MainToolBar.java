@@ -53,34 +53,12 @@ public class MainToolBar extends JToolBar
         popupMenu = new JPopupMenu();
         newAnimationMenu = new JMenuItem("Animation");
         newProjectMenu = new JMenuItem("Project");
-        newProjectMenu.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                parent.newProject();
-            }
-        });
 
         popupMenu.add(newAnimationMenu);
         popupMenu.add(newProjectMenu);
 
         newButton = new EditorButton();
         newButton.setIcon(new ImageIcon(getClass().getResource("/rpgtoolkit/editor/resources/new.png")));
-        newButton.addMouseListener(new MouseAdapter()
-        {
-            @Override
-            public void mousePressed(MouseEvent e)
-            {
-                popupMenu.show(e.getComponent(), e.getX(), e.getY());
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e)
-            {
-                popupMenu.setVisible(false);
-            }
-        });
 
         openButton = new EditorButton();
         openButton.setIcon(new ImageIcon(getClass()
@@ -89,14 +67,6 @@ public class MainToolBar extends JToolBar
         saveButton = new EditorButton();
         saveButton.setIcon(new ImageIcon(getClass()
                 .getResource("/rpgtoolkit/editor/resources/save.png")));
-        saveButton.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                parent.saveAll();
-            }
-        });
         
         saveAllButton = new EditorButton();
         saveAllButton.setIcon(new ImageIcon(getClass()
@@ -153,14 +123,6 @@ public class MainToolBar extends JToolBar
         runButton = new EditorButton();
         runButton.setIcon(new ImageIcon(getClass().
                 getResource("/rpgtoolkit/editor/resources/run.png")));
-        runButton.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                parent.runGame();
-            }
-        });
         runButton.setEnabled(false);
         
         stopButton = new EditorButton();

@@ -1,7 +1,7 @@
 package rpgtoolkit.common.io.types;
 
 import rpgtoolkit.editor.board.types.BoardVector;
-import uk.co.tkce.toolkit.exceptions.CorruptFileException;
+import rpgtoolkit.editor.exceptions.CorruptFileException;
 import rpgtoolkit.common.utilities.BinaryIO;
 
 import java.awt.image.BufferedImage;
