@@ -50,8 +50,7 @@ public final class BoardView extends AbstractBoardView
      */
     private Dimension createPreferredSize()
     {
-        return new Dimension((board.getWidth() * 32) * this.zoomLevel, 
-                (board.getHeight() * 32) * this.zoomLevel);
+        return new Dimension((board.getWidth() * 32), (board.getHeight() * 32));
     }
 
     /**
@@ -61,8 +60,8 @@ public final class BoardView extends AbstractBoardView
     @Override
     public void paint(Graphics g)
     {
-        bufferedImage = new BufferedImage((board.getWidth() * 32) * this.zoomLevel
-                , (board.getHeight() * 32) * this.zoomLevel, BufferedImage.TYPE_INT_ARGB);
+        bufferedImage = new BufferedImage((board.getWidth() * 32)
+                , (board.getHeight() * 32), BufferedImage.TYPE_INT_ARGB);
         
         try
         {
@@ -86,8 +85,7 @@ public final class BoardView extends AbstractBoardView
 
         // Draw background image first
         g.setColor(Color.white);
-        g.fillRect(0, 0, (board.getWidth() * 32) * this.zoomLevel, 
-                (board.getHeight() * 32) * this.zoomLevel);
+        g.fillRect(0, 0, (board.getWidth() * 32), (board.getHeight() * 32));
         
         this.paintLayers(g);
         
@@ -124,7 +122,7 @@ public final class BoardView extends AbstractBoardView
             {
                 try 
                 {
-                    layer.drawTiles(g, this.zoomLevel);
+                    layer.drawTiles(g);
                 } 
                 catch (TilePixelOutOfRangeException ex) 
                 {
@@ -147,7 +145,7 @@ public final class BoardView extends AbstractBoardView
         {
             if (layer.getVisibility())
             {
-                layer.drawVectors(g, this.zoomLevel);
+                layer.drawVectors(g);
             }
         }
     }
@@ -177,12 +175,12 @@ public final class BoardView extends AbstractBoardView
 
         g.setColor(this.getGridColor());
         
-        for (int x = startX; x < endX; x += tileSize.width * this.zoomLevel) 
+        for (int x = startX; x < endX; x += tileSize.width) 
         {
             g.drawLine(x, clipRectangle.y, x, clipRectangle.y + clipRectangle.height - 1);
         }
         
-        for (int y = startY; y < endY; y += tileSize.height * this.zoomLevel) 
+        for (int y = startY; y < endY; y += tileSize.height) 
         {
             g.drawLine(clipRectangle.x, y, clipRectangle.x + clipRectangle.width - 1, y);
         }
@@ -221,11 +219,11 @@ public final class BoardView extends AbstractBoardView
         int endY = (clipRectangle.y + clipRectangle.height) / tileSize.height + 1;
 
         // Draw the coordinates
-        int gy = startY * tileSize.height * this.zoomLevel;
+        int gy = startY * tileSize.height;
         
         for (int y = startY; y < endY; y++) 
         {
-            int gx = startX * tileSize.width * this.zoomLevel;
+            int gx = startX * tileSize.width;
             
             for (int x = startX; x < endX; x++) 
             {
@@ -233,14 +231,14 @@ public final class BoardView extends AbstractBoardView
                 Rectangle2D textSize =
                         font.getStringBounds(coordinates, fontRenderContext);
 
-                int fx = gx + (int) ((tileSize.width * this.zoomLevel - textSize.getWidth()) / 2);
-                int fy = gy + (int) ((tileSize.height * this.zoomLevel + textSize.getHeight()) / 2);
+                int fx = gx + (int) ((tileSize.width - textSize.getWidth()) / 2);
+                int fy = gy + (int) ((tileSize.height + textSize.getHeight()) / 2);
 
                 g.drawString(coordinates, fx, fy);
-                gx += tileSize.width * this.zoomLevel;
+                gx += tileSize.width;
             }
             
-            gy += tileSize.height * this.zoomLevel;
+            gy += tileSize.height;
         }
     }
 

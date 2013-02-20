@@ -251,7 +251,7 @@ public final class BoardLayer implements Cloneable
         }
     }
     
-    public void drawTiles(Graphics2D g, int zoom) throws TilePixelOutOfRangeException
+    public void drawTiles(Graphics2D g) throws TilePixelOutOfRangeException
     {
         for (int x = 0; x < parentBoard.getWidth(); x++)
         {
@@ -264,8 +264,8 @@ public final class BoardLayer implements Cloneable
                 {
                     Tile tile = parentBoard.getTileFromIndex(indexToPaint);
 
-                    g.drawImage(tile.getTileAsImage(zoom), (x * 32) * zoom, 
-                            (y * 32) * zoom, null);
+                    g.drawImage(tile.getTileAsImage(), (x * 32), 
+                            (y * 32), null);
                 }
                 else
                 {
@@ -275,7 +275,7 @@ public final class BoardLayer implements Cloneable
         }
     }
     
-    public void drawVectors(Graphics2D g, int zoom)
+    public void drawVectors(Graphics2D g)
     {
         // Draw Vectors
         ArrayList<BoardVector> vectors = parentBoard.getVectors();
@@ -301,15 +301,15 @@ public final class BoardLayer implements Cloneable
 
             for (int i = 0; i < count - 1; i++)
             {
-                g.drawLine(vector.getPointX(i) * zoom, vector.getPointY(i) * zoom
-                        , vector.getPointX(i + 1) * zoom, vector.getPointY(i + 1) * zoom);
+                g.drawLine(vector.getPointX(i), vector.getPointY(i)
+                        , vector.getPointX(i + 1), vector.getPointY(i + 1));
             }
 
             // Draw the final lines
-            g.drawLine(vector.getPointX(count - 1) * zoom, 
-                    vector.getPointY(count - 1) * zoom, 
-                    vector.getPointX(0) * zoom, 
-                    vector.getPointY(0) * zoom);
+            g.drawLine(vector.getPointX(count - 1), 
+                    vector.getPointY(count - 1), 
+                    vector.getPointX(0), 
+                    vector.getPointY(0));
         }
     }
 }

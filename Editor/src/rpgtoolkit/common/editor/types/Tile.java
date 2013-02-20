@@ -55,36 +55,4 @@ public class Tile extends WritableRaster
         
         return tileImage;
     }
-    
-    public BufferedImage getTileAsImage(int zoom) throws TilePixelOutOfRangeException
-    {
-        if (tileImage == null || previousZoomLevel != zoom)
-        {
-            tileImage = new BufferedImage(getWidth() * zoom, getHeight() * zoom, 
-                    BufferedImage.TYPE_INT_ARGB);
-            
-            Graphics2D g = tileImage.createGraphics();
-            
-            // Draw the tile
-            for (int x = 0; x < 32; x++)
-            {
-                for (int y = 0; y < 32; y++)
-                {
-                    g.setColor(this.getPixel(x, y));
-                    g.fillRect((x * zoom), (y * zoom), zoom, zoom);
-                    
-                    //if (zoom > 5)
-                    //{
-                    //    g.setColor(Color.BLACK);
-                    //    g.drawRect((x * zoom + 1), (y * zoom + 1), zoom, zoom);
-                    //}
-                }
-            }
-            
-            //tileImage.setData(this);
-        }
-        
-        return tileImage;
-    }
-
 }
