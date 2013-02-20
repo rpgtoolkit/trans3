@@ -30,27 +30,9 @@ public final class BoardView extends AbstractBoardView
         
         this.boardController = boardController;
         this.setGridColor(Color.black);
-       
-        this.repaint();
-    }
-
-    /**
-     * 
-     * @return 
-     */
-    @Override
-    public Dimension getPreferredSize()
-    {
-        return createPreferredSize();
-    }
-
-    /**
-     * 
-     * @return 
-     */
-    private Dimension createPreferredSize()
-    {
-        return new Dimension((board.getWidth() * 32), (board.getHeight() * 32));
+        
+        bufferedImage = new BufferedImage((board.getWidth() * 32)
+                , (board.getHeight() * 32), BufferedImage.TYPE_INT_ARGB);
     }
 
     /**
@@ -58,10 +40,12 @@ public final class BoardView extends AbstractBoardView
      * @param g 
      */
     @Override
-    public void paint(Graphics g)
+    public void paintComponent(Graphics g)
     {
-        bufferedImage = new BufferedImage((board.getWidth() * 32)
-                , (board.getHeight() * 32), BufferedImage.TYPE_INT_ARGB);
+        super.paintComponent(g);
+        
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.transform(affineTransform);
         
         try
         {
@@ -72,7 +56,10 @@ public final class BoardView extends AbstractBoardView
             
         }
         
-        g.drawImage(bufferedImage, 0, 0, this);
+        if (bufferedImage != null)
+        {
+            g.drawImage(bufferedImage, 0, 0, null);
+        }
     }
 
     /**
@@ -103,7 +90,7 @@ public final class BoardView extends AbstractBoardView
         {
             this.paintCoordinates(g);
         }
-            
+           
         g.dispose();
     }
     
@@ -239,52 +226,6 @@ public final class BoardView extends AbstractBoardView
             }
             
             gy += tileSize.height;
-        }
-    }
-
-    /**
-     * 
-     * @param visibleRectangle
-     * @param orientation
-     * @param direction
-     * @return 
-     */
-    @Override
-    public int getScrollableBlockIncrement(Rectangle visibleRectangle, 
-    int orientation, int direction) 
-    {
-        Dimension tileSize = new Dimension(32, 32);
-
-        if (orientation == SwingConstants.VERTICAL) 
-        {
-            return (visibleRectangle.height / tileSize.height) * tileSize.height;
-        }
-        else 
-        {
-            return (visibleRectangle.width / tileSize.width) * tileSize.width;
-        }
-    }
-
-    /**
-     * 
-     * @param visibleRect
-     * @param orientation
-     * @param direction
-     * @return 
-     */
-    @Override
-    public int getScrollableUnitIncrement(Rectangle visibleRect, 
-    int orientation, int direction) 
-    {
-         Dimension tileSize = new Dimension(32, 32);
-         
-        if (orientation == SwingConstants.VERTICAL) 
-        {
-            return tileSize.height;
-        }
-        else 
-        {
-            return tileSize.width;
         }
     }
 }

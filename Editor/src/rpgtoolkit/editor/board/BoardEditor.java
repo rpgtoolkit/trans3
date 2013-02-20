@@ -14,13 +14,13 @@ public class BoardEditor extends JInternalFrame
 {
     private MainWindow parent;
 
-    private JScrollPane scroll;
+    private JScrollPane scrollPane;
     
     private BoardController boardController;
 
     public BoardEditor()
     {
-        this.setupWindow();
+
     }
 
     public BoardEditor(MainWindow parent, File fileName)
@@ -32,33 +32,28 @@ public class BoardEditor extends JInternalFrame
         
         this.setTitle("Viewing " + fileName.getAbsolutePath());
         
-        this.scroll = new JScrollPane(boardController.getBoardView());
-        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        this.scrollPane = new JScrollPane(boardController.getBoardView());
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
      
-        this.add(scroll);
-        this.setupWindow();
+        this.add(scrollPane);
+        this.pack();
     }
     
     public BoardController getBoardController()
     {
         return this.boardController;
     }
-
-    private void setupWindow()
-    {
-        Dimension canvasDimensions = this.boardController.
-                getBoardView().getPreferredSize();        
-        this.setSize((int)canvasDimensions.getWidth(), (int)canvasDimensions.getHeight());
-    }
     
     public void zoomIn()
     {
         boardController.performZoomIn();
+        scrollPane.getViewport().revalidate();
     }
     
     public void zoomOut()
     {
         boardController.performZoomOut();
+        scrollPane.getViewport().revalidate();
     }
     
     public void toogleGrid(boolean isVisible)

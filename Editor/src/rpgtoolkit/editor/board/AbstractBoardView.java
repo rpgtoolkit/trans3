@@ -3,10 +3,9 @@ package rpgtoolkit.editor.board;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
-import javax.swing.Scrollable;
 import rpgtoolkit.common.io.types.Board;
 import rpgtoolkit.editor.main.menus.actions.ZoomInAction;
 import rpgtoolkit.editor.main.menus.actions.ZoomOutAction;
@@ -15,10 +14,12 @@ import rpgtoolkit.editor.main.menus.actions.ZoomOutAction;
  *
  * @author Joshua Michael Daly
  */
-public abstract class AbstractBoardView extends JPanel implements Scrollable
+public abstract class AbstractBoardView extends JPanel
 {
+    protected AffineTransform affineTransform = new AffineTransform();
+    
     // Put this somewhere else like an enum.
-    public static int ZOOM_NORMALSIZE = 1;
+    public static int ZOOM_NORMALSIZE = 5;
     
     protected Board board;
     protected BufferedImage bufferedImage;
@@ -54,6 +55,8 @@ public abstract class AbstractBoardView extends JPanel implements Scrollable
     protected AbstractBoardView(Board board)
     {
         this.board = board;
+        this.setPreferredSize(new Dimension((board.getWidth() * 32)
+                , (board.getHeight() * 32)));
         //this.zoomInAction = new ZoomInAction(this);
         //this.zoomOutAction = new ZoomOutAction(this);
         //this.zoomNormalAction = new ZoomNormalAction(this);
@@ -198,7 +201,7 @@ public abstract class AbstractBoardView extends JPanel implements Scrollable
         if (zoomLevel < zoomLevels.length - 1) 
         {
             this.setZoomLevel(zoomLevel + 1);
-            this.repaint();
+            this.reScale(zoom);
         }
 
         return zoomLevel < zoomLevels.length - 1;
@@ -213,7 +216,7 @@ public abstract class AbstractBoardView extends JPanel implements Scrollable
         if (zoomLevel > 0) 
         {
             this.setZoomLevel(zoomLevel - 1);
-            this.repaint();
+            this.reScale(zoom);
         }
 
         return zoomLevel > 0;
@@ -228,8 +231,7 @@ public abstract class AbstractBoardView extends JPanel implements Scrollable
         if (zoom > 0) 
         {
             this.zoom = zoom;
-            //revalidate();
-            this.setSize(getPreferredSize());
+            this.reScale(zoom);
         }
     }
 
@@ -266,59 +268,6 @@ public abstract class AbstractBoardView extends JPanel implements Scrollable
     
     /**
      * 
-     * @return 
-     */
-    @Override
-    public Dimension getPreferredScrollableViewportSize() 
-    {
-        return this.getPreferredSize();
-    }
-
-    /**
-     * 
-     * @return 
-     */
-    @Override
-    public boolean getScrollableTracksViewportWidth()
-    {
-        return false;
-    }
-
-
-    /**
-     * 
-     * @return 
-     */
-    @Override
-    public boolean getScrollableTracksViewportHeight() 
-    {
-        return false;
-    }
-    
-    /**
-     * 
-     * @param visibleRect
-     * @param orientation
-     * @param direction
-     * @return 
-     */
-    @Override
-    public abstract int getScrollableUnitIncrement(Rectangle visibleRect, 
-    int orientation, int direction);
-    
-    /**
-     * 
-     * @param visibleRect
-     * @param orientation
-     * @param direction
-     * @return 
-     */
-    @Override
-    public abstract int getScrollableBlockIncrement(Rectangle visibleRect, 
-    int orientation, int direction);
-     
-    /**
-     * 
      * @param g 
      */
     protected abstract void paintLayers(Graphics2D g);
@@ -340,4 +289,13 @@ public abstract class AbstractBoardView extends JPanel implements Scrollable
      * @param g 
      */
     protected abstract void paintCoordinates(Graphics2D g);
+    
+    public void reScale(double scale) 
+    {  
+      affineTransform = AffineTransform.getScaleInstance(zoom, zoom); 
+      int width = (int) ((board.getWidth() * 32) * zoom);  
+      int height = (int) ((board.getHeight() * 32) * zoom);  
+      this.setPreferredSize(new Dimension(width, height));
+      this.repaint(); 
+   }  
 }
