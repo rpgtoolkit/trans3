@@ -1,31 +1,22 @@
 package rpgtoolkit.editor.board;
 
+import java.awt.Dimension;
 import java.io.File;
-import javax.swing.JInternalFrame;
-import javax.swing.JScrollPane;
-import rpgtoolkit.common.io.types.Board;
-import rpgtoolkit.common.utilities.TileSetCache;
+import javax.swing.*;
 import rpgtoolkit.editor.main.MainWindow;
-import rpgtoolkit.editor.main.menus.actions.ZoomInAction;
-import rpgtoolkit.editor.main.menus.actions.ZoomOutAction;
 
 /**
  * 
  * @author Geoff Wilson
  * @author Joshua Michael Daly
  */
-public final class BoardEditor extends JInternalFrame
+public class BoardEditor extends JInternalFrame
 {
-    private TileSetCache tileSetCache;
-    
     private MainWindow parent;
 
     private JScrollPane scrollPane;
     
-    private Board board;
-    private BoardView boardView;
-    private ZoomInAction zoomInAction;
-    private ZoomOutAction zoomOutAction;
+    private BoardController boardController;
 
     public BoardEditor()
     {
@@ -37,66 +28,40 @@ public final class BoardEditor extends JInternalFrame
         super("Board Viewer", true, true, true, true);
         
         this.parent = parent;
-        
-        this.board = new Board(fileName);
-        this.boardView = new BoardView(this, board);
-        
-        // Move to board View
-        //this.configureBoardController();
-        
-        this.zoomInAction = new ZoomInAction();
-        this.zoomOutAction = new ZoomOutAction();
-         
+        this.boardController = new BoardController(fileName);
         this.setTitle("Viewing " + fileName.getAbsolutePath());
         
-        this.scrollPane = new JScrollPane(boardView);
+        this.scrollPane = new JScrollPane(boardController.getBoardView());
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
      
         this.add(scrollPane);
         this.pack();
     }
     
-     public ZoomInAction getZoomInAction()
+    public BoardController getBoardController()
     {
-        return this.zoomInAction;
-    }
-    
-    public void setZoomInAction(ZoomInAction zoomInAction)
-    {
-        this.zoomInAction = zoomInAction;
-    }
-    
-    public ZoomOutAction getZoomOutAction()
-    {
-        return zoomOutAction;
-    }
-    
-    public void setZoomOutAction(ZoomOutAction zoomOutAction)
-    {
-        this.zoomOutAction = zoomOutAction;
+        return this.boardController;
     }
     
     public void zoomIn()
     {
-        boardView.zoomIn();
+        boardController.performZoomIn();
         scrollPane.getViewport().revalidate();
     }
     
     public void zoomOut()
     {
-        boardView.zoomOut();
+        boardController.performZoomOut();
         scrollPane.getViewport().revalidate();
     }
     
     public void toogleGrid(boolean isVisible)
     {
-        boardView.setShowGrid(isVisible);
+        boardController.toogleGrid(isVisible);
     }
     
     public void toogleCoordinates(boolean isVisible)
     {
-        boardView.setShowCoordinates(isVisible);
+        boardController.toogleCoordinates(isVisible);
     }
-    
-   
 }

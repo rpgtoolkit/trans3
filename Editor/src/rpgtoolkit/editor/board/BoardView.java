@@ -20,14 +20,14 @@ public final class BoardView extends AbstractBoardView
 {   
     /**
      * 
-     * @param boardEditor
+     * @param boardController
      * @param board 
      */
-    public BoardView(BoardEditor boardEditor, Board board)
+    public BoardView(BoardController boardController, Board board)
     {
         super(board);
         
-        this.boardEditor = boardEditor;
+        this.boardController = boardController;
         this.setGridColor(Color.black);
         
         bufferedImage = new BufferedImage((board.getWidth() * 32)
@@ -100,9 +100,9 @@ public final class BoardView extends AbstractBoardView
     @Override
     protected void paintLayers(Graphics2D g)
     {
-        ArrayList<BoardLayer> layersToDraw = this.getLayerArrayList();
+        ArrayList<BoardLayer> layers = boardController.getLayerArrayList();
         
-        for (BoardLayer layer : layersToDraw)
+        for (BoardLayer layer : layers)
         {
             if (layer.getVisibility())
             {
@@ -125,9 +125,9 @@ public final class BoardView extends AbstractBoardView
     @Override
     protected void paintVectors(Graphics2D g) 
     {
-        ArrayList<BoardLayer> layersToDraw = this.getLayerArrayList();
+        ArrayList<BoardLayer> layers = boardController.getLayerArrayList();
         
-        for (BoardLayer layer : layersToDraw)
+        for (BoardLayer layer : layers)
         {
             if (layer.getVisibility())
             {

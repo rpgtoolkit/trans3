@@ -1,6 +1,7 @@
 package rpgtoolkit.editor.board;
 
 import java.io.File;
+import rpgtoolkit.common.editor.types.MultiLayerContainer;
 import rpgtoolkit.common.io.types.Board;
 import rpgtoolkit.common.utilities.TileSetCache;
 import rpgtoolkit.editor.main.menus.actions.ZoomInAction;
@@ -10,7 +11,7 @@ import rpgtoolkit.editor.main.menus.actions.ZoomOutAction;
  *
  * @author Joshua Michael Daly
  */
-public final class BoardController
+public final class BoardController extends MultiLayerContainer
 {
     private Board board;
     private BoardView boardView;
@@ -116,6 +117,18 @@ public final class BoardController
         
         return layer;
     }
+    
+    /**
+     * Calls super method, and additionally fires a {@link MapChangedEvent}.
+     *
+     * @see MultilayerPlane#removeAllLayers
+     */
+//    @Override
+//    public void removeAllLayers() 
+//    {
+//        super.removeAllLayers();
+//        //fireMapChanged();
+//    }
     
     /**
      * 
