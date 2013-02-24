@@ -13,6 +13,7 @@ import java.util.ListIterator;
 import javax.swing.JPanel;
 import rpgtoolkit.common.editor.types.MultiLayerContainer;
 import rpgtoolkit.common.io.types.Board;
+import rpgtoolkit.common.utilities.TileSetCache;
 import rpgtoolkit.editor.main.menus.actions.ZoomInAction;
 import rpgtoolkit.editor.main.menus.actions.ZoomOutAction;
 
@@ -23,6 +24,7 @@ import rpgtoolkit.editor.main.menus.actions.ZoomOutAction;
 public abstract class AbstractBoardView extends JPanel implements MultiLayerContainer
 {
     protected AffineTransform affineTransform = new AffineTransform();
+    protected TileSetCache tileSetCache;
     
     // Put this somewhere else like an enum.
     public static int ZOOM_NORMALSIZE = 5;
@@ -68,6 +70,8 @@ public abstract class AbstractBoardView extends JPanel implements MultiLayerCont
         bounds = new Rectangle();
         this.setPreferredSize(new Dimension((board.getWidth() * 32)
                 , (board.getHeight() * 32)));
+        
+        this.configureBoardController();
         
         //this.zoomInAction = new ZoomInAction(this);
         //this.zoomOutAction = new ZoomOutAction(this);
@@ -543,5 +547,24 @@ public abstract class AbstractBoardView extends JPanel implements MultiLayerCont
     public Iterator<BoardLayer> iterator() 
     {
         return layers.iterator();
+    }
+    
+    private void configureBoardController()
+    {
+        /*
+         * Move this code to the view
+         */
+        
+        //My Hacky code
+        tileSetCache = new TileSetCache();
+        board.initializeTileSetCache(tileSetCache);
+        
+        int layerCount = board.getLayerCount();
+        
+        for (int i = 0; i < layerCount; i++)
+        {
+            BoardLayer layer = new BoardLayer(board, i);
+            this.addLayer(layer);
+        }
     }
 }

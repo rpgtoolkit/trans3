@@ -27,7 +27,6 @@ public final class BoardView extends AbstractBoardView
     {
         super(board);
         
-        layers = new ArrayList();
         this.boardEditor = boardEditor;
         this.setGridColor(Color.black);
         
@@ -101,9 +100,9 @@ public final class BoardView extends AbstractBoardView
     @Override
     protected void paintLayers(Graphics2D g)
     {
-        ArrayList<BoardLayer> layers = this.getLayerArrayList();
+        ArrayList<BoardLayer> layersToDraw = this.getLayerArrayList();
         
-        for (BoardLayer layer : layers)
+        for (BoardLayer layer : layersToDraw)
         {
             if (layer.getVisibility())
             {
@@ -126,9 +125,9 @@ public final class BoardView extends AbstractBoardView
     @Override
     protected void paintVectors(Graphics2D g) 
     {
-        ArrayList<BoardLayer> layers = this.getLayerArrayList();
+        ArrayList<BoardLayer> layersToDraw = this.getLayerArrayList();
         
-        for (BoardLayer layer : layers)
+        for (BoardLayer layer : layersToDraw)
         {
             if (layer.getVisibility())
             {

@@ -42,7 +42,7 @@ public final class BoardEditor extends JInternalFrame
         this.boardView = new BoardView(this, board);
         
         // Move to board View
-        this.configureBoardController();
+        //this.configureBoardController();
         
         this.zoomInAction = new ZoomInAction();
         this.zoomOutAction = new ZoomOutAction();
@@ -98,22 +98,5 @@ public final class BoardEditor extends JInternalFrame
         boardView.setShowCoordinates(isVisible);
     }
     
-    public void configureBoardController()
-    {
-        /*
-         * Move this code to the view
-         */
-        
-        //My Hacky code
-        tileSetCache = new TileSetCache();
-        board.initializeTileSetCache(tileSetCache);
-        
-        int layerCount = board.getLayerCount();
-        
-        for (int i = 0; i < layerCount; i++)
-        {
-            BoardLayer layer = new BoardLayer(board, i);
-            boardView.addLayer(layer);
-        }
-    }
+   
 }
