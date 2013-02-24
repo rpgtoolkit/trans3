@@ -54,7 +54,7 @@ public abstract class AbstractBoardView extends JPanel implements MultiLayerCont
     private ZoomInAction zoomInAction;
     private ZoomOutAction zoomOutAction;
     
-    private ArrayList<BoardLayer> layers;
+    protected ArrayList<BoardLayer> layers;
     protected Rectangle bounds;          // in tiles
     
     /**

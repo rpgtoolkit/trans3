@@ -27,6 +27,7 @@ public final class BoardView extends AbstractBoardView
     {
         super(board);
         
+        layers = new ArrayList();
         this.boardEditor = boardEditor;
         this.setGridColor(Color.black);
         

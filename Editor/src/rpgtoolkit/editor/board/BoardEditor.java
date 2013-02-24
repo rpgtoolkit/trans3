@@ -39,8 +39,11 @@ public final class BoardEditor extends JInternalFrame
         this.parent = parent;
         
         this.board = new Board(fileName);
-        this.configureBoardController();
         this.boardView = new BoardView(this, board);
+        
+        // Move to board View
+        this.configureBoardController();
+        
         this.zoomInAction = new ZoomInAction();
         this.zoomOutAction = new ZoomOutAction();
          
