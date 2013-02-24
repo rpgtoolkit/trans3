@@ -1,10 +1,10 @@
 package rpgtoolkit.common.io.types;
 
-import rpgtoolkit.common.editor.types.Tile;
 import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import rpgtoolkit.common.editor.types.Tile;
 import rpgtoolkit.common.utilities.TileSetCache;
 import rpgtoolkit.editor.board.types.BoardImage;
 import rpgtoolkit.editor.board.types.BoardLayerShade;

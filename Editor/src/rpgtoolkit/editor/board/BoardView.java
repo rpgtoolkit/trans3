@@ -7,7 +7,6 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.SwingConstants;
 import rpgtoolkit.common.io.types.Board;
 import rpgtoolkit.editor.exceptions.TilePixelOutOfRangeException;
 
@@ -21,14 +20,14 @@ public final class BoardView extends AbstractBoardView
 {   
     /**
      * 
-     * @param boardController
+     * @param boardEditor
      * @param board 
      */
-    public BoardView(BoardController boardController, Board board)
+    public BoardView(BoardEditor boardEditor, Board board)
     {
         super(board);
         
-        this.boardController = boardController;
+        this.boardEditor = boardEditor;
         this.setGridColor(Color.black);
         
         bufferedImage = new BufferedImage((board.getWidth() * 32)
@@ -101,7 +100,7 @@ public final class BoardView extends AbstractBoardView
     @Override
     protected void paintLayers(Graphics2D g)
     {
-        ArrayList<BoardLayer> layers = boardController.getLayerArrayList();
+        ArrayList<BoardLayer> layers = this.getLayerArrayList();
         
         for (BoardLayer layer : layers)
         {
@@ -126,7 +125,7 @@ public final class BoardView extends AbstractBoardView
     @Override
     protected void paintVectors(Graphics2D g) 
     {
-        ArrayList<BoardLayer> layers = boardController.getLayerArrayList();
+        ArrayList<BoardLayer> layers = this.getLayerArrayList();
         
         for (BoardLayer layer : layers)
         {
