@@ -169,7 +169,7 @@ STRING prompt(const STRING str)
 		if ((key == _T("LEFT")) || (key == _T("RIGHT")) || (key == _T("UP")) || (key == _T("DOWN"))) continue;
 		if (key == _T("ENTER")) break;
 
-		if (key[0] == 8)
+		if (key == _T("BACKSPACE"))
 		{
 			response = response.substr(0, response.length() - 1);
 		}
