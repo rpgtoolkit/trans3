@@ -2570,7 +2570,13 @@ void operators::array(CALL_DATA &call)
 void CProgram::conditional(CALL_DATA &call)
 {
 	if (call[0].getNum()) return;
-	CONST_POS close = call.prg->m_units.begin() + (int)(call.prg->m_i + 1)->num;
+	int i = (int)(call.prg->m_i + 1)->num;
+	CONST_POS close = call.prg->m_units.begin() + i;
+	if (close == call.prg->m_units.end() - 1)
+	{
+		call.prg->m_i = close;
+		return;
+	}
 	if ((close != call.prg->m_units.end()) && ((close + 1)->udt & UDT_FUNC) && ((close + 1)->func == skipElse))
 	{
 		// Set the current unit to the else so that it is not

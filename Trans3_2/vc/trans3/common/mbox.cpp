@@ -166,8 +166,11 @@ STRING prompt(const STRING str)
 	while (true)
 	{
 		const STRING key = waitForKey(false);
+		// Ignore TAB
+		if (key == _T("TAB"));
 		if ((key == _T("LEFT")) || (key == _T("RIGHT")) || (key == _T("UP")) || (key == _T("DOWN"))) continue;
 		if (key == _T("ENTER")) break;
+		if (key == _T("ESC")) return "";
 
 		if (key == _T("BACKSPACE"))
 		{
@@ -195,6 +198,7 @@ STRING prompt(const STRING str)
 		//DrawText(hdc, response.c_str(), response.length(), &r2, 0);
 		//pBuffer->CloseDC(hdc);
 		pBuffer->DrawText(dx+2, dy, response.c_str(), _T("Arial"), 20, RGB(255,255,255));
+		pBuffer->DrawLine(dx, dy, dx, dy + 20, RGB(255, 255, 255));
 		g_pDirectDraw->Refresh();
 	}
 

@@ -103,6 +103,7 @@ STRING getName(const char chr, const char isVirtual, const bool bCapital)
 	if(chr == 13){ return _T("ENTER");}
 	else if(chr == 27){return _T("ESC");}
 	else if(chr == 8){return _T("BACKSPACE");}
+	else if(chr == 9){return _T("TAB");}
 	const TCHAR toRet[] = {
 		bCapital ? toupper(chr) : chr, _T('\0')
 	};
