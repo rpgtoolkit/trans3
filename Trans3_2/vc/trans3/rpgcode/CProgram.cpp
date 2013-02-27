@@ -1812,10 +1812,12 @@ STACK_FRAME CProgram::run()
 	// unit to prevent the stack from being cleared in execute()
 	// so that the final value can be returned from this function.
 	// *(int *)(&(m_units.back)->udt) &= ~UDT_LINE;
-
-	for (m_i = m_units.begin(); m_i != m_units.end(); ++m_i)
+	int i;
+	for (i = 0, m_i = m_units.begin(); m_i != m_units.end(); ++m_i, ++i)
+//	for (i = 0; i < m_units.size(); ++i)
 	{
 		// m_i->show();
+		//m_i = m_units.begin() + i;
 		m_i->execute(this);
 		processEvent();
 	}
@@ -1935,11 +1937,8 @@ void tagMachineUnit::execute(CProgram *prg) const
 		{
 			try
 			{
-//				STACK_FRAME sf = prg->m_pStack->back() - params;
-//				LPSTACK_FRAME sf = &prg->m_pStack->at(prg->m_pStack->size() - params - 1);
 				CALL_DATA call = {params, &prg->m_pStack->back() - params, prg};
 				func(call);
-//				sf = NULL;
 			}
 			catch (CException exp)
 			{
@@ -1950,7 +1949,13 @@ void tagMachineUnit::execute(CProgram *prg) const
 				prg->handleError(NULL);
 			}
 		}
- 		prg->m_pStack->erase(prg->m_pStack->end() - params - 1, prg->m_pStack->end() - 1);
+		if (prg->m_pStack->size() > 0)
+ 			prg->m_pStack->erase(prg->m_pStack->end() - params - 1, prg->m_pStack->end() - 1);
+		else
+		{
+			// Something's wrong
+			int p = 0;
+		}
 	}
 	else if (udt & UDT_CLOSE)
 	{
@@ -1968,7 +1973,7 @@ void tagMachineUnit::execute(CProgram *prg) const
 			const MACHINE_FUNC &func = (open - 1)->func;
 			if ((func == CProgram::whileLoop) || (func == CProgram::forLoop) || (func == CProgram::untilLoop))
 			{
-				prg->m_i = prg->m_units.begin() + pLines[1] - 1;
+				prg->m_i = prg->m_units.begin() + (pLines[1] > 0 ? pLines[1] : 1) - 1;
 			}
 			else if (func == CProgram::skipMethod)
 			{
