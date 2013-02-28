@@ -1594,12 +1594,15 @@ int SelectEquippableItem(int nPlayerID, int nEquipID)
 
 		if (ie.strKey.compare("DOWN") == 0 || CBCheckKey("JOYDOWN"))
 		{
-			nCursor++;
-			if (nCursor > 11)
+			if (nCursor + nTop < nCount - 1)
 			{
-				nTop++;
-				RenderEquipItems(g_cnvMenu, nCount, nTop);
-				nCursor = 11;
+				nCursor++;
+				if (nCursor > 11)
+				{
+					nTop++;
+					RenderEquipItems(g_cnvMenu, nCount, nTop);
+					nCursor = 11;
+				}
 			}
 			CBPlaySound(strMove);
 			//Sleep(90);
@@ -1727,7 +1730,6 @@ int DetermineEquippableItems(int nPlayerID, int nEquipID)
 																		CBGetGeneralString(GEN_INVENTORY_HANDLES, idx, 0);
 							g_nMap[nListIdx] = idx;
 							nListIdx++;
-							
 						} //bUseLocation
 					} //bUse
 				} //item equippable

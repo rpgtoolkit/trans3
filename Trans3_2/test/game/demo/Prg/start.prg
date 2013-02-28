@@ -103,5 +103,7 @@ method intro()
 	mwincls();
 //      id = thread("test_thread_mwin.prg", true);
 	giveitem("poison.itm");
+	giveitem("sword.itm");
 }
+
 

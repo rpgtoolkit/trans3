@@ -547,7 +547,7 @@ STRING getMainFileName(const STRING cmdLine)
 		}
 	}
 
-	if (CFile::fileExists(mainGam)) return mainGam;
+	if (CFile::fileExists(GAM_PATH + mainGam)) return GAM_PATH + mainGam;
 
 	TCHAR strFileName[MAX_PATH] = _T("");
 
