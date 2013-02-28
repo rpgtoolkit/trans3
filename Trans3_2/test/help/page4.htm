@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+
+<head>
+	<title>RPGToolkit Help &mdash;&nbsp;</title>
+	<script type="text/javascript" src="js.js"></script>
+	<link rel="stylesheet" href="styles/css.css" />
+	<!--[if IE]>
+		<style type="text/css">
+			@import url("styles/ie.css");
+		</style>
+		<script type="text/javascript">
+			g_bUsingIe = true;
+		</script>
+	<![endif]-->
+</head>
+
+<body>
+
+<div id="document">
+
+<h1><span style="font-size: 19.5pt;">tk3 (<a href="/">home</a>, <a href="/dev">dev</a>, <a href="/source">source</a>, <a href="/bugs">bugs</a>, <a href="/help" style="color: rgb(0, 50, 120);">help</a>)</span></h1>
+
+<div class="topLinks">
+
+<span><a href="index.htm">home</a></span>
+|&nbsp;
+
+<span><a href="page1.htm">quick-start</a></span>
+|&nbsp;
+
+<span
+	onmouseover="showMenu('editor');"
+	onmouseout="hideMenu('editor');"
+	id="editor_link"
+><a href="page2.htm">editor</a></span>
+|&nbsp;
+
+<div
+	id="editor"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('editor')"
+>
+	<div><a href="pageed_environment.htm">editor environment</a></div>
+	<div><a href="page3.htm">main file editor</a></div>
+	<div><a href="page4.htm">board editor</a></div>
+	<div><a href="page5.htm">tile editor</a></div>
+	<div><a href="page6.htm">program editor</a></div>
+	<div><a href="page7.htm">character editor</a></div>
+
+	<div><a href="page8.htm">item editor</a></div>
+	<div><a href="page9.htm">enemy editor</a></div>
+	<div><a href="page10.htm">animation editor</a></div>
+	<div><a href="page11.htm">tile bitmap editor</a></div>
+	<div><a href="page12.htm">special move editor</a></div>
+	<div><a href="page13.htm">status effect editor</a></div>
+
+	<div style="margin-bottom: 0;"><a href="pageed_background.htm">background editor</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('engine');"
+	onmouseout="hideMenu('engine');"
+	id="engine_link"
+><a href="page14.htm">playing</a></span>
+|&nbsp;
+<div
+	id="engine"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('engine')"
+>
+	<div><a href="page15.htm">default systems</a></div>
+	<div style="margin-bottom: 0;"><a href="page16.htm">distribution</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('rpgcode');"
+	onmouseout="hideMenu('rpgcode');"
+	id="rpgcode_link"
+><a href="page17.htm">rpgcode</a></span>
+|&nbsp;
+<div
+	id="rpgcode"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('rpgcode')"
+>
+	<div id="rpgcode_features_link"><a href="page18.htm">language features</a></div>
+	<div><a href="page19.htm">function reference</a></div>
+	<div
+		style="margin-bottom: 0;"
+		id="rpgcode_oop_link"
+	><a href="page21.htm">object oriented coding</a></div>
+
+</div>
+
+<span
+	onmouseover="showMenu('troubleshooting');"
+	onmouseout="hideMenu('troubleshooting');"
+	id="troubleshooting_link"
+><a href="page22.htm">troubleshooting</a></span>
+|&nbsp;
+<div
+	id="troubleshooting"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('troubleshooting')"
+>
+	<div><a href="page23.htm">faq</a></div>
+	<div><a href="page25.htm">technical issues</a></div>
+	<div style="margin-bottom: 0;"><a href="page26.htm">system requirements</a></div>
+</div>
+
+<span
+	onmouseover="showMenu('about');"
+	onmouseout="hideMenu('about');"
+	style="margin-bottom: 0;"
+	id="about_link"
+><a href="page28.htm">about</a></span>
+<div
+	id="about"
+	class="submenu"
+	onmouseover="g_currentMenu = null;"
+	onmouseout="hideMenu('about')"
+>
+	<div><a href="page29.htm">history</a></div>
+	<div><a href="page30.htm">links</a></div>
+	<div style="margin-bottom: 0;"><a href="page31.htm">3.1.0 changelog</a></div>
+</div>
+
+</div>
+<div id="content">
+<h2><a href="page2.htm">editor guide</a> &mdash; board editor</h2>
+
+<p style="text-transform: lowercase;">
+Board Basics 
+[ <a href="#perspective">Perspective</a> | <a href="#coordinates">Coordinate Systems</a> | <a href="#layers">Layers</a> | <a href="#vectors">Vectors</a> | <a href="#objects">Objects</a> | <a href="#lighting">Lighting</a> ]
+<br />
+<a href="page4.1.htm">Around the editor</a>
+<br />
+<a href="page4.2.htm">Vector tutorial</a>
+</p>
+
+<!-- Board Editor rewrite - 18 September 2006 by Delano -->
+
+<p>
+Boards create the world in which virtually all of your game will take place; they are the scenes on which the player moves and most events take place (with the possible exception of battles). A board is composed of several layers of images that depict the scene, on which various objects can be placed for the player to interact with. 
+</p>
+
+<img src="images/image47" alt="Board editor" />
+<p></p>
+
+<h3>Board Basics</h3>
+<p>
+Getting started - The <a href="page1.htm">Quick-Start Guide</a> has a little introduction to <a href="page1.htm#boards">board making</a>, which you may find useful.
+</p>
+<h3>Tiles vs Images</h3>
+<p>
+The primary constituent of boards are the pictures that represent the buildings and landscape of the scene. These images come in two types: tiles or pre-rendered images. Tiles are 32x32 pixel square images (or 62x32 diamonds in isometric mode) that are the building blocks of many types of game, not only RPGs. Tiles may depict parts of a building - windows, doors, walls - or treasure chests, or characters - and can be assembled onto a grid in any arrangement. The advantages of using tiles include their reusability and availability (a large selection of free tiles are available on the internet). The Toolkit also provides a large number of tools for tile creation and manipulation. Pre-rendered images, on the other hand, must be created using different software and cannot be edited in the Toolkit. One of the advantages of images (new to 3.1.0) is that they may be placed anywhere on the board and need not be aligned to the tile grid.
+</p>
+
+<p style="text-align: left;">[ <a href="#">top</a> ]</p>
+
+<a name="perspective"></a><h3>Perspective</h3>
+
+<p>
+Boards in the Toolkit can take one of two perspectives: top-down or isometric. In basic terms, a top-down perspective looks two-dimensional and an isometric three-dimensional. A top-down perspective is the easiest to use since its grid is aligned to the horizontal and vertical, but (depending on the graphics used) provides little depth of field. An isometric perspective is psuedo-3D in that it gives the illusion of depth whilst remaining 2D; the axes are inclined by roughly 30 degrees to the horizontal to create diamond-shaped grid tiles. 
+</p><p>
+The perspective of the board affects both the tile grid and the movement of sprites. Keyboard-driven and non-vectorial movement is limited to the eight directions specified by the grid's axes and its diagonals. Essentially, this means sprites will move diagonally at a 45° incline on top-down boards and at a 30° incline on isometric boards (26.6° on the screen, to be precise). 
+</p>
+<a name="coordinates"></a><h3>Coordinate Systems</h3>
+<p>
+As mentioned above, tiles used on a board must be arranged upon a grid. The arrangement of the grid forms the basis of the <i>coordinate system</i>, that is, the convention by which grid squares are identified. This system is used not only to reference tiles but also to determine the position of all objects (e.g., sprites, programs) placed on the board.
+</p><p>
+In the top-down perspective this is a simple process: the x-axis runs from left to right and the y axis from top to bottom, hence the point (1, 1) occurs in the top-left corner. 
+</p><p>
+In isometric view this is slightly more complicated. There is no single universally accepted system for isometrics, and two separate coordinate systems are provided:
+</p>
+<ul>
+	<li><b>Isometric Rotated</b> - This system (introduced in 3.1.0) effectively rotates a top-down coordinate system by 45° degrees to create a more intuitive convention. The x-axis runs from top-left to bottom-right and the y-axis from bottom-left to top-right. It does not come without its disadvantages, however, as the indices of the top-left tile (and from it, all others) are dependent upon the width of the board; that is, if you alter the width of a board the tile indices will change (though all objects are maintained at their physical position).
+	</li>
+	<li><b>Isometric Stacked</b> - The stacked system attempts to retain the horizontal / vertical arrangement of indices by "stacking" sequential y-valued tiles on top of each other. This creates a straddled effect, in which two columns of tiles have the same x-value and alternate y-values. This creates a number of problems when performing calculations on position data.
+	</li>
+</ul>
+
+<img src="images/image48" alt="The three coordinate systems"/>
+<p><i>Top-down, isometric rotated and isometric stacked coordinate systems</i></p>
+
+<p>
+A further coordinate system option (introduced in 3.1.0) is provided that may help to alleviate the pitfalls of tile systems: the 'Absolute' pixel coordinate system. This is a system that applies to objects but not tiles - in effect it is a second coordinate system that sits on top of a tile coordinate system, which is why it is presented as a qualifier rather than another option. In the pixel system, object coordinates are stored in pixel rather than tile units (pixels are the smallest visible division on the screen). This gives users the flexibility to position objects at any location on the board instead of being forced to align objects to gridpoints (tiles are necessarily aligned to gridpoints and therefore cannot use a pixel coordinate system). Furthermore, the pixel coordinate system is aligned to the horizontal and vertical axes in both top-down and isometric modes; that is, no stacking or rotation of the axes occurs for this system in isometrics.
+</p>
+
+<img src="images/image49" alt="The three coordinate systems with pixel modifier"/>
+<p><i>Top-down, isometric rotated and isometric stacked pixel coordinate systems: the grid only applies to tiles</i></p>
+
+<p>
+It is recommended that all users enable the pixel coordinates option, as this is the easiest system to work with. Isometric users are recommended to use the Rotated coordinate system. Users upgrading from older versions than 3.1.0 may upgrade the coordinate system from tile to pixel and from stacked isometric to rotated through the menu options provided (see next page). All tiles and objects are properly updated, but users should be aware that any coordinate values used in RPGCode programs cannot be altered by the upgrader.
+</p>
+
+<p style="text-align: left;">[ <a href="#">top</a> ]</p>
+
+<a name="layers"></a><h3>Layers</h3>
+
+<p>
+Layers provide a method of arranging tiles or objects above or below one another, and may be thought of as the third dimension of a 2D board, or as a series of 'vertical' levels on which tiles or objects can be placed. Anything placed on a higher layer is drawn over anything placed on layers below it. Whilst the contents of all layers are displayed in-game, the player can only move and interact on one layer at a time (if you are having trouble interacting with a sprite, it may be that the player and sprite are on different layers). If a sprite is at a point where there are tiles or objects on higher layers 'above it' the intersecting portion of the sprite will be drawn translucently to indicate this. Players can move between layers by moving onto a 'stairs' vector (see below).
+</p>
+
+<img src="images/image82" alt="Breakdown of a board into layers" />
+<p><i>Each type of tile is placed on a separate layer; the board is a composite of the layers</i></p>
+
+<p>
+As mentioned above, one new feature of 3.1.0 is the ability to place images on layers in a similar fashion to tiles. Images on layers are drawn on top of any tiles placed on the same layer. The exception to this is the 'background image', which is treated separately and resides below the bottom layer of tiles; this is generally used to hold an image that exactly matches the board's dimensions and contains all the graphical details of the scene.
+</p>
+
+<p style="text-align: left;">[ <a href="#">top</a> ]</p>
+
+<a name="vectors"></a><h3>Vectors</h3>
+
+<p>
+Once the board's scenery has been created using tiles or images, users must specify which areas of the board must appear 'solid' to the player (for instance, a wall or tree); this is accomplished using <i>vectors</i>. Vectors in the Toolkit are series of points connected together to form a closed loop (polygon) or open line (there is a slight ambiguity here with respect to the mathematical concept of vectors: a TK vector is composed of a group of 'mathematical' vectors). TK vectors can be used in a number of ways, the first of which is to define these solid areas of a board - sprites are not allowed to cross the boundary of a 'solid' vector. This implies that the sprites themselves have some contact area with the board (e.g., their feet) that is also solid - indeed, solid vectors can be drawn around the base of sprites in their respective editors (see <a href="page7.htm">Character</a> and <a href="page8.htm">Item Editors</a>).
+</p>
+
+<img src="images/image83" alt="Vectors" />
+<p><i>Vector collision allows complicated solid objects to be defined</i></p>
+
+<p>
+Vectors can also be used to create areas that trigger some event when a sprite enters the vector or crosses its boundary.
+</p>
+<ul>
+	<li><b>Under vector</b> - Under vectors (the successor to the under-tiletype for pre-3.1.0 users) cause the bounded portion of images or tiles on the same or lower layers to be promoted to the layer above, such that when a sprite walks across an under vector, the bounded background is drawn on top of the sprite and the sprite appears translucently. This provides the same effect as having tiles or images on layers above the sprites - this is particularly useful when using images as it avoids the need for separate image files.
+	</li>
+	<li><b>Stair vector</b> - Used to move players between layers of the board. The player is moved at the first instance of contact between its vector and the boundary of the stair vector.
+	</li>
+	<li><b>Program vector</b> - Most events that the user will want to occur must be created in an RPGCode program, and vectors can be created that start or launch an RPGCode program when the player intersects the boundary or presses the 'activation key' (see <a href="page3.htm">Main File Editor</a>) whilst partially or completely within the vector. Additionally the vector may be configured to cause the program to launch repeatedly after a given number of steps.
+	</li>
+	<li><b>Waypoint vector</b> - One powerful feature of vectors is the ability to cause a sprite to move along a vector, providing a simple method of moving sprites on complex paths. Once defined, a waypoint vector can be assigned to sprite using a single RPGCode function.
+	</li>
+</ul>
+
+<img src="images/image84" alt="Vector types" />
+<p><i>Vector types: collision (white), under (green), stairs (blue), program (yellow), waypoint (pink)</i></p>
+
+<p>
+Vectors are complex objects and as such have a huge range of uses. A separate article is provided to detail the design and use of vectors: <a href="page4.2.htm">link</a>.
+</p>
+
+<p style="text-align: left;">[ <a href="#">top</a> ]</p>
+
+<a name="objects"></a><h3>Objects</h3>
+
+<p>
+After creating a scene from tiles, images and vectors, you'll want to populate it with objects for the player to interact with - these come in the form of items and programs.
+</p>
+<ul>
+	<li><b>Items</b> - 'Item' is the generic term given to an object that the player can pick up, talk to or interact with; for instance, an item may be sword, a non-player character (NPC) or a chest (see <a href="page8.htm">Item Editor</a>). Items placed on the board are represented by their assigned graphic, if they have one, and if they are directed to move they will animate with their movement graphics, if present. Any behaviour the item exhibits must be specified in an RPGCode program that is 'attached' to the item - whether the item moves, talks, opens or is added to the inventory. A program can also be assigned to an item to control behaviour that occurs when a player is not interacting with it. Use items instead of programs if the object requires special graphics, movement, or may be removed during the player's time on the board.
+	</li>
+	<li><b>Programs</b> - As mentioned above, programs placed on the board are run when a player interacts with its associated vector. Use programs instead of items when you do not need special graphics, movement or alteration to display the object.
+	</li>
+	<li><b>Threads</b> - Programs can also be launched when the user enters the board and run 'in the background', controlling things like NPC movement or a heads-up-display (HUD). These are known as <i>threads</i> and are not associated with any vector. Threads are run concurrently with movement; that is, sprites can continue moving whilst a thread runs, in contrast to all other programs, which take exclusive control of the game engine and do not allow free movement. A board thread is launched when the user enters the board and ends when the player leaves, if it has not already ended (note: threads do not automatically repeat, you must use a While() loop or other function to achieve this inside the program). Threads can also be launched programmatically by using the relevant functions (see <a href="page19.htm">RPGCode Reference</a>). Use one or more threads when you want sprites or animations to continue animating whilst the program runs.
+	</li>
+</ul>
+<p>
+<b>Note for pre-3.1.0 users:</b> Warp tiles have been depreciated in 3.1.0; instead create a program vector and use the Send() function as inline RPGCode (see below) to avoid creating a large number of warp*.prg files.
+</p>
+
+<p style="text-align: left;">[ <a href="#">top</a> ]</p>
+
+<a name="lighting"></a><h3>Lighting</h3>
+
+<p>
+Version 3.1.0 offers a limited lighting capability. Three types of lighting are provided: tile shading, lighting and an ambient level. The way these are applied depend on the type of graphics used and on full-screen status.
+</p>
+<ul>
+	<li><b>Tile shading</b> - Tile shading allows a single 'shade' to be applied across a whole tile; the shade may lighten, darken or change the colour of the tile. Tile shades are drawn onto the board in the same way as tiles, or in the same way as pixels are in a standard graphics program.
+	</li>
+	<li><b>Lighting</b> - In addition to applying single-tile shading, light sources (spotlights or gradients) can be applied to tiles on the board to create more realistic lighting. The lights are applied on a tile scale; that is, each tile again receives a single shade. Lights are represented on the board using vectors, whose points and lines define the directions or centres of the shading. The number of points on light vectors is fixed (spotlights have three points, gradients have two), but in all other respects can be manipulated like other vectors.
+	</li>
+</ul>
+<p>
+Tile shading and lighting are both rendered to a <i>lighting layer</i> that is treated like any other layer on the board - it may be positioned between any two layers and any shades on the layer are 'cast' onto all tiles on layers below. 
+</p><p>
+<b>Note:</b> tile shading and lighting is <b>only</b> applied to board tiles; it is not applied to non-tile images or sprites (items) made of tiles. Tile shading and lighting cannot be altered at run-time. No mechanism currently exists to provide sub-tile (pixel) lighting.
+</p>
+
+<img src="images/image85" alt="Lighting layer" />
+<p><i>The single lighting layer is cast onto multiple layers</i></p>
+
+<p>
+Ambient level - the ambient level is a single colour or shade that may be applied to the entire board or screen, and can be altered in-game using the <a href="page19.htm#setambientlevel">SetAmbientLevel()</a> command. The ambient level is applied to board tiles and sprites (items) composed of tiles, non-tile board images including the background and non-tile sprite frames. Boards themselves have an <i>ambient effect</i> attribute that contributes additively to the ambient level. This can be set in the board properties.
+</p>
+<p>
+<b>Note to pre-3.1.0 users</b>: the SetAmbientLevel() command partially replaces the ambientRed, ambientGreen and ambientBlue <a href="page18.5.htm">global variables</a>; these variables are still valid, but when altered must be followed by a ForceRedraw() call to apply the changes. SetAmbientLevel() updates these variables and calls ForceRedraw(), hence the variables can still be used to get the ambient level.
+</p>
+
+<p>On to <a href="page4.1.htm">Around The Editor...</a></p>
+
+
+<p style="text-align: left;">[ <a href="#">top</a> ]</p>
+<hr />
+<p>
+<a href="page3.htm">previous</a>, <a href="page4.1.htm">forward</a>
+</p>
+</div>
+
+<div id="links">
+<p>
+All contents copyright &copy; 2005, 2007 Colin James Fitzpatrick, Jonathan Hughes, and Samuel Bedwell.
+</p>
+</div>
+
+</div>
+
+</body>
+
+</html>

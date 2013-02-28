@@ -1,0 +1,11 @@
+The toolkit engine has been rewritten in C++ for version 3.1.0.
+The player can now be controlled using the mouse.
+A complete vector collision and path-finding system has been implemented.
+A number of important changes have been made to RPGCode in version 3.1.0 - see the changelog.
+The board editor has been completely rewritten for version 3.1.0.
+There is a warm community of fellow users always ready to help you at toolkitzone.com.
+Tk3 is an open-source project, licensed under the GNU General Public License (GPL).
+The toolkit can compile your whole game to a stand-alone EXE file.
+The toolkit is accompanied by extensive help files - read them before asking questions on toolkitzone.com.
+The toolkit is made by users for users, if you have any suggestions, make them at toolkitzone.com.
+If you find a bug, be sure to report it at toolkitzone.com.
