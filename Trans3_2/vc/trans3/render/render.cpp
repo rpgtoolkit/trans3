@@ -227,7 +227,7 @@ void changeCursor(const STRING strCursor)
 	ReleaseDC(g_hHostWnd, hHostDc);
 
 	ICONINFO cursor = {FALSE, g_mainFile.hotSpotX, g_mainFile.hotSpotY, hMaskBmp, hColorBmp};
-	HCURSOR hCursor = CreateIconIndirect(&cursor);
+	HCURSOR hCursor = CreateIconIndirect(&cursor);	
 	SetClassLong(g_hHostWnd, GCL_HCURSOR, LONG(hCursor));
 	DestroyIcon(hCursor);
 
@@ -609,6 +609,9 @@ void renderNow(CCanvas *cnv, const bool bForce)
 		}
 		g_pDirectDraw->DrawCanvasTransparent(g_mwin.cnvText, x, 0, g_mwin.color);
 	}
+
+	// Render the cursor
+
 	if (bScreen) g_pDirectDraw->Refresh();
 }
 

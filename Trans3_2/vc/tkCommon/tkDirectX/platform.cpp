@@ -446,14 +446,16 @@ BOOL FAST_CALL CDirectDraw::CopyScreenToCanvas(
 
 			// Get the point of the window outside of the title bar and border
 			POINT pt = {0, 0};
+			ShowCursor(FALSE);
 			ClientToScreen(m_hWndMain, &pt);
 
 			// Now offset the top/left of the window rect by the distance from the
 			// title bar / border
 			RECT rect = {0, 0, m_nWidth, m_nHeight};
 			OffsetRect(&rect, pt.x, pt.y);
-
-			return pCanvas->GetDXSurface()->BltFast(0, 0, m_lpddsPrime, &rect, DDBLTFAST_NOCOLORKEY | DDBLTFAST_WAIT);
+			BOOL ret = pCanvas->GetDXSurface()->BltFast(0, 0, m_lpddsPrime, &rect, DDBLTFAST_NOCOLORKEY | DDBLTFAST_WAIT);
+			ShowCursor(TRUE);
+			return ret;
 		}
 		else
 		{

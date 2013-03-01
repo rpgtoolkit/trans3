@@ -248,6 +248,37 @@ void drawImage(const STRING strFile, const HDC hdc, const int x, const int y, co
 
 	STRING prFile = getAsciiString(resolve(strFile)).c_str();
 	FIBITMAP *bmp = FreeImage_Load(FreeImage_GetFileType(prFile.c_str(), 16), prFile.c_str());
-	StretchDIBits(hdc, x, y, (width != -1) ? width : FreeImage_GetWidth(bmp), (height != -1) ? height : FreeImage_GetHeight(bmp), 0, 0, FreeImage_GetWidth(bmp), FreeImage_GetHeight(bmp), FreeImage_GetBits(bmp), FreeImage_GetInfo(bmp), DIB_RGB_COLORS, SRCCOPY);
+	int bmpWidth = FreeImage_GetWidth(bmp);
+	int bmpHeight = FreeImage_GetHeight(bmp);
+	int blitMode = 0;// Alpha blend by default
+	// Convert to HBITMAP
+	HBITMAP hbmp = CreateDIBitmap(hdc, FreeImage_GetInfoHeader(bmp), CBM_INIT, FreeImage_GetBits(bmp), FreeImage_GetInfo(bmp), DIB_RGB_COLORS);
+	HDC hBmpDC = CreateCompatibleDC(hdc);
+
+	SelectObject(hBmpDC, (HBITMAP)hbmp);
+
+	BLENDFUNCTION bfn = {0};
+
+	bfn.BlendOp = AC_SRC_OVER;
+	bfn.BlendFlags = 0;
+	bfn.SourceConstantAlpha = 255;
+	bfn.AlphaFormat = AC_SRC_ALPHA;
+
+	if (FreeImage_GetBPP(bmp) == 32) // Only 32-bit images can be alpha blended	
+		blitMode = 0;	
+	else	
+		blitMode = 1; // Opaque Blit
+	
+	if (blitMode == 0)
+	{
+		if (!AlphaBlend(hdc, x, y, (width != -1) ? width : bmpWidth, (height != -1) ? height : bmpHeight, hBmpDC, 0, 0, bmpWidth, bmpHeight, bfn))
+			blitMode = 1;
+	}
+			
+	if (blitMode == 1)
+		StretchDIBits(hdc, x, y, (width != -1) ? width : FreeImage_GetWidth(bmp), (height != -1) ? height : FreeImage_GetHeight(bmp), 0, 0, FreeImage_GetWidth(bmp), FreeImage_GetHeight(bmp), FreeImage_GetBits(bmp), FreeImage_GetInfo(bmp), DIB_RGB_COLORS, SRCCOPY);
+
+	DeleteDC(hBmpDC);
+	DeleteObject((HBITMAP)hbmp);
 	FreeImage_Unload(bmp);
 }
