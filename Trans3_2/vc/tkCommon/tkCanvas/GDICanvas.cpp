@@ -648,6 +648,21 @@ INLINE VOID CCanvas::Destroy(VOID)
 }
 
 //--------------------------------------------------------------------------
+// Set the color key for the source
+//--------------------------------------------------------------------------
+VOID CCanvas::SetSrcColorKey(
+	CONST LONG crTransparentColor
+		) CONST
+{
+	// Obtain RGB color
+	CONST LONG rgb = matchColor(crTransparentColor);
+
+	// Setup color key
+	DDCOLORKEY ddck = {rgb, rgb};
+	GetDXSurface()->SetColorKey(DDCKEY_SRCBLT, &ddck);
+}
+
+//--------------------------------------------------------------------------
 // Set a pixel using GDI
 //--------------------------------------------------------------------------
 VOID CCanvas::SetPixel(
@@ -772,6 +787,7 @@ INT FAST_CALL CCanvas::BltPart(
 	// If using DirectX
 	if (lpddsSurface && usingDX())
 	{
+		SetSrcColorKey(TRANSP_COLOR);
 
 		// Setup the rects
 		RECT destRect = {x, y, x + width, y + height};
@@ -781,7 +797,7 @@ INT FAST_CALL CCanvas::BltPart(
 		DDBLTFX bltFx;
 		DD_INIT_STRUCT(bltFx);
 		bltFx.dwROP = lRasterOp;
-		return SUCCEEDED(lpddsSurface->BltFast(x, y, GetDXSurface(), &rect, DDBLTFAST_WAIT | DDBLTFAST_NOCOLORKEY));
+		return SUCCEEDED(lpddsSurface->BltFast(x, y, GetDXSurface(), &rect, DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY));
 
 	}
 	else if (lpddsSurface)
@@ -931,13 +947,14 @@ INT FAST_CALL CCanvas::BltStretch(
 {
 
 	// If using DirectX
-	/**if	(
+	if	(
 			lpddsSurface &&
-			usingDX() &&
-			g_pDirectDraw->supportsRop(lRasterOp, m_bInRam, bInRam)
+			usingDX() //&&
+			//g_pDirectDraw->supportsRop(lRasterOp, m_bInRam, bInRam)
 		)
 	{
 
+		SetSrcColorKey(TRANSP_COLOR);
 		// Setup the rects
 		RECT destRect = {x, y, x + newWidth, y + newHeight};
 		RECT rect = {xSrc, ySrc, xSrc + width, ySrc + height};
@@ -946,7 +963,7 @@ INT FAST_CALL CCanvas::BltStretch(
 		DDBLTFX bltFx;
 		DD_INIT_STRUCT(bltFx);
 		bltFx.dwROP = lRasterOp;
-		CONST HRESULT hr = lpddsSurface->Blt(&destRect, GetDXSurface(), &rect, DDBLT_WAIT | DDBLT_ROP, &bltFx);
+		CONST HRESULT hr = lpddsSurface->Blt(&destRect, GetDXSurface(), &rect, DDBLT_WAIT | DDBLT_ROP | DDBLT_KEYSRCOVERRIDE, &bltFx);
 
 		// If there was an error
 		if (FAILED(hr))
@@ -965,7 +982,7 @@ INT FAST_CALL CCanvas::BltStretch(
 		return TRUE;
 
 	}
-	else if (lpddsSurface)**/
+	else if (lpddsSurface)
 	{
 		// Use GDI
 		HDC hdc = NULL;

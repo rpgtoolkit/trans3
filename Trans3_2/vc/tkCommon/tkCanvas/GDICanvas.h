@@ -170,6 +170,10 @@ public:
 		CONST INT height
 	);
 
+	VOID SetSrcColorKey(
+		CONST LONG crTransparentColor
+	)CONST;
+
 	BOOL usingDX(
 		VOID
 	) CONST { return m_bUseDX; }
