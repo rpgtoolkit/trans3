@@ -932,6 +932,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\resources\splash.bmp"
+					>
+				</File>
+				<File
 					RelativePath="trans3.rgs"
 					>
 				</File>

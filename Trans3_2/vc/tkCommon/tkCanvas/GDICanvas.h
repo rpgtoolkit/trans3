@@ -110,6 +110,10 @@ public:
 		CONST CCanvas &rhs
 	);
 
+	HBITMAP GetHBitmap(
+		VOID
+	) CONST { return m_hBitmap; }
+
 	VOID FAST_CALL CreateBlank(
 		CONST HDC hdcCompatible,
 		CONST INT width,

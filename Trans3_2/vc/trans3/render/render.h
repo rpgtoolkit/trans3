@@ -158,4 +158,8 @@ void setAmbientLevel(void);
  */
 void changeCursor(const STRING strCursor);
 
+/*
+ * Fade in splash screen and out
+ */
+void splashScreen();
 #endif

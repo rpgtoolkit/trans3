@@ -50,6 +50,7 @@
 #include "../common/board.h"
 #include "../input/input.h"
 #include "../resource.h"
+#include "../../tkCommon/images/FreeImage.h"
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <vector>
@@ -179,6 +180,54 @@ void destroyCanvases()
 		delete *i;
 	}
 }
+
+/*
+ * Fade in splash screen and out
+ */
+void splashScreen()
+{
+	const HDC hHostDc = GetDC(g_hHostWnd);
+	HBITMAP hbmp = NULL;
+
+	extern HINSTANCE g_hInstance;
+	hbmp = LoadBitmap(g_hInstance, MAKEINTRESOURCE(IDB_BITMAP3));
+	//SelectObject(hColorDc, hbmp);
+	FIBITMAP *dib = NULL;
+	if(hbmp) {
+
+		BITMAP bm;
+		GetObject(hbmp, sizeof(BITMAP), (LPSTR) &bm);
+		dib = FreeImage_Allocate(bm.bmWidth, bm.bmHeight, bm.bmBitsPixel);
+		// The GetDIBits function clears the biClrUsed and biClrImportant BITMAPINFO members (dont't know why)
+		// So we save these infos below. This is needed for palettized images only.
+		int nColors = FreeImage_GetColorsUsed(dib);
+		HDC dc = GetDC(NULL);
+		int Success = GetDIBits(dc, hbmp, 0, FreeImage_GetHeight(dib),
+		FreeImage_GetBits(dib), FreeImage_GetInfo(dib), DIB_RGB_COLORS);
+		ReleaseDC(NULL, dc);
+		// restore BITMAPINFO members
+		FreeImage_GetInfoHeader(dib)->biClrUsed = nColors;
+		FreeImage_GetInfoHeader(dib)->biClrImportant = nColors;
+
+	}	
+	SetStretchBltMode(hHostDc, COLORONCOLOR);
+	int brightness;
+	for (brightness = 0; brightness > -99; --brightness)
+	{
+		FreeImage_AdjustBrightness(dib, brightness);
+		StretchDIBits(hHostDc, 0, 0,
+			g_resX, g_resY,
+			0, 0, FreeImage_GetWidth(dib), FreeImage_GetHeight(dib),
+			FreeImage_GetBits(dib), FreeImage_GetInfo(dib), DIB_RGB_COLORS, SRCCOPY);
+		if (brightness == 0)Sleep(4000);
+		else Sleep(20);
+	}
+	// don't forget to call FreeImage_Unload when you no longer need the dib
+	FreeImage_Unload(dib);
+	DeleteObject(hbmp);
+	DeleteObject(hHostDc);	
+}
+
 
 /*
  * Load a cursor from a file.
@@ -320,6 +369,8 @@ void showScreen(const int width, const int height)
 
 	createCanvases();
 
+	// TBD: Implement smarter conditions when to show splash screen
+	//splashScreen();
 }
 
 /*

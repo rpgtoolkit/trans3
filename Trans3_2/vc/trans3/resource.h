@@ -7,6 +7,7 @@
 #define IDR_CALLBACKS                   101
 #define IDB_BITMAP1                     203
 #define IDB_BITMAP2                     205
+#define IDB_BITMAP3                     207
 #define IDI_ICON1                       206
 
 // Next default values for new objects
