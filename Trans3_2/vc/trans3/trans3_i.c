@@ -6,7 +6,7 @@
 
 
  /* File created by MIDL compiler version 7.00.0500 */
-/* at Sat Mar 02 16:19:10 2013
+/* at Mon Mar 04 12:34:32 2013
  */
 /* Compiler settings for .\trans3.idl:
     Oicf, W1, Zp8, env=Win32 (32b run)

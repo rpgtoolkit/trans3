@@ -506,6 +506,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="copy .\Debug\trans3.exe ..\..\test"
 			/>
 		</Configuration>
 		<Configuration

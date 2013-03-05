@@ -596,7 +596,8 @@ void CProgram::methodCall(CALL_DATA &call)
 		// Find the parameter containing the object.
 		LPSTACK_FRAME objp = &call[0];
 
-		if (~objp->getType() & UDT_OBJ)
+		//if (~objp->getType() & UDT_OBJ)
+		if (objp->getType() & UDT_LIT || objp->getType() & UDT_NUM)
 		{
 			if (~(objp += call.params - 2)->getType() & UDT_OBJ)
 			{

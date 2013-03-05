@@ -443,6 +443,8 @@ line_terminator:
 			{
 				std::map<STD_NATURAL_STRING, int> *params = &g_methods.back();
 				std::map<STD_NATURAL_STRING, int>::iterator i = params->begin();
+				//std::map<STD_NATURAL_STRING, int> *i = params;//->begin();
+				STD_NATURAL_STRING key = "";
 				int count = 0;
 				for (; i != params->end(); ++i)
 				//for (count = 0; count < params.size(); ++count, ++i)
@@ -453,9 +455,12 @@ line_terminator:
 					{
 						const STD_NATURAL_STRING type = strParam.substr(0, space);
 						const STD_NATURAL_STRING name = strParam.substr(space + 1);
+						key = i->first;
 						params->insert(std::pair<STD_NATURAL_STRING, int>(name, i->second));
-						params = &g_methods.back();
-						i = params->find(name);
+						//i = params->begin() + count;
+						//params = &g_methods.back();
+						i = params->find(key);
+						//CProgram::debugger(_T("map iterator i=\"") + i->first + _T("\" name was") + name + _T("param:") + TCHAR(i->second + 1));
 
 
 						// Verify that the parameter is the requested type.
