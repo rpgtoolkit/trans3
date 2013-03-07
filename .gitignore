@@ -38,16 +38,6 @@ ehthumbs.db
 Thumbs.db
 *~
 
-# NetBeans Specific #
-#####################
-
-build.xml
-manifest.mf
-/Editor/nbproject/
-/Editor/nbproject/private/
-/Editor/build/
-/Editor/dist/
-
 # Visual Studio Specific #
 ##########################
 *.obj
