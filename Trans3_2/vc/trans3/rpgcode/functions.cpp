@@ -81,9 +81,11 @@ extern CCanvas *g_cnvRpgCode;
 STRING g_fontFace = _T("Arial");			// Font face.
 int g_fontSize = 20;						// Font size.
 COLORREF g_color = RGB(255, 255, 255);		// Current colour.
+COLORREF g_outlineColor = RGB(0, 0, 0);		// Current outline color (if g_outline == TRUE)
 BOOL g_bold = FALSE;						// Bold enabled?
 BOOL g_italic = FALSE;						// Italics enabled?
 BOOL g_underline = FALSE;					// Underline enabled?
+BOOL g_outline = FALSE;						// Outline enabled?
 CAllocationHeap<CCanvas> g_canvases;		// Allocated canvases.
 CAllocationHeap<CCursorMap> g_cursorMaps;	// Cursor maps.
 ENTITY g_target, g_source;					// Target and source.

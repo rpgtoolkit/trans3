@@ -200,11 +200,44 @@ BOOL FAST_CALL CCanvas::DrawText(
 	CONST BOOL bold,
 	CONST BOOL italics,
 	CONST BOOL underline,
-	CONST BOOL centred,
+	CONST BOOL centered,
 	CONST BOOL outlined
 		)
 {
+		using namespace Gdiplus;		
 
+		// Open the DC
+		CONST HDC hdc = OpenDC();
+		{
+		std::wstring buf; // GDI+ mainly uses WCHAR
+		Graphics g(hdc);
+		g.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
+		g.SetInterpolationMode(Gdiplus::InterpolationModeHighQualityBicubic);		
+		FontFamily font(getUnicodeString(strTypeFace).c_str());
+		StringFormat strFormat;
+		GraphicsPath path;
+		int fs = Gdiplus::FontStyleRegular;
+		
+		if (bold)fs |= Gdiplus::FontStyleBold;
+		if (underline)fs |= Gdiplus::FontStyleUnderline;
+		if (italics)fs |= Gdiplus::FontStyleItalic;
+
+		if (centered)strFormat.SetAlignment(Gdiplus::StringAlignmentCenter);
+		
+		buf = getUnicodeString(strText);
+
+		path.AddString(buf.c_str(), buf.length(), &font, fs, size, Gdiplus::Point(x, y), &strFormat);
+		if (outlined)
+		{
+			Pen p(Color(120, 120, 120), 2);
+			g.DrawPath(&p, &path);
+		}
+		SolidBrush brush(Color(GetRValue(clr), GetGValue(clr), GetBValue(clr)));
+		g.FillPath(&brush, &path);
+		}
+		CloseDC(hdc);
+		return TRUE;
+#if 0
 	// Create a font
 	CONST HFONT hFont = CreateFont(
 		size,
@@ -226,7 +259,6 @@ BOOL FAST_CALL CCanvas::DrawText(
 	// If the font was valid
 	if (hFont)
 	{
-
 		// Open the DC
 		CONST HDC hdc = OpenDC();
 
@@ -240,7 +272,7 @@ BOOL FAST_CALL CCanvas::DrawText(
 		SetTextColor(hdc, clr);
 
 		// Set allignment
-		SetTextAlign(hdc, centred ? TA_CENTER : TA_LEFT);
+		SetTextAlign(hdc, centered ? TA_CENTER : TA_LEFT);
 
 		// Create a new brush
 		CONST HGDIOBJ hNewBrush = CreateSolidBrush(clr);
@@ -258,9 +290,13 @@ BOOL FAST_CALL CCanvas::DrawText(
 			EndPath(hdc);
 
 			// Outline the text
-			SetBkColor(hdc, clr);
+			HPEN hpen = CreatePen(PS_SOLID, 1, RGB(100, 100, 100));
+			SelectObject(hdc, hpen);
+			SetBkColor(hdc, RGB(255, 0, 0));
 			SetBkMode(hdc, OPAQUE);
 			StrokeAndFillPath(hdc);
+			
+			DeleteObject(hpen);
 
 		} 
 		else
@@ -288,7 +324,7 @@ BOOL FAST_CALL CCanvas::DrawText(
 
 	// All's good
 	return TRUE;
-
+#endif
 }
 
 //------------------------------------------------------------------------

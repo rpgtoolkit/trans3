@@ -57,13 +57,14 @@
 #include "../../tkCommon/images/FreeImage.h"
 #include "../resource.h"
 #include "winmain.h"
-#define WIN32_LEAN_AND_MEAN
+//#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <commdlg.h>
 #include <vector>
 #include <sstream>
 #include <iostream>
 #include "Shlwapi.h"
+#include "../tkCommon/tkDirectX/platform.h"
 
 #define FPS_CAP 120.0					// Maximum number of fps to render.
 #define HALF_FPS_CAP 60.0				// Half said value.
@@ -735,7 +736,9 @@ int mainEntry(const HINSTANCE hInstance, const HINSTANCE /*hPrevInstance*/, cons
 //	TCHAR dev[] = _T("C:\\CVS\\Tk3 Dev\\");
 //	TCHAR dev[] = _T("C:\\Program Files\\Toolkit3\\");
 //	path = dev;
-
+   GdiplusStartupInput gdiplusStartupInput;
+   ULONG_PTR           gdiplusToken;
+   
 	set_terminate(termFunc);
 
 	g_hInstance = hInstance;
@@ -765,6 +768,9 @@ int mainEntry(const HINSTANCE hInstance, const HINSTANCE /*hPrevInstance*/, cons
 
 	if (!g_mainFile.open(fileName)) return EXIT_SUCCESS;
 
+    // Initialize GDI+.
+    GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
+
 //	MessageBox(NULL, _T("We made it through"),_T("Just Checking"),0);
 	try
 	{
@@ -782,6 +788,7 @@ int mainEntry(const HINSTANCE hInstance, const HINSTANCE /*hPrevInstance*/, cons
 		terminate();
 	}
 
+	GdiplusShutdown(gdiplusToken);
 	return EXIT_SUCCESS;
 }
 
