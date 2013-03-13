@@ -1,7 +1,7 @@
 class oneClass
 {
 public:
-	function oneClass(val)
+	function oneClass(val, val2)
 	{
 		mVal = val;
 	}
@@ -19,7 +19,7 @@ private:
 class otherClass
 {
 public:
-	function otherClass(obj)
+	function otherClass(obj, val)
 	{
 		mVal = obj->value();
 	}
@@ -34,10 +34,11 @@ private:
 };
 d = "My goodness";
 debugger("LINE 1");
-a = oneClass(d);
+a = oneClass(d, 99);
 debugger("LINE 2");
-b = otherClass(a);
+b = otherClass(a, 108);
 c = b->value();
 mwin("b value is <c>");
 wait();
+
 
