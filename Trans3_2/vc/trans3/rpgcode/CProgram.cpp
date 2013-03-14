@@ -1316,7 +1316,12 @@ void CProgram::parseFile(FILE *pFile)
 		updateLocations(m_units.begin());
 	}
 
-	updateInheritedMethodCalls();
+	// We're going to need at least 2
+	// classes for inheritance.
+	if (m_methods.size() > 1)
+	{
+		updateInheritedMethodCalls(); 
+	}
 
 	// Resolve function calls.
 	resolveFunctions();
@@ -1374,7 +1379,23 @@ unsigned int CProgram::updateLocations(POS i)
 	return depth;
 }
 
+// Updates the location of any inherited methods in a sub class. This method is needed
+// because updateLocations() doesn't deal with any of the sub class's inherited methods
+// only the methods that specifically belong to it.
 //
+// It checks first to see if the class actually inherits from anything, if this is true
+// it then cycles through all of the classes methods, inside of that loop it cycles through
+// all the programs methods declared in m_methods(). It is assumed that m_methods contains
+// valid method locations, which it should.
+//
+// During every cycle it will check to see if the sub class inheirts from the class that
+// the method in m_methods() belongs to. If it inherits from this class it then compares
+// the class's method with the method in m_method(). If these methods are identical and the 
+// machine unit locations DON'T match they are updated.
+//
+// The same thing could possibly be achieved using each classes "locate" method, but then
+// it would have to work backwards to determine which method belongs to which inherited class,
+// doing this both for Public and Private scopes. This approach will do for now.
 void CProgram::updateInheritedMethodCalls()
 {
 	std::map<STRING, tagClass>::iterator classIterator = m_classes.begin();
@@ -1404,7 +1425,8 @@ void CProgram::updateInheritedMethodCalls()
 					{
 						continue; // It doesn't inherit from this class.
 					}
-
+					
+					// We inherit from this class so get the name of the method.
 					STRING name = method.name.substr(position);	
 
 					if (name == classMethod.name)
@@ -1422,7 +1444,9 @@ void CProgram::updateInheritedMethodCalls()
 	}
 }
 
-//
+// Checks to see if a sub class inherits from another possible super class by looping through
+// all of the sub class's "inherits" and comparing it with the possible super class.
+// If the sub class inherits from the super class it returns a true value.
 bool CProgram::checkForInheritance(std::deque<STRING> inheritsFrom, const STRING compareClass)
 {
 	for (int i = 0; i < inheritsFrom.size(); i++)
@@ -1436,13 +1460,17 @@ bool CProgram::checkForInheritance(std::deque<STRING> inheritsFrom, const STRING
 	return false;
 }
 
-//
+// Compares two methods to see if they are an exact match of each other. It is used to 
+// determine if the inherited method is the same as a method in the m_methods() member
+// in the CProgram object.
 bool CProgram::compareInheritedMethod(NAMED_METHOD inheritedMethod, NAMED_METHOD compareMethod)
 {
 	if (inheritedMethod.bInline == compareMethod.bInline)
 	{
 		if (inheritedMethod.byref == compareMethod.byref)
 		{
+			// Check the number of parameters because RPGCode
+			// supports method overloading.
 			if (inheritedMethod.params == compareMethod.params)
 			{
 				if(inheritedMethod.i != compareMethod.i)
