@@ -435,6 +435,9 @@ private:
 	friend CGarbageCollector;
 
 	void parseFile(FILE *pFile);
+	void updateInheritedMethodCalls();
+	bool checkForInheritance(std::deque<STRING> inheritsFrom, const STRING compareClass);
+	bool compareInheritedMethod(NAMED_METHOD inheritedMethod, NAMED_METHOD compareMethod);
 	unsigned int matchBrace(POS i);
 	void include(const CProgram prg);
 	void prime();

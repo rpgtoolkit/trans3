@@ -47,6 +47,7 @@
 #include "../../tkCommon/strings.h"
 #include <malloc.h>
 #include <math.h>
+#include <algorithm> 
 
 // Static member initialization.
 std::vector<tagNamedMethod> tagNamedMethod::m_methods;
@@ -1293,11 +1294,16 @@ void CProgram::parseFile(FILE *pFile)
 		updateLocations(m_units.begin());
 	}
 
+	updateInheritedMethodCalls();
+
 	// Resolve function calls.
 	resolveFunctions();
 }
 
 // Match all curly braces and update method locations.
+// This method will only update a classes own methods
+// it will not update the location of any of its
+// inherited methods.
 unsigned int CProgram::updateLocations(POS i)
 {
 	unsigned int depth = 0;
@@ -1344,6 +1350,88 @@ unsigned int CProgram::updateLocations(POS i)
 		}
 	}
 	return depth;
+}
+
+//
+void CProgram::updateInheritedMethodCalls()
+{
+	std::map<STRING, tagClass>::iterator classIterator = m_classes.begin();
+
+	for (; classIterator != m_classes.end(); ++classIterator)
+	{
+		// Check to see if this class inherits from another super class.
+		if (!classIterator->second.inherits.empty())
+		{			
+			// Loop through all of this classes methods.
+			for (int i = 0; i < classIterator->second.methods.size(); i++)
+			{	
+				NAMED_METHOD classMethod = classIterator->second.methods[i].first;
+
+				// Loop through all the methods declared in this RPGCode program and do some comparing.
+				for(int j = 0; j < m_methods.size(); j++) 
+				{
+					NAMED_METHOD method = m_methods[j];
+
+					// Find the starting position of the actual method name.
+					unsigned position = method.name.find("::") + 2;
+
+					// Lets get the name of the class that this method belongs to.
+					STRING className = method.name.substr(0, position - 2);
+
+					if (!checkForInheritance(classIterator->second.inherits, className))
+					{
+						continue; // It doesn't inherit from this class.
+					}
+
+					STRING name = method.name.substr(position);	
+
+					if (name == classMethod.name)
+					{
+						if (compareInheritedMethod(classMethod, method))
+						{
+							// Methods match but the locations don't, update it.
+							classIterator->second.methods[i].first.i = method.i;
+							break;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+//
+bool CProgram::checkForInheritance(std::deque<STRING> inheritsFrom, const STRING compareClass)
+{
+	for (int i = 0; i < inheritsFrom.size(); i++)
+	{
+		if (inheritsFrom[i] == compareClass)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+//
+bool CProgram::compareInheritedMethod(NAMED_METHOD inheritedMethod, NAMED_METHOD compareMethod)
+{
+	if (inheritedMethod.bInline == compareMethod.bInline)
+	{
+		if (inheritedMethod.byref == compareMethod.byref)
+		{
+			if (inheritedMethod.params == compareMethod.params)
+			{
+				if(inheritedMethod.i != compareMethod.i)
+				{
+					return true;
+				}
+			}
+		}
+	}
+
+	return false;
 }
 
 // Resolve all currently unresolved functions.
