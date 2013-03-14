@@ -23,11 +23,16 @@ public:
 private:
 	var mVal;
 };
-
-c = thirdclass();
-d = thirdclass(c);
+debugger("0");
+c = thirdclass(); // c::mVal = 2
+debugger("1");
+d = thirdclass(c); // d::mVal = 4
 a = c->value();
-d->takevalue(c);
+d->takevalue(c); // d::mVal = 2
 b = d->value();
+//e = 5;
+debugger("line");
+//e->takevalue(d);
 mwin("c=<a>, d=<b>");
 wait();
+

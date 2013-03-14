@@ -436,10 +436,10 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".\;&quot;$(DXSDK_DIR)Include&quot;;&quot;$(WINDDK_DIR)inc\atl71&quot;;&quot;$(WINDDK_DIR)inc\mfc42&quot;"
+				AdditionalIncludeDirectories=".\;&quot;$(DXSDK_DIR)Include&quot;"
 				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;FREEIMAGE_LIB"
 				MinimalRebuild="true"
-				BasicRuntimeChecks="3"
+				BasicRuntimeChecks="0"
 				RuntimeLibrary="1"
 				BufferSecurityCheck="false"
 				RuntimeTypeInfo="true"
@@ -470,11 +470,11 @@
 				RegisterOutput="false"
 				IgnoreImportLibrary="false"
 				LinkLibraryDependencies="true"
-				AdditionalDependencies="ddraw.lib dxguid.lib msimg32.lib odbc32.lib odbccp32.lib dinput8.lib winmm.lib strmiids.lib FreeImaged.lib dsound.lib"
+				AdditionalDependencies="ddraw.lib dxguid.lib msimg32.lib odbc32.lib odbccp32.lib dinput8.lib winmm.lib strmiids.lib FreeImaged.lib dsound.lib gdiplus.lib"
 				OutputFile=".\Debug/trans3.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="..\tkCommon\images\;.\audio\;&quot;$(DXSDK_DIR)Lib\x86&quot;;&quot;$(WINDDK_DIR)lib\ATL\i386&quot;;&quot;$(WINDDK_DIR)inc\win7\i386&quot;;&quot;$(WINDDK_DIR)lib\Mfc\i386&quot;"
+				AdditionalLibraryDirectories="..\tkCommon\images\;.\audio\;&quot;$(DXSDK_DIR)Lib\x86&quot;"
 				IgnoreDefaultLibraryNames="LIBC"
 				GenerateDebugInformation="true"
 				AssemblyDebug="1"
@@ -839,7 +839,7 @@
 						<Tool
 							Name="VCResourceCompilerTool"
 							PreprocessorDefinitions=""
-							AdditionalIncludeDirectories="&quot;$(OUTDIR)&quot;;&quot;$(WINDDK_DIR)inc\atl71&quot;;&quot;$(WINDDK_DIR)inc\mfc42&quot;"
+							AdditionalIncludeDirectories="&quot;$(OUTDIR)&quot;"
 						/>
 					</FileConfiguration>
 					<FileConfiguration

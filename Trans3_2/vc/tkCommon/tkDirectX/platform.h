@@ -54,6 +54,9 @@
 #include <ddraw.h>
 #include "../strings.h"
 #include "../tkCanvas/GDICanvas.h"
+#include <Gdiplus.h>
+using namespace Gdiplus;
+//#pragma comment(lib, "gdiplus.lib")
 
 //------------------------------------------------------------------------
 // Definitions
@@ -316,7 +319,6 @@ private:
 	BOOL (FAST_CALL CDirectDraw::*m_pRefresh) (VOID);
 	LPDIRECTDRAWGAMMACONTROL m_lpddGammaControl;		// Gamma control.
 	BOOL m_bGammaEnabled;				// Gamma enabled?
-
 };
 
 //------------------------------------------------------------------------

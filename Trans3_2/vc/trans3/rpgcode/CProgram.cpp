@@ -578,6 +578,8 @@ void CProgram::methodCall(CALL_DATA &call)
 	// Will be > 0 because the first line is at least a skipMethod.
 	fr.errorReturn = 0;
 
+	// Last parameter is the UDT_UNSET (terminator)
+	// Second to the last is the method/function call (type UDT_ID and UDT_OBJ)
 	STACK_FRAME &fra = call[call.params - 1];
 
 	bool bNoRet = false;
@@ -597,15 +599,35 @@ void CProgram::methodCall(CALL_DATA &call)
 		// Find the parameter containing the object.
 		LPSTACK_FRAME objp = &call[0];
 
-		//if (~objp->getType() & UDT_OBJ)
-		if (objp->getType() & UDT_LIT || objp->getType() & UDT_NUM)
+		// EXPECTATIONS:
+		// call[0] can either be an object calling a member function or a class method parameter
+		// which may or may not be an object itself
+		// objp->func(call[1], ...);
+		// class::func(objp, ...);
+
+		if (~objp->getType() & UDT_OBJ)
 		{
-			if (~(objp += call.params - 2)->getType() & UDT_OBJ)
+			// It's either not a valid object or not a caller
+			// Maybe it's a function parameter?
+			// 3rd parameter from the last should contain the pointer to caller's class. It should be of type UDT_NUM and UDT_OBJ
+			objp += call.params - 2;
+			if ((~objp->getType() & UDT_OBJ) || (~objp->getType() & UDT_NUM))
 			{
-				// The object was not the first parameter (typical call) or
-				// the last parameter (constructor call), so it's an invalid
-				// object.
-				throw CError(_T("Invalid object."));
+				// It failed. Parameter is neither of the two, and is unacceptable.
+				throw CError(objp->lit + _T(" is an invalid object."));
+			}
+		}
+		else
+		{
+			// Parameter is an object, but is it a caller or an object function parameter?
+			// See if the caller's class is present
+			// 3rd parameter from the last should contain the pointer to caller's class. It should be of type UDT_NUM and UDT_OBJ
+			objp += call.params - 2;
+			if ((~objp->udt & UDT_OBJ) || (~objp->udt & UDT_NUM))
+			{
+				// Parameter on such position isn't a class pointer
+				// This is conclusively an object calling a member method. Return it back to normal
+				objp = &call[0];
 			}
 		}
 
@@ -651,7 +673,7 @@ void CProgram::methodCall(CALL_DATA &call)
 				// The call is of the form p->func(, ...q) where p is not
 				// a valid object but q is so it passed the test above.
 				// However, it does not pass this test.
-				throw CError("Invalid object.");
+				//throw CError("Invalid object.");
 			}
 			call.prg->m_pStack->back() = objp->getValue();
 			bNoRet = true;

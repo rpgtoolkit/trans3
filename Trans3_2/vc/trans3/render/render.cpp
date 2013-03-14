@@ -662,7 +662,8 @@ void renderNow(CCanvas *cnv, const bool bForce)
 	}
 
 	// Render the cursor
-
+	// Render overlay text for BETA
+	g_pDirectDraw->DrawTextA(5, g_resY - 30, "Trans3 3.x Bug Fix", "Arial", 16, RGB(250, 250, 250), 0, 0, 0, 0, 1);
 	if (bScreen) g_pDirectDraw->Refresh();
 }
 

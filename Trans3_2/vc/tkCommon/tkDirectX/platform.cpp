@@ -87,7 +87,6 @@ BOOL FAST_CALL CDirectDraw::InitGraphicsMode(
 	CONST BOOL bFullScreen
 		)
 {
-
 	// Store the main window's handle
 	m_hWndMain = handle;
 
@@ -258,7 +257,7 @@ BOOL FAST_CALL CDirectDraw::KillGraphicsMode(VOID)
 	SAFE_RELEASE(m_lpddsPrime);
 	SAFE_RELEASE(m_lpddGammaControl);
 	SAFE_RELEASE(m_lpdd);
-
+	
 	return TRUE;
 }
 
