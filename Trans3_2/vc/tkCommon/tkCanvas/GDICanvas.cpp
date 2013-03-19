@@ -212,9 +212,10 @@ BOOL FAST_CALL CCanvas::DrawText(
 		std::wstring buf; // GDI+ mainly uses WCHAR
 		Graphics g(hdc);
 		g.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
+		g.SetTextRenderingHint(Gdiplus::TextRenderingHint::TextRenderingHintAntiAlias);
 		g.SetInterpolationMode(Gdiplus::InterpolationModeHighQualityBicubic);		
 		FontFamily font(getUnicodeString(strTypeFace).c_str());
-		StringFormat strFormat;
+		StringFormat strFormat(Gdiplus::StringFormat::GenericTypographic());
 		GraphicsPath path;
 		int fs = Gdiplus::FontStyleRegular;
 		
@@ -338,47 +339,58 @@ SIZE FAST_CALL CCanvas::GetTextSize(
 	CONST BOOL italics
 		)
 {
+	using namespace Gdiplus;
+
+	std::wstring wtypeFace = getUnicodeString(strTypeFace);
+	std::wstring wtext = getUnicodeString(strText);
+	const wchar_t *typeFace = wtypeFace.c_str();
+	const wchar_t *text = wtext.c_str();
+
+	int fontStyle = Gdiplus::FontStyleRegular;
+		
+	if (bold)fontStyle |= Gdiplus::FontStyleBold;
+	if (italics)fontStyle |= Gdiplus::FontStyleItalic;
+
+	// Font's constructor requires a none constant value,
+	// so we have to cast it here.
+	Font font(const_cast<wchar_t*>(typeFace), size);
+
 	SIZE sz = {0, 0};
 	UINT len = 0;
 
-	// Create a font
-	CONST HFONT hFont = CreateFont(
-		size,
-		0,
-		0,
-		0,
-		bold ? FW_BOLD : FW_NORMAL,
-		italics,
-		0,
-		0,
-		DEFAULT_CHARSET,
-		OUT_DEFAULT_PRECIS,
-		CLIP_DEFAULT_PRECIS,
-		DEFAULT_QUALITY,
-		DEFAULT_PITCH,
-		strTypeFace.c_str()
-	);
-
-	if (hFont)
+	CONST HDC hdc = OpenDC();
 	{
-		CONST HDC hdc = OpenDC();
 		SetBkMode(hdc, TRANSPARENT);
+		
+		Graphics g(hdc);
+		g.SetTextRenderingHint(Gdiplus::TextRenderingHint::TextRenderingHintAntiAlias);
 
-		// Select out old font.
-		CONST HGDIOBJ hOld = SelectObject(hdc, hFont);
+		StringFormat format(Gdiplus::StringFormat::GenericTypographic());
 
-		len = strlen(strText.c_str());
-		if (len)
-		{
-			GetTextExtentPoint32(hdc, strText.c_str(), len, &sz);
-		}
+		len = wcslen(text);
 
-		// Clean up.
-		SelectObject(hdc, hOld);
-		DeleteObject(hFont);
-		CloseDC(hdc);
+		// TBD: This should be set to the hdc size.
+		const RectF layoutRect(0, 0, 1000, 1000);
+		RectF boundRect(0, 0, 0, 0); // The rectangle that we will get the text's pixel dimensions from.
+		const CharacterRange ranges(0, strText.length());
+		Region *regions = new Region[1];
+
+		format.SetMeasurableCharacterRanges(1, &ranges);
+
+		// The values being calculated here are to large.
+		g.MeasureCharacterRanges(const_cast<WCHAR*>(text), len, &font, layoutRect, &format, 1, regions);
+
+		regions[0].GetBounds(&boundRect, &g);
+
+		SizeF sizeF;
+		boundRect.GetSize(&sizeF);
+		sz.cx = boundRect.Width;
+		sz.cy = sizeF.Height;
 	}
 
+	// Clean up.
+	CloseDC(hdc);
+	
 	return sz;
 }
 
