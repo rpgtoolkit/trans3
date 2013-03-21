@@ -340,7 +340,7 @@ SIZE FAST_CALL CCanvas::GetTextSize(
 {
 	SIZE sz = {0, 0};
 	UINT len = 0;
-
+#if 0
 	// Create a font
 	CONST HFONT hFont = CreateFont(
 		size,
@@ -378,7 +378,32 @@ SIZE FAST_CALL CCanvas::GetTextSize(
 		DeleteObject(hFont);
 		CloseDC(hdc);
 	}
+#endif
+	// Open the DC
+	CONST HDC hdc = OpenDC();
+	{
+		std::wstring buf; // GDI+ mainly uses WCHAR
+		Graphics g(hdc);
+		g.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
+		g.SetInterpolationMode(Gdiplus::InterpolationModeHighQualityBicubic);		
+		FontFamily font(getUnicodeString(strTypeFace).c_str());
+		StringFormat strFormat;
+		GraphicsPath path;
+		int fs = Gdiplus::FontStyleRegular;
+		
+		if (bold)fs |= Gdiplus::FontStyleBold;
+		if (italics)fs |= Gdiplus::FontStyleItalic;
 
+		buf = getUnicodeString(strText);
+
+		path.AddString(buf.c_str(), buf.length(), &font, fs, size, Gdiplus::Point(0, 0), &strFormat);
+
+		Rect bounds;
+		path.GetBounds(&bounds);
+		sz.cx = bounds.Width;
+		sz.cy = bounds.Height;
+	}
+	CloseDC(hdc);
 	return sz;
 }
 

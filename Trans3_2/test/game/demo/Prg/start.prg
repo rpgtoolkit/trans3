@@ -87,7 +87,10 @@ method drawTitle()
 {
 	// Clear any previous images and set up a title screen.
 	clear();
-	text(3, 3, "Test Game");
+//	text(3, 3, "Test Game");
+	pixeltext(100, 100, "Heraldry: ");
+	xx = getTextWidth("Heraldry: ");
+	pixelText(100 + xx, 100, "Journey to the Crescent Moon");
 	// bitmap("title.gif");
 }
 
@@ -105,6 +108,7 @@ method intro()
 	giveitem("poison.itm");
 	giveitem("sword.itm");
 }
+
 
 
 
