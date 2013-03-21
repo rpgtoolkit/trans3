@@ -54,7 +54,8 @@
 #include <windows.h>				// The Windows API
 #include <ddraw.h>					// For DirectDraw
 #include "../strings.h"
-
+#include <Gdiplus.h>
+using namespace Gdiplus;
 //--------------------------------------------------------------------------
 // Definitions
 //--------------------------------------------------------------------------
@@ -581,7 +582,6 @@ private:
 	HBITMAP m_hBitmap;						// Bitmap for GDI canvases
 	HBITMAP m_hOldBitmap;					// Old bitmap for GDI canvases
 	BOOL m_bInRam;							// In RAM?
-
 };
 
 //--------------------------------------------------------------------------

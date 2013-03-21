@@ -87,7 +87,11 @@ method drawTitle()
 {
 	// Clear any previous images and set up a title screen.
 	clear();
-	text(3, 3, "Test Game");
+//	text(3, 3, "Test Game");
+	pixeltext(100, 100, "Heraldry: ");
+	xx = getTextWidth("Heraldry: ");
+	yy = getTextHeight("Heraldry: ");
+	pixelText(100 + xx, 100 + yy, "Journey to the Crescent Moon");
 	// bitmap("title.gif");
 }
 
@@ -103,8 +107,10 @@ method intro()
 	mwincls();
 //      id = thread("test_thread_mwin.prg", true);
 	giveitem("poison.itm");
+	mp3pause("item.wav");
 	giveitem("sword.itm");
 }
+
 
 
 

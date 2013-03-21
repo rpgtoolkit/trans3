@@ -1042,6 +1042,8 @@ CPfVector CPfVector::sweep(const DB_POINT &origin, const DB_POINT &target)
 	// Determine the extreme points by extrapolating in the target
 	// to the y-intercept (or x if vertical).
 	DB_ITR max, min;
+	max = m_p.end();
+	min = m_p.end();
 	if (d.x)
 	{
 		const double m = d.y / d.x;
@@ -1049,8 +1051,8 @@ CPfVector CPfVector::sweep(const DB_POINT &origin, const DB_POINT &target)
 		for (DB_ITR i = m_p.begin(); i != m_p.end(); ++i)
 		{
 			const double c = i->y - m * i->x;
-			if (!&*min || c < dmin) { dmin = c; min = i; }
-			if (!&*max || c > dmax) { dmax = c; max = i; }
+			if (min == m_p.end() || c < dmin) { dmin = c; min = i; }
+			if (max == m_p.end() || c > dmax) { dmax = c; max = i; }
 		}
 	}
 	else
@@ -1058,8 +1060,8 @@ CPfVector CPfVector::sweep(const DB_POINT &origin, const DB_POINT &target)
 		// Take any x-value.
 		for (DB_ITR i = m_p.begin(); i != m_p.end(); ++i)
 		{
-			if (!&*min || i->x < min->x) min = i;
-			if (!&*max || i->x > max->x) max = i;
+			if (min == m_p.end() || i->x < min->x) min = i;
+			if (max == m_p.end() || i->x > max->x) max = i;
 		}
 	}
 
