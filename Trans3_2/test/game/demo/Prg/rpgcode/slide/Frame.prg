@@ -85,7 +85,6 @@ public:
         
     }
     
-    
     method close()
     {
         
@@ -93,15 +92,15 @@ public:
     
 private:
     
-    //private memebers
+    // private memebers
     var title
     var frame
     var titlebar
     var location[]
     var contentPane
     
-    //methods
-    method draw()
+    // methods
+    method paint()
     {
         local(titlebarCanvas) = this->drawTitlebar()
 
@@ -119,7 +118,7 @@ private:
     
     method drawFrame()
     {
-           
+            
     }
     
     method drawTitlebar()
