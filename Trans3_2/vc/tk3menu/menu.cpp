@@ -52,7 +52,7 @@ void vDrawButton(CNVID cnvButton)
 	if(g_menuButtonGraphic == "")
 	{
 		// Fill rect instead
-		CBCanvasFill(cnvButton, CBGetGeneralNum(GEN_TRANSPARENTCOLOR, 0, 0));		
+		CBCanvasFill(cnvButton, 0);		
 	}
 	else
 	{

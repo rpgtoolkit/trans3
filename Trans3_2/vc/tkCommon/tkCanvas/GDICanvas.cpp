@@ -216,6 +216,7 @@ BOOL FAST_CALL CCanvas::DrawText(
 		FontFamily font(getUnicodeString(strTypeFace).c_str());
 		StringFormat strFormat;
 		GraphicsPath path;
+		strFormat.GenericTypographic();
 		int fs = Gdiplus::FontStyleRegular;
 		
 		if (bold)fs |= Gdiplus::FontStyleBold;
@@ -226,7 +227,18 @@ BOOL FAST_CALL CCanvas::DrawText(
 		
 		buf = getUnicodeString(strText);
 
-		path.AddString(buf.c_str(), buf.length(), &font, fs, size, Gdiplus::Point(x, y), &strFormat);
+		// Because Addstring requires world units...
+		float emsize = size * font.GetCellAscent(fs) / font.GetEmHeight(fs);
+
+		// Because Addstring is influenced by a Font's built-in spacing...
+		int lineSpacing = font.GetLineSpacing(fs);
+		int lineSpacingPixel = size * lineSpacing / font.GetEmHeight(fs);
+		int nx, ny;
+
+		ny = y - (lineSpacingPixel - size);
+		// This is just an approximation! If you know of a way to get the exact character spacing, have at it...
+		nx = x - (size / 4);
+		path.AddString(buf.c_str(), buf.length(), &font, fs, emsize, Gdiplus::Point(nx, ny), &strFormat);
 		if (outlined)
 		{
 			Pen p(Color(120, 120, 120), 2);
@@ -234,6 +246,12 @@ BOOL FAST_CALL CCanvas::DrawText(
 		}
 		SolidBrush brush(Color(GetRValue(clr), GetGValue(clr), GetBValue(clr)));
 		g.FillPath(&brush, &path);
+
+	   // Get the path's bounding rectangle.
+	   //Rect rect;
+	   //path.GetBounds(&rect);
+	   //Pen redPen(Color(255, 0, 0));
+	   //g.DrawRectangle(&redPen, rect); 
 		}
 		CloseDC(hdc);
 		return TRUE;
@@ -395,8 +413,8 @@ SIZE FAST_CALL CCanvas::GetTextSize(
 		if (italics)fs |= Gdiplus::FontStyleItalic;
 
 		buf = getUnicodeString(strText);
-
-		path.AddString(buf.c_str(), buf.length(), &font, fs, size, Gdiplus::Point(0, 0), &strFormat);
+		float emsize = size * font.GetCellAscent(fs) / font.GetEmHeight(fs);
+		path.AddString(buf.c_str(), buf.length(), &font, fs, emsize, Gdiplus::Point(0, 0), &strFormat);
 
 		Rect bounds;
 		path.GetBounds(&bounds);

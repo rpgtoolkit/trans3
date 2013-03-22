@@ -2280,7 +2280,7 @@ STDMETHODIMP CCallbacks::CBCreateCanvas(int width, int height, int *pRet)
 {
 	CCanvas *p = g_canvases.allocate();
 	p->CreateBlank(NULL, width, height, TRUE);
-	p->ClearScreen(TRANSP_COLOR);
+	p->ClearScreen(0);
 	*pRet = (int)p;
 	return S_OK;
 }

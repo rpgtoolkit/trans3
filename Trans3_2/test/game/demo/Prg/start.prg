@@ -7,8 +7,9 @@
 autolocal(true);
 
 // Some initial settings.
-font("Comic Sans MS");
-fontSize(18);
+//font("Comic Sans MS");
+font("Magneto");
+fontSize(48);
 bold(true);
 clear();
 
@@ -88,9 +89,12 @@ method drawTitle()
 	// Clear any previous images and set up a title screen.
 	clear();
 //	text(3, 3, "Test Game");
-	pixeltext(100, 100, "Heraldry: ");
-	xx = getTextWidth("Heraldry: ");
-	yy = getTextHeight("Heraldry: ");
+	xx = getTextWidth("HeHaldry: ");
+	yy = getTextHeight("HeHaldry: ");
+	colorrgb(120, 20, 60);
+	fillrect(100, 100, 100 + xx, 100 + yy);
+	colorrgb(255, 255, 255);
+	pixeltext(100, 100, "HeHaldry: ");
 	pixelText(100 + xx, 100 + yy, "Journey to the Crescent Moon");
 	// bitmap("title.gif");
 }
@@ -110,6 +114,7 @@ method intro()
 	mp3pause("item.wav");
 	giveitem("sword.itm");
 }
+
 
 
 

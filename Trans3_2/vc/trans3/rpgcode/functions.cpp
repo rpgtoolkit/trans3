@@ -5969,7 +5969,7 @@ void createCanvas(CALL_DATA &params)
 	}
 	CCanvas *p = g_canvases.allocate();
 	p->CreateBlank(NULL, params[0].getNum(), params[1].getNum(), TRUE);
-	p->ClearScreen(TRANSP_COLOR);
+	p->ClearScreen(0);
 	params.ret().udt = UDT_NUM;
 	params.ret().num = double(int(p));
 	if (params.params == 3)
