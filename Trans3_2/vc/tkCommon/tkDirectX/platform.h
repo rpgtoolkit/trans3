@@ -145,9 +145,10 @@ public:
 	BOOL IsGammaEnabled() CONST { return m_bGammaEnabled; }
 
 	// Flip the backbuffer to the primary surface
-	BOOL Refresh(VOID) { return (this->*m_pRefresh)(); }
+	BOOL Refresh(VOID);
 	BOOL FAST_CALL RefreshFullScreen(VOID);
 	BOOL FAST_CALL RefreshWindowed(VOID);
+	VOID FAST_CALL CheckSurfaces();
 
 	// Draw text on the screen
 	BOOL DrawText(

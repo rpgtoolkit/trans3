@@ -19,7 +19,7 @@ wait();
 drawCanvas(brd,0,0);
 mWincls();
 
-playerDirection(tk_DIR_W);
+playerDirection(0, tkDIR_W);
 itemDirection(0,tkDIR_E);
 canvasGetScreen(brd);
 
@@ -34,3 +34,4 @@ wait();
 mWin("Now.");
 delay(.05);
 wait();
+

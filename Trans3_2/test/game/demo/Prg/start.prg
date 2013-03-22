@@ -7,10 +7,9 @@
 autolocal(true);
 
 // Some initial settings.
-//font("Comic Sans MS");
-font("Magneto");
-fontSize(48);
-bold(true);
+font("Comic Sans MS");
+fontSize(18);
+bold(false);
 clear();
 
 // Default menu and battle systems.
@@ -89,12 +88,12 @@ method drawTitle()
 	// Clear any previous images and set up a title screen.
 	clear();
 //	text(3, 3, "Test Game");
-	xx = getTextWidth("HeHaldry: ");
-	yy = getTextHeight("HeHaldry: ");
+	xx = getTextWidth("Heraldry: ");
+	yy = getTextHeight("Heraldry: ");
 	colorrgb(120, 20, 60);
 	fillrect(100, 100, 100 + xx, 100 + yy);
 	colorrgb(255, 255, 255);
-	pixeltext(100, 100, "HeHaldry: ");
+	pixeltext(100, 100, "Heraldry: ");
 	pixelText(100 + xx, 100 + yy, "Journey to the Crescent Moon");
 	// bitmap("title.gif");
 }
@@ -111,7 +110,6 @@ method intro()
 	mwincls();
 //      id = thread("test_thread_mwin.prg", true);
 	giveitem("poison.itm");
-	mp3pause("item.wav");
 	giveitem("sword.itm");
 }
 

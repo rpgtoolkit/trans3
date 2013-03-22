@@ -317,12 +317,46 @@ BOOL CDirectDraw::OffsetGammaRamp(INT r, INT g, INT b)
 }
 
 //------------------------------------------------------------------------
+// Our screen refresh function
+//------------------------------------------------------------------------
+BOOL CDirectDraw::Refresh(VOID)
+{
+	CheckSurfaces();
+	return (this->*m_pRefresh)();
+}
+
+//------------------------------------------------------------------------
+// Restore surfaces if lost
+//------------------------------------------------------------------------
+VOID FAST_CALL CDirectDraw::CheckSurfaces()
+{
+	// Check the primary surface
+	if (m_lpddsPrime)
+	{
+		if (m_lpddsPrime->IsLost() == DDERR_SURFACELOST)
+			m_lpddsPrime->Restore();
+	}
+	// Check the back buffer
+	if (m_lpddsSecond)
+	{
+		if (m_lpddsSecond->IsLost() == DDERR_SURFACELOST)
+			m_lpddsSecond->Restore();
+	}
+}
+
+//------------------------------------------------------------------------
 // Flip back buffer onto the screen
 //------------------------------------------------------------------------
 BOOL FAST_CALL CDirectDraw::RefreshFullScreen(VOID)
 {
 	// Just flip
-	while (FAILED(m_lpddsPrime->Flip(NULL, DDFLIP_WAIT)));
+	//while (FAILED(m_lpddsPrime->Flip(NULL, DDFLIP_WAIT)))
+	m_lpddsPrime->Flip(NULL, DDFLIP_WAIT);
+
+	// Clone the contents to our back buffer for contingency with the next cycle of rendering
+	RECT r;
+	SetRect(&r, 0, 0, m_nWidth, m_nHeight);
+	m_lpddsSecond->BltFast(0, 0, m_lpddsPrime, &r, DDBLTFAST_WAIT);
 	return TRUE;
 }
 BOOL FAST_CALL CDirectDraw::RefreshWindowed(VOID)
