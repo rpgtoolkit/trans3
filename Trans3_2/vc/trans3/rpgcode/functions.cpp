@@ -482,7 +482,7 @@ void mwin(CALL_DATA &params)
 void wait(CALL_DATA &params)
 {
 	params.ret().udt = UDT_LIT;
-	params.ret().lit = waitForKey(true);
+	params.ret().lit = waitForKey(false);
 	if (params.params == 1)
 	{
 		*params.prg->getVar(params[0].lit) = params.ret();
@@ -6482,7 +6482,23 @@ void asc(CALL_DATA &params)
 		throw CError(_T("Asc() requires one or two parameters."));
 	}
 	params.ret().udt = UDT_NUM;
-	params.ret().num = (double)params[0].getLit()[0];
+
+	STRING literalValue = params[0].getLit();
+	double asciiValue = 0;
+
+	if (literalValue == _T("BACKSPACE")) asciiValue = 8;
+	else if (literalValue == _T("TAB")) asciiValue = 9;
+	else if (literalValue == _T("ENTER")) asciiValue = 13;
+	else if (literalValue == _T("CAPSLOCK")) asciiValue = 20;
+	else if (literalValue == _T("ESC")) asciiValue = 27;
+	else if (literalValue == _T("LEFT")) asciiValue = 37;
+	else if (literalValue == _T("UP")) asciiValue = 38;
+	else if (literalValue == _T("RIGHT")) asciiValue = 39;
+	else if (literalValue == _T("DOWN")) asciiValue = 40;
+	else asciiValue = (double)params[0].getLit()[0];
+
+	params.ret().num = asciiValue;
+
 	if (params.params == 2)
 	{
 		*params.prg->getVar(params[1].lit) = params.ret();
