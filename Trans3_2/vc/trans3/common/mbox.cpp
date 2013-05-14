@@ -166,7 +166,7 @@ STRING prompt(const STRING str)
 	while (true)
 	{
 		const STRING key = waitForKey(false);
-		// Ignore TAB and CAPSLOCK
+
 		if ((key == _T("LEFT")) || (key == _T("RIGHT")) || (key == _T("UP")) || (key == _T("DOWN")) 
 			|| key == _T("TAB") || key == _T("CAPSLOCK")) continue;
 		if (key == _T("ENTER")) break;

@@ -63,7 +63,7 @@ POINT getMouseClick(const bool bWait);
 /*
  * Get last mouse move.
  */
-POINT getMouseMove(void);
+POINT getMouseMove(const bool bWait);
 
 /*
  * Host window event processor.

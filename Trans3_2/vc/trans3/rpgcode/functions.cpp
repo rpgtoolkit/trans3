@@ -3730,12 +3730,12 @@ void mouseclick(CALL_DATA &params)
  */
 void mousemove(CALL_DATA &params)
 {
-	if (params.params != 2)
+	if (params.params != 2 && params.params != 3)
 	{
-		throw CError(_T("MouseMove() requires two parameters."));
+		throw CError(_T("MouseMove() requires two parameters or three parameters.."));
 	}
 
-	CONST POINT p = getMouseMove();
+	CONST POINT p = getMouseMove(params.params == 3 ? !(params[2].getBool()) : true);
 	{
 		LPSTACK_FRAME var = params.prg->getVar(params[0].lit);
 		var->udt = UDT_NUM;

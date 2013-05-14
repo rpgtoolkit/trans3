@@ -151,12 +151,16 @@ POINT getMouseClick(const bool bWait)
 /*
  * Get last mouse move.
  */
-POINT getMouseMove(void)
+POINT getMouseMove(const bool bWait)
 {
 	const int x = g_mouse.move.x, y = g_mouse.move.y;
-	while (g_mouse.move.x == x && y == g_mouse.move.y)
+
+	if (bWait)
 	{
-		processEvent();
+		while (g_mouse.move.x == x && y == g_mouse.move.y)
+		{
+			processEvent();
+		}
 	}
 	return g_mouse.move;
 }
