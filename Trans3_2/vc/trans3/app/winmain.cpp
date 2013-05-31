@@ -529,10 +529,16 @@ STRING getMainFileName(const STRING cmdLine)
 		const STRING main = GAM_PATH + parts[1];
 		if (CFile::fileExists(main))
 		{
+			GdiplusStartupInput gdiplusStartupInput;
+			ULONG_PTR gdiplusToken;
+
+			GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
+
 			m_testingProgram = true;
 			g_mainFile.open(main);
 			g_mainFile.startupPrg = parts[2];
 			g_mainFile.initBoard = _T("");
+
 			try
 			{
 				openSystems();
@@ -543,7 +549,10 @@ STRING getMainFileName(const STRING cmdLine)
 				// but it does not actually matter, so we just ignore
 				// the error.
 			}
+
+			GdiplusShutdown(gdiplusToken);
 			closeSystems();
+
 			return _T("");
 		}
 	}
