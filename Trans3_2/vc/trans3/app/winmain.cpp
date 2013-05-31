@@ -671,6 +671,7 @@ int mainEventLoop()
 
 	// Define a structure to hold the messages we recieve
 	MSG message;
+	bool active = true;
 
 	while (TRUE)
 	{
@@ -687,6 +688,14 @@ int mainEventLoop()
 				// It was; quit
 				break;
 			}
+			else if (message.message == WM_NCACTIVATE)
+			{
+				active = message.wParam;
+			}
+			else if (message.message == WM_ACTIVATEAPP)
+			{
+				active = message.wParam;
+			}
 			else
 			{
 				// Change ascii keys and the like to virtual keys
@@ -696,32 +705,33 @@ int mainEventLoop()
 			}
 		}
 
-		// Run a frame of game logic
-		if (gameLogic() != GS_PAUSE)
-		{
-			// Count this loop if not in Paused state
-
-			// Sleep for any remaining time
-			while ((GetTickCount() - dwTimeNow) < dwOneFrame);
-
-			// Update length rendering took
-			dwTimeNow = GetTickCount() - dwTimeNow;
-
-			// Add the time for this loop and increment the counter.
-			// Add only if this is a "short" loop.
-			if (dwTimeNow < 256)
+		if (active)
+			// Run a frame of game logic
+			if (gameLogic() != GS_PAUSE)
 			{
-				m_renderTime += dwTimeNow;
-				++m_renderCount;
+				// Count this loop if not in Paused state
 
-				// Make the fps more responsive.
-				if (m_renderTime > 4096)
+				// Sleep for any remaining time
+				while ((GetTickCount() - dwTimeNow) < dwOneFrame);
+
+				// Update length rendering took
+				dwTimeNow = GetTickCount() - dwTimeNow;
+
+				// Add the time for this loop and increment the counter.
+				// Add only if this is a "short" loop.
+				if (dwTimeNow < 256)
 				{
-					m_renderCount = int(m_renderCount / 16);
-					m_renderTime = m_renderCount / g_fpms;
+					m_renderTime += dwTimeNow;
+					++m_renderCount;
+
+					// Make the fps more responsive.
+					if (m_renderTime > 4096)
+					{
+						m_renderCount = int(m_renderCount / 16);
+						m_renderTime = m_renderCount / g_fpms;
+					}
 				}
 			}
-		}
 
 	}
 

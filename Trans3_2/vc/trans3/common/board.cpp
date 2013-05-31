@@ -1075,6 +1075,21 @@ void tagBoard::createImageCanvases()
 }
 
 /*
+ * Restore board gfx in case it was lost (i.e. due to alt-tabbing)
+ */
+void tagBoard::checkRestore()
+{
+	if(bkgImage)
+	{
+		if(bkgImage->pCnv->CheckSurfaces())
+		{
+			// Canvas surface was lost. Reload image
+			//bkgImage->createCanvas(*this);
+			createImageCanvases();
+		}
+	}
+}
+/*
  * Create a canvas from a vector.
  */
 void tagBoardVector::createCanvas(BOARD &board)

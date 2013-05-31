@@ -80,6 +80,7 @@ MESSAGE_WINDOW g_mwin;
  */
 void renderRpgCodeScreen()
 {
+	g_cnvRpgCode->CheckSurfaces();
 	g_pDirectDraw->DrawCanvas(g_cnvRpgCode, 0, 0);
 	if (g_mwin.visible)
 	{
@@ -430,7 +431,7 @@ void tagScrollCache::render(const bool bForceRedraw)
 			r.top, 
 			width, 
 			height
-		); 
+		);
 
 #ifdef DEBUG_VECTORS
 		if (g_mainFile.drawVectors & CV_DRAW_BRD_VECTORS)
@@ -516,14 +517,15 @@ void renderNow(CCanvas *cnv, const bool bForce)
 	// Set of RECTs covering the sprites.
 	std::vector<RECT> rects;		
 
+	g_pBoard->checkRestore();
 	// Draw the background (parallaxed or otherwise).
 	g_pBoard->renderBackground(cnv, g_screen);
 
 	// Render the flattened board if it exists ([0] represents any layer occupied).
 	if (g_pBoard->bLayerOccupied[0])
-	{
+	{		
 		// Check if we need to re-render the scroll cache.
-		g_scrollCache.render(false);
+		g_scrollCache.render(g_scrollCache.cnv.CheckSurfaces());
 
 		// Advance animated tiles and update the scroll cache.
 		g_pBoard->renderAnimatedTiles(g_scrollCache);
@@ -537,7 +539,7 @@ void renderNow(CCanvas *cnv, const bool bForce)
 			g_scrollCache.r.right - g_scrollCache.r.left, 
 			g_scrollCache.r.bottom - g_scrollCache.r.top,
 			TRANSP_COLOR
-		);			
+		);
 	}
 
 	/*

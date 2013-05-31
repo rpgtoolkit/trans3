@@ -519,6 +519,9 @@ public:
 		CONST COLORREF rgb
 	) CONST;
 
+	BOOL FAST_CALL CheckSurfaces(
+		VOID
+	) CONST;
 //
 // Private visibility
 //

@@ -1042,6 +1042,7 @@ INT FAST_CALL CCanvas::BltStretch(
 		DDBLTFX bltFx;
 		DD_INIT_STRUCT(bltFx);
 		bltFx.dwROP = lRasterOp;
+		CheckSurfaces();
 		CONST HRESULT hr = lpddsSurface->Blt(&destRect, GetDXSurface(), &rect, DDBLT_WAIT | DDBLT_ROP | DDBLT_KEYSRCOVERRIDE, &bltFx);
 
 		// If there was an error
@@ -1389,6 +1390,7 @@ INT FAST_CALL CCanvas::BltTransparentPart(
 		RECT rect = {xSrc, ySrc, xSrc + width, ySrc + height};
 
 		// Execute the blt
+		CheckSurfaces();
 		return SUCCEEDED(lpddsSurface->BltFast(x, y, this->GetDXSurface(), &rect, DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY));
 
 	}
@@ -1587,6 +1589,7 @@ INT FAST_CALL CCanvas::BltTranslucentPart(
 	{
 
 		// Lock the destination surface
+		CheckSurfaces();
 		DDSURFACEDESC2 destSurface;
 		DD_INIT_STRUCT(destSurface);
 		HRESULT hr = lpddsSurface->Lock(NULL, &destSurface, DDLOCK_SURFACEMEMORYPTR | DDLOCK_NOSYSLOCK | DDLOCK_WAIT, NULL);
@@ -1855,6 +1858,26 @@ INT FAST_CALL CCanvas::BltTranslucentPart(
 	// If we made it here, we failed
 	return FALSE;
 
+}
+
+//------------------------------------------------------------------------
+// Restore surfaces if lost
+//------------------------------------------------------------------------
+BOOL FAST_CALL CCanvas::CheckSurfaces(
+	 VOID
+		) CONST
+{
+	// Check the primary surface
+	BOOL ret = false;
+	if (m_lpddsSurface)
+	{
+		if (m_lpddsSurface->IsLost() == DDERR_SURFACELOST)
+		{
+			m_lpddsSurface->Restore();
+			ret = true;
+		}
+	}
+	return ret;
 }
 
 //--------------------------------------------------------------------------

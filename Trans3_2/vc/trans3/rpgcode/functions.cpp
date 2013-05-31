@@ -436,6 +436,9 @@ void mwin(CALL_DATA &params)
 		throw CError(_T("MWin() requires one parameter."));
 	}
 
+	g_mwin.cnvBkg->CheckSurfaces();
+	g_mwin.cnvText->CheckSurfaces();
+
 	if (g_mwin.nextLine == 0) 
 	{
 		g_mwin.cnvText->ClearScreen(g_mwin.color);
