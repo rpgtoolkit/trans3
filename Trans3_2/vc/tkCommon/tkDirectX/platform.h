@@ -276,7 +276,7 @@ public:
 		DDGAMMARAMP &ramp
 	) CONST { return m_lpddGammaControl->GetGammaRamp(0, &ramp); }
 
-	CCanvas *getBackBuffer(VOID) { return m_pBackBuffer; }
+	CCanvas *getBackBuffer(VOID) { m_pBackBuffer->CheckSurfaces(); return m_pBackBuffer; }
 
 	// Deconstructor
 	~CDirectDraw(
