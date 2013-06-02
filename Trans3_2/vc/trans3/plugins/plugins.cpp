@@ -158,6 +158,7 @@ IPlugin *loadPlugin(const STRING path)
 	const STRING file = resolve(path);
 
 	HMODULE mod = LoadLibrary(file.c_str());
+
 	if (!mod)
 	{
 		messageBox(_T("The file ") + file + _T(" is not a valid dynamically linkable library."));
@@ -165,6 +166,7 @@ IPlugin *loadPlugin(const STRING path)
 	}
 
 	FARPROC pReg = GetProcAddress(mod, _T("DllRegisterServer"));
+
 	if (!pReg)
 	{
 		FreeLibrary(mod);
@@ -179,49 +181,76 @@ IPlugin *loadPlugin(const STRING path)
 		return NULL;
 	}
 
-	// Unrequired to register.
-	((HRESULT (__stdcall *)())pReg)();
-
-	/**if (FAILED(((HRESULT (__stdcall *)())pReg)()))
-	{
-		messageBox(_T("An error occurred while registering ") + file + _T(".\n\nIf this problem persists, please make sure you are running the game in an account with administrator privileges."));
-		FreeLibrary(mod);
-		return NULL;
-	}**/
-
 	FreeLibrary(mod);
 
-	ITypeLib *pTypeLib = NULL;
-	if (FAILED(LoadTypeLib(getUnicodeString(file).c_str(), &pTypeLib)))
-	{
-		messageBox(_T("Failed to load the type library of ") + file + _T("."));
-		return NULL;
-	}
-
-	const int types = pTypeLib->GetTypeInfoCount();
-
 	CComPlugin *p = new CComPlugin();
+	/*STRING manifestFile = file + ".X.manifest";
 
-	// Check all the types in the library.
-	bool bLoaded = false;
-	for (unsigned int i = 0; i < types; ++i)
+	CoInitializeEx(0, COINIT_MULTITHREADED);
+
+	ACTCTX actCtx;
+	memset((void*)&actCtx, 0, sizeof(ACTCTX));
+	actCtx.cbSize = sizeof(ACTCTX);
+	actCtx.lpSource = manifestFile.c_str();
+
+	HANDLE hCtx = ::CreateActCtx(&actCtx);
+
+	if (hCtx == INVALID_HANDLE_VALUE)
 	{
-		ITypeInfo *pTypeInfo = NULL;
-		pTypeLib->GetTypeInfo(i, &pTypeInfo);
-		if (bLoaded = p->load(pTypeInfo)) break;
-	}
-
-	// Release the type library.
-	pTypeLib->Release();
-
-	if (!bLoaded)
-	{
-		messageBox(_T("A remotable class was not found in ") + file + _T("."));
-		delete p;
+		messageBox(_T("Failed to load the type library manifest ") + manifestFile + _T("."));
 		return NULL;
 	}
+	else
+	{
+		ULONG_PTR cookie;
+
+		if (::ActivateActCtx(hCtx, &cookie))
+		{*/
+			ITypeLib *pTypeLib = NULL;
+
+			// Because we can't simply cast to 'LPCOLESTR'.
+			std::wstring fileWstring = getUnicodeString(file);
+			LPCOLESTR fileLibrary = fileWstring.c_str();
+
+			if (FAILED(LoadTypeLib(fileLibrary, &pTypeLib)))
+			{
+				messageBox(_T("Failed to load the type library of ") + file + _T("."));
+				return NULL;
+			}
+
+			const int types = pTypeLib->GetTypeInfoCount();
+
+			// Check all the types in the library.
+			bool bLoaded = false;
+			for (int i = 0; i < types; ++i)
+			{
+				ITypeInfo *pTypeInfo = NULL;
+				pTypeLib->GetTypeInfo(i, &pTypeInfo);
+
+				if (bLoaded = p->load(pTypeInfo)) 
+				{
+					break;
+				}
+			}
+
+			// Release the type library.
+			pTypeLib->Release();
+
+			if (!bLoaded)
+			{
+				messageBox(_T("A remotable class was not found in ") + file + _T("."));
+				delete p;
+				return NULL;
+			}
+
+			/*::DeactivateActCtx(0, cookie);
+		}
+	}
+
+	CoUninitialize();*/
 
 	p->initialize();
+
 	return p;
 }
 
@@ -431,13 +460,24 @@ COldPlugin::COldPlugin(const STRING file)
  */
 bool CComPlugin::load(ITypeInfo *pTypeInfo)
 {
+	if (m_plugin || !g_pCallbacks) 
+	{
+		return false;
+	}
 
-	if (m_plugin || !g_pCallbacks) return false;
-	//messageBox(_T("Passed first hurdle not m_plugin and g_pCallbacks workds"));
+	//messageBox(_T("Passed first hurdle not m_plugin and g_pCallbacks works"));
+
 	// Create an instance of the plugin's class.
+	// Failing on Windows 7 at this point.
 	HRESULT hr = pTypeInfo->CreateInstance(NULL, IID_IDispatch, (LPVOID *)&m_plugin);
-	if (FAILED(hr)) return false;
-	//messageBox(_T("HRESULT from creating an instance worked."));
+
+	if (FAILED(hr)) 
+	{
+		return false;
+	}
+
+	messageBox(_T("HRESULT from creating an instance worked."));
+
 	// I regret this arbitrary naming scheme, but it's too
 	// late to change it now.
 	LPOLESTR names[] = {
@@ -472,7 +512,7 @@ bool CComPlugin::load(ITypeInfo *pTypeInfo)
 		return false;
 	}
 
-	//messageBox(_T("DISPID is known you have passed another hurdle"));
+	messageBox(_T("DISPID is known you have passed another hurdle"));
 	// Provide the plugin with a pointer to an instance of
 	// CCallbacks, via the setCallbacks() function.
 	DISPPARAMS params = {NULL, NULL, 1, 1};
@@ -484,7 +524,7 @@ bool CComPlugin::load(ITypeInfo *pTypeInfo)
 	params.rgdispidNamedArgs = &put;
 	if (FAILED(m_plugin->Invoke(disp, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUTREF, &params, NULL, NULL, NULL)))
 	{
-		//messageBox(_T("Property set failed inspection possible worry here"));
+		messageBox(_T("Property set failed inspection possible worry here"));
 		// No property set; try for property let.
 		if (FAILED(m_plugin->Invoke(disp, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT, &params, NULL, NULL, NULL)))
 		{
@@ -492,8 +532,8 @@ bool CComPlugin::load(ITypeInfo *pTypeInfo)
 			return false;
 		}
 	}
-	//messageBox(_T("At least a property set or property let passed inspection"));
-	//messageBox(_T("Honestly if you're here then something else has gone wrong somewhere. Trying more opotions"));
+	messageBox(_T("At least a property set or property let passed inspection"));
+	messageBox(_T("Honestly if you're here then something else has gone wrong somewhere. Trying more opotions"));
 	return true;
 }
 
