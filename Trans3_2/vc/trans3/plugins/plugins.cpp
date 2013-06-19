@@ -184,9 +184,7 @@ IPlugin *loadPlugin(const STRING path)
 	FreeLibrary(mod);
 
 	CComPlugin *p = new CComPlugin();
-	/*STRING manifestFile = file + ".X.manifest";
-
-	CoInitializeEx(0, COINIT_MULTITHREADED);
+	/*STRING manifestFile = file + ".x.manifest";
 
 	ACTCTX actCtx;
 	memset((void*)&actCtx, 0, sizeof(ACTCTX));
@@ -243,11 +241,9 @@ IPlugin *loadPlugin(const STRING path)
 				return NULL;
 			}
 
-			/*::DeactivateActCtx(0, cookie);
-		}
-	}
-
-	CoUninitialize();*/
+	//		::DeactivateActCtx(0, cookie);
+	//	}
+	//}
 
 	p->initialize();
 

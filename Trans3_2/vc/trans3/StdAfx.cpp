@@ -9,9 +9,6 @@
 //  stdafx.pch will be the pre-compiled header
 //  stdafx.obj will contain the pre-compiled type information
 
-#define _WIN32_DCOM
-#define _WIN32_FUSION 0x0100 // This causes activation context structs and APIs to be included.
-
 #include "stdafx.h"
 
 #ifdef _ATL_STATIC_REGISTRY

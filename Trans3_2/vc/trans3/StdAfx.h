@@ -16,6 +16,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#define _WIN32_DCOM
+#define _WIN32_FUSION 0x0100 // This causes activation context structs and APIs to be included
+
 #ifndef STRICT
 #define STRICT
 #endif // STRICT
