@@ -135,3 +135,30 @@ void getSetting(const STRING strKey, double &dblValue)
 	}
 	RegCloseKey(hKey);
 }
+
+/*
+ * Create a temporary file, we would normally use the tmpfile() function 
+ * found in the standard library but this has some issues with Windows 7, 
+ * so we'll emulate its functionality here.
+ *
+ * return (out) - A pointer to the temporary file.
+ */
+FILE* createTemporaryFile()
+{
+	char* name = _tempnam(NULL, NULL);
+
+	if (!name)
+	{
+		return 0;
+	}
+
+	FILE* filePointer = fopen(name, "wb+TD");
+
+	// When name is no longer needed.
+	if (name)
+	{
+		free(name);
+	}
+
+	return filePointer;
+}

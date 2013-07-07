@@ -46,6 +46,7 @@
 #include <vector>
 #include <tchar.h>
 #include <iostream>
+#include "../misc/misc.h"
 
 using namespace std;
 #ifndef STRING_DEFINED
@@ -437,7 +438,7 @@ private:
 	void parseFile(FILE *pFile);
 	void updateInheritedMethodCalls();
 	bool checkForInheritance(std::deque<STRING> inheritsFrom, const STRING compareClass);
-	bool compareInheritedMethod(NAMED_METHOD inheritedMethod, NAMED_METHOD compareMethod);
+	bool compareInheritedMethod(NAMED_METHOD *inheritedMethod, NAMED_METHOD *compareMethod);
 	unsigned int matchBrace(POS i);
 	void include(const CProgram prg);
 	void prime();

@@ -1046,7 +1046,7 @@ bool CProgram::open(const STRING fileName)
 		str[length + 2] = '\n';
 
 		fclose(file);		// Close the original file...
-		file = tmpfile();	// ...and create another.
+		file = createTemporaryFile();	// ...and create another.
 
 		// Write the updated version to our temp file.
 		fwrite(str, sizeof(char), length + 3, file);
@@ -1431,7 +1431,7 @@ void CProgram::updateInheritedMethodCalls()
 
 					if (name == classMethod.name)
 					{
-						if (compareInheritedMethod(classMethod, method))
+						if (compareInheritedMethod(&classMethod, &method))
 						{
 							// Methods match but the locations don't, update it.
 							classIterator->second.methods[i].first.i = method.i;
@@ -1463,17 +1463,17 @@ bool CProgram::checkForInheritance(std::deque<STRING> inheritsFrom, const STRING
 // Compares two methods to see if they are an exact match of each other. It is used to 
 // determine if the inherited method is the same as a method in the m_methods() member
 // in the CProgram object.
-bool CProgram::compareInheritedMethod(NAMED_METHOD inheritedMethod, NAMED_METHOD compareMethod)
+bool CProgram::compareInheritedMethod(NAMED_METHOD *inheritedMethod, NAMED_METHOD *compareMethod)
 {
-	if (inheritedMethod.bInline == compareMethod.bInline)
+	if (inheritedMethod->bInline == compareMethod->bInline)
 	{
-		if (inheritedMethod.byref == compareMethod.byref)
+		if (inheritedMethod->byref == compareMethod->byref)
 		{
 			// Check the number of parameters because RPGCode
 			// supports method overloading.
-			if (inheritedMethod.params == compareMethod.params)
+			if (inheritedMethod->params == compareMethod->params)
 			{
-				if(inheritedMethod.i != compareMethod.i)
+				if(inheritedMethod->i != compareMethod->i)
 				{
 					return true;
 				}

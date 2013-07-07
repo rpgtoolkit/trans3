@@ -98,4 +98,13 @@ void saveSetting(const STRING strKey, const double dblValue);
  */
 void getSetting(const STRING strKey, double &dblValue);
 
+/*
+ * Create a temporary file, we would normally use the tmpfile() function 
+ * found in the standard library but this has some issues with Windows 7, 
+ * so we'll emulate its functionality here.
+ *
+ * return (out) - A pointer to the temporary file.
+ */
+FILE* createTemporaryFile();
+
 #endif

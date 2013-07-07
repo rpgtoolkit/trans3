@@ -675,7 +675,6 @@ int mainEventLoop()
 
 	while (TRUE)
 	{
-
 		// Get current time
 		DWORD dwTimeNow = GetTickCount();
 

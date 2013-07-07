@@ -184,8 +184,14 @@ IPlugin *loadPlugin(const STRING path)
 	FreeLibrary(mod);
 
 	CComPlugin *p = new CComPlugin();
-	/*STRING manifestFile = file + ".x.manifest";
+	STRING manifestFile = file + ".x.manifest";
 
+	// Create an "Active Context" to load the DLL into this processes
+	// execution address.
+	//
+	// Normally you would have to register a COM DLL to access it which
+	// would require administrative rights, to get around that issue
+	// we are using "Registration Free COM".
 	ACTCTX actCtx;
 	memset((void*)&actCtx, 0, sizeof(ACTCTX));
 	actCtx.cbSize = sizeof(ACTCTX);
@@ -203,7 +209,7 @@ IPlugin *loadPlugin(const STRING path)
 		ULONG_PTR cookie;
 
 		if (::ActivateActCtx(hCtx, &cookie))
-		{*/
+		{
 			ITypeLib *pTypeLib = NULL;
 
 			// Because we can't simply cast to 'LPCOLESTR'.
@@ -241,9 +247,9 @@ IPlugin *loadPlugin(const STRING path)
 				return NULL;
 			}
 
-	//		::DeactivateActCtx(0, cookie);
-	//	}
-	//}
+			::DeactivateActCtx(0, cookie);
+		}
+	}
 
 	p->initialize();
 
@@ -472,7 +478,7 @@ bool CComPlugin::load(ITypeInfo *pTypeInfo)
 		return false;
 	}
 
-	messageBox(_T("HRESULT from creating an instance worked."));
+	/*messageBox(_T("HRESULT from creating an instance worked."));*/
 
 	// I regret this arbitrary naming scheme, but it's too
 	// late to change it now.
@@ -508,7 +514,8 @@ bool CComPlugin::load(ITypeInfo *pTypeInfo)
 		return false;
 	}
 
-	messageBox(_T("DISPID is known you have passed another hurdle"));
+	/*messageBox(_T("DISPID is known you have passed another hurdle"));*/
+
 	// Provide the plugin with a pointer to an instance of
 	// CCallbacks, via the setCallbacks() function.
 	DISPPARAMS params = {NULL, NULL, 1, 1};
@@ -518,9 +525,10 @@ bool CComPlugin::load(ITypeInfo *pTypeInfo)
 	params.rgvarg = &var;
 	DISPID put = DISPID_PROPERTYPUT;
 	params.rgdispidNamedArgs = &put;
+
 	if (FAILED(m_plugin->Invoke(disp, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUTREF, &params, NULL, NULL, NULL)))
 	{
-		messageBox(_T("Property set failed inspection possible worry here"));
+		/*messageBox(_T("Property set failed inspection possible worry here"));*/
 		// No property set; try for property let.
 		if (FAILED(m_plugin->Invoke(disp, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT, &params, NULL, NULL, NULL)))
 		{
@@ -528,8 +536,10 @@ bool CComPlugin::load(ITypeInfo *pTypeInfo)
 			return false;
 		}
 	}
-	messageBox(_T("At least a property set or property let passed inspection"));
-	messageBox(_T("Honestly if you're here then something else has gone wrong somewhere. Trying more opotions"));
+
+	/*messageBox(_T("At least a property set or property let passed inspection"));
+	messageBox(_T("Honestly if you're here then something else has gone wrong somewhere. Trying more opotions"));*/
+
 	return true;
 }
 
