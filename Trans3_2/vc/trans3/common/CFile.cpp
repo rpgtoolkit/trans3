@@ -35,7 +35,7 @@
  */
 #include "CFile.h"
 #include "paths.h"
-#include "SystemFont.h"
+#include "../SystemFont.h"
 
 /*
  * Constructor.

@@ -39,7 +39,7 @@
 #include "../../tkCommon/strings.h"
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#include "SystemFont.h"
+#include "../SystemFont.h"
 
 class CFile
 {

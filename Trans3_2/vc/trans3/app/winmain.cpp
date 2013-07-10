@@ -64,7 +64,7 @@
 #include <sstream>
 #include <iostream>
 #include "Shlwapi.h"
-#include "../tkCommon/tkDirectX/platform.h"
+#include "../../tkCommon/tkDirectX/platform.h"
 
 #define FPS_CAP 120.0					// Maximum number of fps to render.
 #define HALF_FPS_CAP 60.0				// Half said value.
@@ -145,8 +145,8 @@ void termFunc()
 	messageBox(	_T("An unhandled exception has occurred. ")
 				_T("Trans3 will now close.\n\n")
 				_T("We apologize for this inconvenience. ")
-				_T("If this problem persists, please post at www.toolkitzone.com ")
-				_T("on the \"Toolkit Discussion\" forum with an explanation of ")
+				_T("If this problem persists, please post at www.rpgtoolkit.net ")
+				_T("on the \"Software\" forum with an explanation of ")
 				_T("what you were doing when the bug occurred and instructions ")
 				_T("on how to reproduce the bug, and we will attempt to solve ")
 				_T("this problem.")	);

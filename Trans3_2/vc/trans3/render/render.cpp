@@ -220,7 +220,7 @@ void splashScreen()
 			g_resX, g_resY,
 			0, 0, FreeImage_GetWidth(dib), FreeImage_GetHeight(dib),
 			FreeImage_GetBits(dib), FreeImage_GetInfo(dib), DIB_RGB_COLORS, SRCCOPY);
-		if (brightness == 0)Sleep(4000);
+		if (brightness == 0)Sleep(2000);
 		else Sleep(20);
 	}
 	// don't forget to call FreeImage_Unload when you no longer need the dib
@@ -347,7 +347,7 @@ void showScreen(const int width, const int height)
 		{
 			if (!g_mainFile.extendToFullScreen)
 			{
-				MessageBox(NULL, _T("Error initializing graphics mode. Make sure you have DirectX 8 or higher installed."), _T("Cannot Initialize"), 0);
+				MessageBox(NULL, _T("Error initializing graphics mode. Make sure you have DirectX 9 or higher installed."), _T("Cannot Initialize"), 0);
 				delete g_pDirectDraw;
 				exit(EXIT_SUCCESS);
 			}
@@ -371,7 +371,7 @@ void showScreen(const int width, const int height)
 	createCanvases();
 
 	// TBD: Implement smarter conditions when to show splash screen
-	//splashScreen();
+	splashScreen();
 }
 
 /*
@@ -665,7 +665,7 @@ void renderNow(CCanvas *cnv, const bool bForce)
 
 	// Render the cursor
 	// Render overlay text for BETA
-	g_pDirectDraw->DrawTextA(5, g_resY - 30, "Trans3 3.x Bug Fix", "Arial", 16, RGB(250, 250, 250), 0, 0, 0, 0, 1);
+	g_pDirectDraw->DrawTextA(5, g_resY - 30, "Trans3 3.2", "Arial", 16, RGB(250, 250, 250), 0, 0, 0, 0, 1);
 	extern double g_fpms;
 	std::stringstream strFPS;
 	strFPS << "FPS: " << int(g_fpms * MILLISECONDS);

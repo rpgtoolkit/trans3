@@ -47,7 +47,7 @@
 #include "../movement/CPlayer/CPlayer.h"
 #include "../movement/CItem/CItem.h"
 #include <vector>
-#include "SystemFont.h"
+#include "../SystemFont.h"
 
 extern std::vector<CPlayer *> g_players;
 extern CInventory g_inv;

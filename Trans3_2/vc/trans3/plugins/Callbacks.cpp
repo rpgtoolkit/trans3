@@ -71,7 +71,7 @@
 #include "../../tkCommon/tkCanvas/GDICanvas.h"
 //#include "../../tkCommon/strings.h"
 #include <map>
-#include "SystemFont.h"
+#include "../SystemFont.h"
 
 extern CAllocationHeap<CCanvas> g_canvases;
 extern CDirectDraw *g_pDirectDraw;

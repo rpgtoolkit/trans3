@@ -204,6 +204,7 @@ BOOL FAST_CALL CCanvas::DrawText(
 	CONST BOOL outlined
 		)
 {
+#if 0
 		using namespace Gdiplus;		
 
 		// Open the DC
@@ -255,7 +256,8 @@ BOOL FAST_CALL CCanvas::DrawText(
 		}
 		CloseDC(hdc);
 		return TRUE;
-#if 0
+#endif
+
 	// Create a font
 	CONST HFONT hFont = CreateFont(
 		size,
@@ -342,7 +344,6 @@ BOOL FAST_CALL CCanvas::DrawText(
 
 	// All's good
 	return TRUE;
-#endif
 }
 
 //------------------------------------------------------------------------
@@ -358,7 +359,7 @@ SIZE FAST_CALL CCanvas::GetTextSize(
 {
 	SIZE sz = {0, 0};
 	UINT len = 0;
-#if 0
+
 	// Create a font
 	CONST HFONT hFont = CreateFont(
 		size,
@@ -396,7 +397,8 @@ SIZE FAST_CALL CCanvas::GetTextSize(
 		DeleteObject(hFont);
 		CloseDC(hdc);
 	}
-#endif
+
+#if 0
 	// Open the DC
 	CONST HDC hdc = OpenDC();
 	{
@@ -422,6 +424,8 @@ SIZE FAST_CALL CCanvas::GetTextSize(
 		sz.cy = bounds.Height;
 	}
 	CloseDC(hdc);
+#endif
+
 	return sz;
 }
 
