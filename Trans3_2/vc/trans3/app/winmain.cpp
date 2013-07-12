@@ -621,9 +621,23 @@ g_mainFile.bFpsInTitleBar = 1;//~TEMP
 			}
 
 			// Multitask.
-			unsigned int units = HALF_FPS_CAP / fps;
-			//units = 8;
+			// I couldn't see any sense in basing the number of thread
+			// units executed on HALF_FPS_CAP (which is 60) divided
+			// by the current fps.
+			// 
+			// For example if the current fps was about 100 then we would be
+			// executing 0.6 (because this is unsigned it would become 1).
+			// Basically as the fps decreased we would end up executing even
+			// more units which would simply magnifiy any performance issues.
+			//
+			// It makes more sense to use the reverse of: fps / (HALF_FPS_CAP / 2).
+			// Engine threaded multitasking will need to be reviewed properly,
+			// threads are roughly 50 times slower than normal programs...
+			//unsigned int units = HALF_FPS_CAP / fps;
+
+			unsigned int units = fps / (HALF_FPS_CAP / 2);
 			CThread::multitask((units < 1) ? 10 : ((units > 8) ? 80 : units*10));
+
 			// Movement.
 			//std::vector<CSprite *>::const_iterator i = g_sprites.v.begin();
 			// Remember the vector size, so we'll know if it has been tampered with from within the move function

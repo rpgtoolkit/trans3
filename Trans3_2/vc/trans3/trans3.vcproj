@@ -147,6 +147,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="2"
+				AdditionalIncludeDirectories=".\;&quot;$(DXSDK_DIR)Include&quot;"
 				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;FREEIMAGE_LIB"
 				StringPooling="true"
 				RuntimeLibrary="0"
@@ -158,7 +159,7 @@
 				ProgramDataBaseFileName=".\ReleaseMinDependency/"
 				BrowseInformation="2"
 				BrowseInformationFile=".\ReleaseMinDependency/"
-				WarningLevel="2"
+				WarningLevel="0"
 				SuppressStartupBanner="true"
 			/>
 			<Tool
@@ -174,12 +175,12 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ddraw.lib dxguid.lib msimg32.lib odbc32.lib odbccp32.lib dinput8.lib winmm.lib strmiids.lib"
+				AdditionalDependencies="ddraw.lib dxguid.lib msimg32.lib odbc32.lib odbccp32.lib dinput8.lib winmm.lib strmiids.lib FreeImaged.lib dsound.lib gdiplus.lib"
 				OutputFile=".\ReleaseMinDependency/trans3.exe"
-				LinkIncremental="1"
+				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories=".\audio\"
-				IgnoreDefaultLibraryNames="LIBC,MSVCRT"
+				AdditionalLibraryDirectories="..\tkCommon\images\;.\audio\;&quot;$(DXSDK_DIR)Lib\x86&quot;"
+				IgnoreDefaultLibraryNames="LIBC;MSVCRT;"
 				ProgramDatabaseFile=".\ReleaseMinDependency/trans3.pdb"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
@@ -449,7 +450,7 @@
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
 				BrowseInformation="1"
-				WarningLevel="0"
+				WarningLevel="2"
 				SuppressStartupBanner="false"
 				DebugInformationFormat="3"
 			/>
@@ -475,7 +476,7 @@
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\tkCommon\images\;.\audio\;&quot;$(DXSDK_DIR)Lib\x86&quot;"
-				IgnoreDefaultLibraryNames="LIBC"
+				IgnoreDefaultLibraryNames="LIBC;"
 				GenerateDebugInformation="true"
 				AssemblyDebug="1"
 				ProgramDatabaseFile=".\Debug/trans3.pdb"
@@ -608,6 +609,121 @@
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
+		<Configuration
+			Name="Optimised|Win32"
+			OutputDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="1"
+			UseOfMFC="0"
+			UseOfATL="1"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			ManagedExtensions="0"
+			WholeProgramOptimization="0"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+				Description="Performing registration"
+				CommandLine="&quot;$(TargetPath)&quot; /RegServer&#x0D;&#x0A;echo regsvr32 exec. time &gt; &quot;$(OutDir)\regsvr32.trg&quot;&#x0D;&#x0A;echo Server registration done!&#x0D;&#x0A;"
+				Outputs="$(OutDir)\regsvr32.trg"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				TypeLibraryName=".\Optimised/trans3.tlb"
+				HeaderFileName=""
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="2"
+				InlineFunctionExpansion="2"
+				EnableIntrinsicFunctions="false"
+				FavorSizeOrSpeed="1"
+				WholeProgramOptimization="false"
+				AdditionalIncludeDirectories=".\;&quot;$(DXSDK_DIR)Include&quot;"
+				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;FREEIMAGE_LIB"
+				StringPooling="true"
+				MinimalRebuild="false"
+				BasicRuntimeChecks="0"
+				RuntimeLibrary="1"
+				BufferSecurityCheck="true"
+				EnableFunctionLevelLinking="true"
+				RuntimeTypeInfo="true"
+				UsePrecompiledHeader="0"
+				PrecompiledHeaderFile=".\Optimised/trans3.pch"
+				AssemblerListingLocation=".\Optimised/"
+				ObjectFile=".\Optimised/"
+				ProgramDataBaseFileName=".\Optimised/"
+				BrowseInformation="2"
+				WarningLevel="0"
+				SuppressStartupBanner="true"
+				DebugInformationFormat="0"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				Culture="4105"
+				AdditionalIncludeDirectories="rpgcode\"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				RegisterOutput="false"
+				IgnoreImportLibrary="false"
+				LinkLibraryDependencies="true"
+				AdditionalDependencies="ddraw.lib dxguid.lib msimg32.lib odbc32.lib odbccp32.lib dinput8.lib winmm.lib strmiids.lib FreeImaged.lib dsound.lib gdiplus.lib"
+				OutputFile=".\Optimised/trans3.exe"
+				LinkIncremental="2"
+				SuppressStartupBanner="true"
+				AdditionalLibraryDirectories="..\tkCommon\images\;.\audio\;&quot;$(DXSDK_DIR)Lib\x86&quot;"
+				IgnoreDefaultLibraryNames="LIBC;"
+				GenerateDebugInformation="false"
+				AssemblyDebug="0"
+				ProgramDatabaseFile=".\Optimised/trans3.pdb"
+				SubSystem="2"
+				OptimizeForWindows98="0"
+				LinkTimeCodeGeneration="0"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
+				TargetMachine="1"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+				SuppressStartupBanner="true"
+				OutputFile=".\Optimised/trans3.bsc"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="copy .\Optimised\trans3.exe ..\..\test"
+			/>
+		</Configuration>
 	</Configurations>
 	<References>
 	</References>
@@ -671,6 +787,16 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+							UsePrecompiledHeader="1"
+							PrecompiledHeaderThrough="stdafx.h"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="trans3.cpp"
@@ -717,6 +843,14 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Unicode Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -793,6 +927,17 @@
 							InterfaceIdentifierFileName="trans3_i.c"
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
+						>
+						<Tool
+							Name="VCMIDLTool"
+							GenerateStublessProxies="true"
+							TypeLibraryName=".\trans3.tlb"
+							HeaderFileName="trans3.h"
+							InterfaceIdentifierFileName="trans3_i.c"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="trans3.rc"
@@ -851,6 +996,15 @@
 							AdditionalIncludeDirectories="$(OUTDIR)"
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
+						>
+						<Tool
+							Name="VCResourceCompilerTool"
+							PreprocessorDefinitions=""
+							AdditionalIncludeDirectories="&quot;$(OUTDIR)&quot;"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="app\winmain.cpp"
@@ -897,6 +1051,14 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Unicode Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -999,6 +1161,14 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="rpgcode\CGarbageCollector.cpp"
@@ -1051,6 +1221,14 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="rpgcode\COptimiser.cpp"
@@ -1097,6 +1275,14 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Unicode Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -1156,6 +1342,14 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="rpgcode\functions.cpp"
@@ -1202,6 +1396,14 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Unicode Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -1277,6 +1479,16 @@
 							Outputs="$(InputDir)lex.yy.c"
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Compiling..."
+							CommandLine="$(InputDir)flex -Cfe -o&quot;$(InputDir)lex.yy.c&quot; $(InputPath)&#x0D;&#x0A;"
+							Outputs="$(InputDir)lex.yy.c"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="rpgcode\parser\parser.cpp"
@@ -1329,6 +1541,14 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="rpgcode\virtualvar.cpp"
@@ -1375,6 +1595,14 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Unicode Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -1437,6 +1665,16 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Unicode Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Compiling..."
+							CommandLine="$(InputDir)byacc -o &quot;$(InputDir)y.tab.c&quot; $(InputPath)&#x0D;&#x0A;"
+							Outputs="$(InputDir)y.tab.c"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
 						>
 						<Tool
 							Name="VCCustomBuildTool"
@@ -1537,6 +1775,14 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="common\background.cpp"
@@ -1583,6 +1829,14 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Unicode Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -1642,6 +1896,15 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+							BrowseInformation="2"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="common\CAnimation.cpp"
@@ -1688,6 +1951,14 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Unicode Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -1746,6 +2017,14 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\tkCommon\board\conversion.cpp"
@@ -1792,6 +2071,14 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Unicode Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -1850,6 +2137,14 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="common\enemy.cpp"
@@ -1896,6 +2191,14 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Unicode Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -1954,6 +2257,14 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\tkCommon\board\lighting.cpp"
@@ -2000,6 +2311,14 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Unicode Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -2058,6 +2377,14 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="common\mbox.cpp"
@@ -2104,6 +2431,14 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Unicode Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -2162,6 +2497,14 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="common\player.cpp"
@@ -2208,6 +2551,14 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Unicode Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -2266,6 +2617,14 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="common\sprite.cpp"
@@ -2312,6 +2671,14 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Unicode Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -2370,6 +2737,14 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="common\status.cpp"
@@ -2416,6 +2791,14 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Unicode Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -2474,6 +2857,14 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="common\tilebitmap.cpp"
@@ -2520,6 +2911,14 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Unicode Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -2678,6 +3077,14 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
 				</File>
 			</Filter>
 			<Filter
@@ -2746,6 +3153,14 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\tkCommon\board\coords.cpp"
@@ -2797,6 +3212,15 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+							BrowseInformation="2"
 						/>
 					</FileConfiguration>
 				</File>
@@ -2852,6 +3276,15 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+							BrowseInformation="2"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="movement\CPlayer\CPlayer.cpp"
@@ -2898,6 +3331,14 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Unicode Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -2957,6 +3398,15 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+							BrowseInformation="2"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="movement\CVector\CVector.cpp"
@@ -3008,6 +3458,15 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+							BrowseInformation="2"
 						/>
 					</FileConfiguration>
 				</File>
@@ -3102,6 +3561,14 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
 				</File>
 			</Filter>
 			<Filter
@@ -3164,6 +3631,14 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Unicode Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -3238,6 +3713,14 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
 				</File>
 			</Filter>
 			<Filter
@@ -3306,6 +3789,14 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\tkCommon\tkCanvas\GDICanvas.cpp"
@@ -3352,6 +3843,14 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Unicode Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -3430,6 +3929,14 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\tkCommon\tkGfx\CUtil.cpp"
@@ -3476,6 +3983,14 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Unicode Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -3554,6 +4069,14 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="plugins\plugins.cpp"
@@ -3600,6 +4123,14 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Unicode Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -3694,6 +4225,14 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
 				</File>
 			</Filter>
 			<Filter
@@ -3768,6 +4307,15 @@
 							CommandLine="if &quot;%OS%&quot;==&quot;&quot; goto NOTNT&#x0D;&#x0A;if not &quot;%OS%&quot;==&quot;Windows_NT&quot; goto NOTNT&#x0D;&#x0A;&quot;$(TargetPath)&quot; /RegServer&#x0D;&#x0A;echo regsvr32 exec. time &gt; &quot;$(OutDir)\regsvr32.trg&quot;&#x0D;&#x0A;echo Server registration done!&#x0D;&#x0A;goto end&#x0D;&#x0A;:NOTNT&#x0D;&#x0A;echo Warning : Cannot register Unicode EXE on Windows 95&#x0D;&#x0A;:end&#x0D;&#x0A;"
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Performing registration"
+							CommandLine="&quot;$(TargetPath)&quot; /RegServer&#x0D;&#x0A;echo regsvr32 exec. time &gt; &quot;$(OutDir)\regsvr32.trg&quot;&#x0D;&#x0A;echo Server registration done!&#x0D;&#x0A;"
+						/>
+					</FileConfiguration>
 				</File>
 			</Filter>
 		</Filter>
@@ -3830,6 +4378,14 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Unicode Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -3908,6 +4464,14 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
 				</File>
 			</Filter>
 			<Filter
@@ -3977,6 +4541,14 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
 				</File>
 			</Filter>
 			<Filter
@@ -4037,6 +4609,15 @@
 							Name="VCCustomBuildTool"
 							Description="Performing registration"
 							CommandLine="if &quot;%OS%&quot;==&quot;&quot; goto NOTNT&#x0D;&#x0A;if not &quot;%OS%&quot;==&quot;Windows_NT&quot; goto NOTNT&#x0D;&#x0A;&quot;$(TargetPath)&quot; /RegServer&#x0D;&#x0A;echo regsvr32 exec. time &gt; &quot;$(OutDir)\regsvr32.trg&quot;&#x0D;&#x0A;echo Server registration done!&#x0D;&#x0A;goto end&#x0D;&#x0A;:NOTNT&#x0D;&#x0A;echo Warning : Cannot register Unicode EXE on Windows 95&#x0D;&#x0A;:end&#x0D;&#x0A;"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Optimised|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Performing registration"
+							CommandLine="&quot;$(TargetPath)&quot; /RegServer&#x0D;&#x0A;echo regsvr32 exec. time &gt; &quot;$(OutDir)\regsvr32.trg&quot;&#x0D;&#x0A;echo Server registration done!&#x0D;&#x0A;"
 						/>
 					</FileConfiguration>
 				</File>

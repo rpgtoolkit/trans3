@@ -371,7 +371,7 @@ void showScreen(const int width, const int height)
 	createCanvases();
 
 	// TBD: Implement smarter conditions when to show splash screen
-	splashScreen();
+	//splashScreen();
 }
 
 /*
@@ -664,13 +664,6 @@ void renderNow(CCanvas *cnv, const bool bForce)
 	}
 
 	// Render the cursor
-	// Render overlay text for BETA
-	g_pDirectDraw->DrawTextA(5, g_resY - 30, "Trans3 3.2", "Arial", 16, RGB(250, 250, 250), 0, 0, 0, 0, 1);
-	extern double g_fpms;
-	std::stringstream strFPS;
-	strFPS << "FPS: " << int(g_fpms * MILLISECONDS);
-	int w = cnv->GetTextSize(strFPS.str(), "Arial", 16, 1, 0).cx;
-	g_pDirectDraw->DrawTextA(g_resX - w - 10, g_resY - 30, strFPS.str(), "Arial", 16, RGB(100, 200, 250), 1, 0, 0, 0, 1);
 	if (bScreen) g_pDirectDraw->Refresh();
 }
 
