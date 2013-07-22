@@ -54,6 +54,12 @@ typedef std::basic_string<TCHAR> STRING;
 #define STRING_DEFINED
 #endif
 
+/*
+ * *************************************************************************
+ * tagUnitDataType
+ * *************************************************************************
+ */
+
 // Data types.
 typedef enum tagUnitDataType
 {
@@ -70,7 +76,19 @@ typedef enum tagUnitDataType
 	UDT_PLUGIN = 1024	// A plugin call.
 } UNIT_DATA_TYPE;
 
+/*
+ * *************************************************************************
+ * CProgram
+ * *************************************************************************
+ */
+
 class CProgram;
+
+/*
+ * *************************************************************************
+ * tagStackFrame
+ * *************************************************************************
+ */
 
 // A frame on the stack.
 typedef struct tagStackFrame
@@ -98,6 +116,12 @@ typedef struct tagStackFrame
 		udt(UNIT_DATA_TYPE(UDT_NUM | UDT_UNSET)) { }
 } STACK_FRAME, *LPSTACK_FRAME;
 
+/*
+ * *************************************************************************
+ * tagCallData
+ * *************************************************************************
+ */
+
 // Data passed to a called function.
 typedef struct tagCallData
 {
@@ -113,6 +137,12 @@ typedef struct tagCallData
 typedef std::pair<unsigned int, STRING> REFERENCE_DESC;
 typedef std::pair<LPSTACK_FRAME, REFERENCE_DESC> REFERENCE;
 typedef std::map<unsigned int, REFERENCE> REFERENCE_MAP;
+
+/*
+ * *************************************************************************
+ * tagCallFrame
+ * *************************************************************************
+ */
 
 // A call.
 typedef struct tagCallFrame
@@ -130,6 +160,12 @@ typedef struct tagCallFrame
 // A callable function.
 typedef void (*MACHINE_FUNC) (CALL_DATA &);
 
+/*
+ * *************************************************************************
+ * tagMachineUnit
+ * *************************************************************************
+ */
+
 // A machine instruction unit.
 typedef struct tagMachineUnit
 {
@@ -142,6 +178,12 @@ typedef struct tagMachineUnit
 	void show() const;
 	void execute(CProgram *prg) const;
 } MACHINE_UNIT, *LPMACHINE_UNIT;
+
+/*
+ * *************************************************************************
+ * Operators
+ * *************************************************************************
+ */
 
 // RPGCode operators.
 namespace operators
@@ -191,6 +233,12 @@ namespace operators
 	void array(CALL_DATA &call);
 }
 
+/*
+ * *************************************************************************
+ * tagNamedMethod
+ * *************************************************************************
+ */
+
 // For loading methods.
 typedef struct tagNamedMethod
 {
@@ -206,12 +254,24 @@ typedef struct tagNamedMethod
 	static tagNamedMethod *locate(const STRING name, const int params, const bool bMethod, CProgram &prg);
 } NAMED_METHOD, *LPNAMED_METHOD;
 
+/*
+ * *************************************************************************
+ * tagClassVisibility
+ * *************************************************************************
+ */
+
 // Class visibilities.
 typedef enum tagClassVisibility
 {
 	CV_PRIVATE,
 	CV_PUBLIC
 } CLASS_VISIBILITY;
+
+/*
+ * *************************************************************************
+ * tagClass
+ * *************************************************************************
+ */
 
 // A class.
 typedef struct tagClass
@@ -240,6 +300,12 @@ inline STRING lcase(const STRING str)
 	return ret;
 }
 
+/*
+ * *************************************************************************
+ * CPtrData
+ * *************************************************************************
+ */
+
 // A pointer held in place.
 template <class T>
 class CPtrData
@@ -259,6 +325,12 @@ private:
 	T *m_pData;
 };
 
+/*
+ * *************************************************************************
+ * CEnumeration
+ * *************************************************************************
+ */
+
 // A class for enumeration.
 template <class T>
 class CEnumeration
@@ -274,6 +346,12 @@ private:
 	T &m_enum;
 };
 
+/*
+ * *************************************************************************
+ * tagExceptionType
+ * *************************************************************************
+ */
+
 // Types of exceptions.
 typedef enum tagExceptionType
 {
@@ -281,6 +359,12 @@ typedef enum tagExceptionType
 	E_ERROR,
 	E_WARNING
 } EXCEPTION_TYPE;
+
+/*
+ * *************************************************************************
+ * tagVariableScope
+ * *************************************************************************
+ */
 
 // Broad scope categories.
 typedef enum tagVariableScope
@@ -304,6 +388,12 @@ typedef CEnumeration<std::map<STRING, CPtrData<STACK_FRAME> > > HEAP_ENUM;
 typedef CEnumeration<std::map<STRING, STRING> > REDIRECT_ENUM;
 typedef CEnumeration<std::set<CThread *> > THREAD_ENUM;
 typedef CEnumeration<std::map<unsigned int, STRING> > OBJECT_ENUM;
+
+/*
+ * *************************************************************************
+ * CProgram
+ * *************************************************************************
+ */
 
 // A program.
 class CProgram
@@ -467,6 +557,12 @@ protected:
 	LPSTACK_FRAME (CProgram::*m_pResolveFunc) (const STRING name, unsigned int *);
 };
 
+/*
+ * *************************************************************************
+ * CProgramChild
+ * *************************************************************************
+ */
+
 // A child of a program. Used for parsing lines at runtime.
 class CProgramChild : public CProgram
 {
@@ -479,6 +575,12 @@ private:
 	CProgram &m_prg;
 	std::list<std::map<STRING, STACK_FRAME> > *getLocals() { return m_prg.getLocals(); }
 };
+
+/*
+ * *************************************************************************
+ * CThread
+ * *************************************************************************
+ */
 
 // An RPGCode thread.
 class CThread : public CProgram
@@ -511,6 +613,12 @@ protected:
 	static std::set<CThread *> m_threads;
 };
 
+/*
+ * *************************************************************************
+ * CException
+ * *************************************************************************
+ */
+
 // An exception.
 class CException
 {
@@ -525,11 +633,23 @@ protected:
 		m_str(str), m_type(type) { }
 };
 
+/*
+ * *************************************************************************
+ * CError
+ * *************************************************************************
+ */
+
 class CError : public CException
 {
 public:
 	CError(const STRING str): CException(str, E_ERROR) { }
 };
+
+/*
+ * *************************************************************************
+ * CWarning
+ * *************************************************************************
+ */
 
 class CWarning : public CException
 {

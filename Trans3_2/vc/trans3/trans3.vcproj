@@ -473,7 +473,7 @@
 				LinkLibraryDependencies="true"
 				AdditionalDependencies="ddraw.lib dxguid.lib msimg32.lib odbc32.lib odbccp32.lib dinput8.lib winmm.lib strmiids.lib FreeImaged.lib dsound.lib gdiplus.lib"
 				OutputFile=".\Debug/trans3.exe"
-				LinkIncremental="2"
+				LinkIncremental="0"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\tkCommon\images\;.\audio\;&quot;$(DXSDK_DIR)Lib\x86&quot;"
 				IgnoreDefaultLibraryNames="LIBC;"

@@ -74,6 +74,136 @@ LPCRITICAL_SECTION g_mutex = NULL;
 static std::map<STRING, CProgram> g_cache; // Program cache.
 typedef std::map<STRING, CProgram>::iterator CACHE_ITR;
 
+/*
+ * *************************************************************************
+ * Global Scope
+ * *************************************************************************
+ */
+
+// Parsing error handler.
+int yyerror(const char *error)
+{
+	extern unsigned int g_lines;
+	TCHAR str[255];
+	// No +1 because the first line is a hacky bug fix.
+	// See CProgram::open().
+	_itot(g_lines, str, 10);
+#ifndef _UNICODE
+	STRING strError = error;
+#else
+	STRING strError = getUnicodeString(std::string(error));
+#endif
+	strError[0] = toupper(strError[0]);
+	CProgram::debugger(CProgram::m_parsing + _T("\r\nLine ") + str + _T(": ") + strError + _T("."));
+	return 0;
+}
+
+inline STRING getUnitDataType(UNIT_DATA_TYPE udt)
+{
+	STRING ret;
+
+	if (udt & UDT_UNSET) ret += "UDT_UNSET, ";
+	if (udt & UDT_NUM) ret += "UDT_NUM, ";
+	if (udt & UDT_LIT) ret += "UDT_LIT, ";
+	if (udt & UDT_ID) ret += "UDT_ID, ";
+	if (udt & UDT_FUNC) ret += "UDT_FUNC, ";
+	if (udt & UDT_OPEN) ret += "UDT_OPEN, ";
+	if (udt & UDT_CLOSE) ret += "UDT_CLOSE, ";
+	if (udt & UDT_LINE) ret += "UDT_LINE, ";
+	if (udt & UDT_OBJ) ret += "UDT_OBJ, ";
+	if (udt & UDT_LABEL) ret += "UDT_LABEL, ";
+	if (udt & UDT_PLUGIN) ret += "UDT_PLUGIN, ";
+
+	return (!ret.empty()) ? ret.substr(0, ret.length() - 2) : STRING();
+}
+
+#define YYSTACKSIZE 50000
+#define YYSTYPE CVariant
+#include "y.tab.c"
+#ifdef STRING
+#undef STRING
+#endif
+
+// Read a string.
+inline STRING freadString(FILE *file)
+{
+	STRING ret;
+	TCHAR c = _T('\0');
+	while (fread(&c, sizeof(TCHAR), 1, file) != 0)
+	{
+		if (c == _T('\0')) break;
+		ret += c;
+	}
+	return ret;
+}
+
+// Serialise a stack frame.
+inline void serialiseStackFrame(CFile &stream, const STACK_FRAME &sf)
+{
+	// Do not bother writing 'tag'; it is only for virtual
+	// variables and they cannot be serialised anyway.
+
+	// The member 'prg' is also not written because it is
+	// just a pointer to the current program.
+	stream << sf.num << sf.lit << int(sf.udt);
+}
+inline void reconstructStackFrame(CFile &stream, STACK_FRAME &sf)
+{
+	int udt = 0;
+	stream >> sf.num >> sf.lit >> udt;
+	sf.udt = UNIT_DATA_TYPE(udt);
+}
+
+// opr - the overloaded operator to check for
+// call[0] must be an object.
+inline bool checkOverloadedOperator(const STRING opr, CALL_DATA &call)
+{
+	const unsigned int obj = (unsigned int)call[0].getNum();
+
+	const STRING type = CProgram::m_objects[obj];
+	std::map<STRING, tagClass>::iterator k = call.prg->m_classes.find(type);
+	if (k == call.prg->m_classes.end())
+	{
+		throw CError(_T("Could not find class ") + type + _T("."));
+	}
+
+	const STRING method = _T("operator") + opr;
+	const CLASS_VISIBILITY cv = (call.prg->m_calls.size() && 
+		(CProgram::m_objects[call.prg->m_calls.back().obj] == type)) ? CV_PRIVATE : CV_PUBLIC;
+	if (!k->second.locate(method, call.params - 1, cv)) return false;
+
+	STACK_FRAME &fra = call.ret();
+	fra.udt = UDT_OBJ;
+	fra.lit = method;
+	call.prg->m_pStack->push_back(call.prg);
+	call.p = &call.prg->m_pStack->back() - (++call.params);
+	CProgram::methodCall(call);
+	return true;
+}
+
+// The point of this macro is to avoid a massive slowdown because I don't trust
+// VC++ to inline this the way I want it to.
+#define CHECK_OVERLOADED_OPERATOR(opr, fail) \
+	if (call[0].getType() & UDT_OBJ) \
+	{ \
+		try \
+		{ \
+			if (!checkOverloadedOperator(_T(#opr), call)) \
+				throw CError(_T("No overloaded operator ") _T(#opr) _T(" found!")); \
+			return; \
+		} \
+		catch (CError err) \
+		{ \
+			if (fail) throw err; \
+		} \
+	}
+
+/*
+ * *************************************************************************
+ * CProgram
+ * *************************************************************************
+ */
+
 // Copy constructor for CProgram.
 CProgram::CProgram(const CProgram &rhs)
 {
@@ -104,105 +234,6 @@ CProgram::~CProgram()
 	{
 		// The above will fail if we are exiting.
 	}
-}
-
-// Protected constructor.
-CThread::CThread(const STRING str):
-CProgram(),
-m_bSleeping(false) 
-{
-	extern STRING g_projectPath;
-	m_fileName = g_projectPath + PRG_PATH + str;
-	if (CFile::fileExists(m_fileName))
-	{
-		open(m_fileName);
-	}
-	else
-	{
-		m_fileName = str;
-		loadFromString(str);
-	}
-}
-
-// Create a thread.
-CThread *CThread::create(const STRING str)
-{
-	CThread *p = new CThread(str);
-	m_threads.insert(p);
-	return p;
-}
-
-// Destroy a thread.
-void CThread::destroy(CThread *p)
-{
-	std::set<CThread *>::iterator i = m_threads.find(p);
-	if (i != m_threads.end())
-	{
-		m_threads.erase(i);
-		delete p;
-	}
-}
-
-// Destroy all threads.
-void CThread::destroyAll()
-{
-	std::set<CThread *>::iterator i = m_threads.begin();
-	for (; i != m_threads.end(); ++i)
-	{
-		delete *i;
-	}
-	m_threads.clear();
-}
-
-// Multitask now.
-void CThread::multitask(const unsigned int units)
-{
-	std::set<CThread *>::iterator i = m_threads.begin();
-	for (; i != m_threads.end(); ++i)
-	{
-		(*i)->execute(units);
-	}
-}
-
-// Put a thread to sleep.
-// 0 milliseconds = indefinite sleep
-void CThread::sleep(const unsigned long milliseconds)
-{
-	m_bSleeping = true;
-	m_sleepDuration = milliseconds;
-	m_sleepBegin = GetTickCount();
-}
-
-// Is a thread sleeping?
-bool CThread::isSleeping() const
-{
-	if (!m_bSleeping) return false;
-
-	if (m_sleepDuration && (GetTickCount() - m_sleepBegin >= m_sleepDuration))
-	{
-		m_bSleeping = false;
-		return false;
-	}
-	return true;
-}
-
-// Check how much sleep is remaining.
-unsigned long CThread::sleepRemaining() const
-{
-	if (!isSleeping() || !m_sleepDuration) return 0;
-	return (m_sleepDuration - (GetTickCount() - m_sleepBegin));
-}
-
-// Execute n units from a program.
-bool CThread::execute(const unsigned int units)
-{
-	unsigned int i = 0;
-	while ((m_i != m_units.end()) && (i++ < units) && !isSleeping())
-	{
-		m_i->execute(this);
-		++m_i; 
-	}
-	return true;
 }
 
 // Assignment operator.
@@ -267,24 +298,6 @@ void CProgram::freePlugins()
 		delete *i;
 	}
 	m_plugins.clear();
-}
-
-// Parsing error handler.
-int yyerror(const char *error)
-{
-	extern unsigned int g_lines;
-	TCHAR str[255];
-	// No +1 because the first line is a hacky bug fix.
-	// See CProgram::open().
-	_itot(g_lines, str, 10);
-#ifndef _UNICODE
-	STRING strError = error;
-#else
-	STRING strError = getUnicodeString(std::string(error));
-#endif
-	strError[0] = toupper(strError[0]);
-	CProgram::debugger(CProgram::m_parsing + _T("\r\nLine ") + str + _T(": ") + strError + _T("."));
-	return 0;
 }
 
 // Estimate the line a unit is part of. Doesn't work at all for
@@ -401,85 +414,6 @@ void CProgram::removeRedirect(CONST STRING str)
 	}
 }
 
-// Locate a named method.
-tagNamedMethod *tagNamedMethod::locate(const STRING name, const int params, const bool bMethod, CProgram &prg)
-{
-	std::vector<NAMED_METHOD>::iterator i = prg.m_methods.begin();
-	for (; i != prg.m_methods.end(); ++i)
-	{
-		if ((i->name == name) && (i->params == params) && (bMethod || (i->i != 0xffffff)))
-		{
-			return &*i;
-		}
-	}
-	return NULL;
-}
-
-tagNamedMethod *tagNamedMethod::locate(const STRING name, const int params, const bool bMethod)
-{
-	std::vector<NAMED_METHOD>::iterator i = m_methods.begin();
-	for (; i != m_methods.end(); ++i)
-	{
-		if ((i->name == name) && (i->params == params) && (bMethod || (i->i != 0xffffff)))
-		{
-			return &*i;
-		}
-	}
-	return NULL;
-}
-
-tagNamedMethod *tagClass::locate(const STRING name, const int params, const CLASS_VISIBILITY vis)
-{
-	std::deque<std::pair<NAMED_METHOD, CLASS_VISIBILITY> >::iterator i = methods.begin();
-	for (; i != methods.end(); ++i)
-	{
-		if ((i->second >= vis) && (i->first.name == name) && (i->first.params == params))
-		{
-			return &i->first;
-		}
-	}
-	return NULL;
-}
-
-// Check whether the class has a member.
-bool tagClass::memberExists(const STRING name, const CLASS_VISIBILITY vis) const
-{
-	std::deque<std::pair<STRING, CLASS_VISIBILITY> >::const_iterator i = members.begin();
-	for (; i != members.end(); ++i)
-	{
-		if ((i->second >= vis) && (i->first == name)) return true;
-	}
-	return false;
-}
-
-// Inherit a class.
-void tagClass::inherit(const tagClass &cls)
-{
-	std::deque<std::pair<STRING, CLASS_VISIBILITY> >::const_iterator i = cls.members.begin();
-	for (; i != cls.members.end(); ++i)
-	{
-		if (!memberExists(i->first, CV_PRIVATE))
-		{
-			members.push_back(*i);
-		}
-	}
-
-	std::deque<std::pair<NAMED_METHOD, CLASS_VISIBILITY> >::const_iterator j = cls.methods.begin();
-	for (; j != cls.methods.end(); ++j)
-	{
-		if (!locate(j->first.name, j->first.params, CV_PRIVATE))
-		{
-			methods.push_back(*j);
-		}
-	}
-
-	std::deque<STRING>::const_iterator k = cls.inherits.begin();
-	for (; k != cls.inherits.end(); ++k)
-	{
-		inherits.push_back(*k);
-	}
-}
-
 // Get a function's name.
 STRING CProgram::getFunctionName(const MACHINE_FUNC func)
 {
@@ -489,40 +423,6 @@ STRING CProgram::getFunctionName(const MACHINE_FUNC func)
 		if (i->second == func) break;
 	}
 	return ((i != m_functions.end()) ? i->first : _T(""));
-}
-
-inline STRING getUnitDataType(UNIT_DATA_TYPE udt)
-{
-	STRING ret;
-
-	if (udt & UDT_UNSET) ret += "UDT_UNSET, ";
-	if (udt & UDT_NUM) ret += "UDT_NUM, ";
-	if (udt & UDT_LIT) ret += "UDT_LIT, ";
-	if (udt & UDT_ID) ret += "UDT_ID, ";
-	if (udt & UDT_FUNC) ret += "UDT_FUNC, ";
-	if (udt & UDT_OPEN) ret += "UDT_OPEN, ";
-	if (udt & UDT_CLOSE) ret += "UDT_CLOSE, ";
-	if (udt & UDT_LINE) ret += "UDT_LINE, ";
-	if (udt & UDT_OBJ) ret += "UDT_OBJ, ";
-	if (udt & UDT_LABEL) ret += "UDT_LABEL, ";
-	if (udt & UDT_PLUGIN) ret += "UDT_PLUGIN, ";
-
-	return (!ret.empty()) ? ret.substr(0, ret.length() - 2) : STRING();
-}
-
-// Show the contents of the instruction unit.
-/*inline */void tagMachineUnit::show() const
-{
-	STRINGSTREAM ss;
-
-	ss			<< "Lit: " << getAsciiString(lit)
-				<< "\nNum: " << num
-				<< "\nType: " << getUnitDataType(udt)
-				<< "\nFunc: " << getAsciiString(CProgram::getFunctionName(func))
-				<< "\nParams: " << params;
-				//<< "\n\n";
-
-	CProgram::debugger(ss.str());
 }
 
 // Add a function to the global namespace.
@@ -621,7 +521,8 @@ void CProgram::methodCall(CALL_DATA &call)
 		{
 			// Parameter is an object, but is it a caller or an object function parameter?
 			// See if the caller's class is present
-			// 3rd parameter from the last should contain the pointer to caller's class. It should be of type UDT_NUM and UDT_OBJ
+			// 3rd parameter from the last should contain the pointer to caller's class. 
+			//It should be of type UDT_NUM and UDT_OBJ.
 			objp += call.params - 2;
 			if ((~objp->udt & UDT_OBJ) || (~objp->udt & UDT_NUM))
 			{
@@ -649,7 +550,8 @@ void CProgram::methodCall(CALL_DATA &call)
 			fra.lit = _T("~") + k->first;
 		}
 
-		const CLASS_VISIBILITY cv = (call.prg->m_calls.size() && (CProgram::m_objects[call.prg->m_calls.back().obj] == type)) ? CV_PRIVATE : CV_PUBLIC;
+		const CLASS_VISIBILITY cv = (call.prg->m_calls.size() && 
+			(CProgram::m_objects[call.prg->m_calls.back().obj] == type)) ? CV_PRIVATE : CV_PUBLIC;
 		LPNAMED_METHOD p = k->second.locate(fra.lit, call.params - 2, cv);
 		if (!p)
 		{
@@ -657,7 +559,8 @@ void CProgram::methodCall(CALL_DATA &call)
 			{
 				TCHAR str[255];
 				_itot(call.params - 2, str, 10);
-				throw CError(_T("Class ") + k->first + _T(" has no accessible ") + fra.lit + _T(" method with a parameter count of ") + str + _T("."));
+				throw CError(_T("Class ") + k->first + _T(" has no accessible ") + 
+					fra.lit + _T(" method with a parameter count of ") + str + _T("."));
 			}
 			else
 			{
@@ -884,26 +787,6 @@ void CProgram::returnReference(CALL_DATA &call)
 		call[0].lit = _T(':') + res.second;
 	}
 	call.prg->returnFromMethod(call[0]);
-}
-
-#define YYSTACKSIZE 50000
-#define YYSTYPE CVariant
-#include "y.tab.c"
-#ifdef STRING
-#undef STRING
-#endif
-
-// Read a string.
-inline STRING freadString(FILE *file)
-{
-	STRING ret;
-	TCHAR c = _T('\0');
-	while (fread(&c, sizeof(TCHAR), 1, file) != 0)
-	{
-		if (c == _T('\0')) break;
-		ret += c;
-	}
-	return ret;
 }
 
 // Open an RPGCode program.
@@ -1209,7 +1092,8 @@ void CProgram::parseFile(FILE *pFile)
 			if (depth && !--depth) pClass = NULL;
 		}
 
-		if ((i->udt & UDT_ID) && (i->udt & UDT_LINE) && ((i == m_units.begin()) || ((i - 1)->udt & UDT_LINE)) && ((i == m_units.end()) || ((i + 1)->udt & UDT_LINE)))
+		if ((i->udt & UDT_ID) && (i->udt & UDT_LINE) && ((i == m_units.begin()) || ((i - 1)->udt & UDT_LINE)) && 
+			((i == m_units.end()) || ((i + 1)->udt & UDT_LINE)))
 		{
 			if (depth == 1)
 			{
@@ -1284,7 +1168,8 @@ void CProgram::parseFile(FILE *pFile)
 				{
 					TCHAR str[255]; _itot(i->params - 1, str, 10);
 					TCHAR line[255]; _itot(getLine(i), line, 10);
-					debugger(STRING(_T("Near line ")) + line + _T(": No accessible constructor for ") + unit->lit + _T(" has a parameter count of ") + str + _T("."));
+					debugger(STRING(_T("Near line ")) + line + _T(": No accessible constructor for ") + unit->lit + 
+						_T(" has a parameter count of ") + str + _T("."));
 				}
 			}
 		}
@@ -1596,23 +1481,6 @@ void CProgram::include(const CProgram prg)
 			else if ((j->udt & UDT_CLOSE) && !--depth) break;
 		} while (++j != prg.m_units.end());
 	}
-}
-
-// Serialise a stack frame.
-inline void serialiseStackFrame(CFile &stream, const STACK_FRAME &sf)
-{
-	// Do not bother writing 'tag'; it is only for virtual
-	// variables and they cannot be serialised anyway.
-
-	// The member 'prg' is also not written because it is
-	// just a pointer to the current program.
-	stream << sf.num << sf.lit << int(sf.udt);
-}
-inline void reconstructStackFrame(CFile &stream, STACK_FRAME &sf)
-{
-	int udt = 0;
-	stream >> sf.num >> sf.lit >> udt;
-	sf.udt = UNIT_DATA_TYPE(udt);
 }
 
 // Serialise the current state.
@@ -2034,7 +1902,8 @@ void CProgram::handleError(CException *p)
 			// Try to jump to the label specified.
 			if (!jump(handler))
 			{
-				CError exp = _T("An error occurred, but the handler could not be invoked because label \"") + handler + _T("\" was not found.");
+				CError exp = _T("An error occurred, but the handler could not be invoked because label \"") + handler 
+					+ _T("\" was not found.");
 				handler = _T("");
 				handleError(&exp);
 				// Swallow the original error deliberately to avoid confusion.
@@ -2063,6 +1932,406 @@ void CProgram::setErrorHandler(const STRING handler)
 		throw CError("An error handler cannot be set outside of a function.");
 	}
 	m_calls.back().errorHandler = handler;
+}
+
+// If...else control structure.
+void CProgram::conditional(CALL_DATA &call)
+{
+	if (call[0].getNum()) return;
+	int i = (int)(call.prg->m_i + 1)->num;
+	CONST_POS close = call.prg->m_units.begin() + i;
+	if (close == call.prg->m_units.end() - 1)
+	{
+		call.prg->m_i = close;
+		return;
+	}
+	if ((close != call.prg->m_units.end()) && ((close + 1)->udt & UDT_FUNC) && ((close + 1)->func == skipElse))
+	{
+		// Set the current unit to the else so that it is not
+		// executed in CProgram::run(). Execution would cause
+		// the else clause to be skipped.
+		call.prg->m_i = close + 1;
+	}
+	else
+	{
+		call.prg->m_i = close;
+	}
+}
+
+// Skip an else block.
+void CProgram::skipElse(CALL_DATA &call)
+{
+	call.prg->m_i = call.prg->m_units.begin() + (int)(call.prg->m_i + 1)->num;
+}
+
+// Skip a method block.
+void CProgram::skipMethod(CALL_DATA &call)
+{
+	call.prg->m_i = call.prg->m_units.begin() + (int)(call.prg->m_i + 1)->num;
+}
+
+// Skip a class block.
+void CProgram::skipClass(CALL_DATA &call)
+{
+	call.prg->m_i = call.prg->m_units.begin() + (int)(call.prg->m_i + 1)->num;
+}
+
+// While loop.
+void CProgram::whileLoop(CALL_DATA &call)
+{
+	if (call[0].getNum()) return;
+	call.prg->m_i = call.prg->m_units.begin() + (int)(call.prg->m_i + 1)->num;
+}
+
+// Until loop.
+void CProgram::untilLoop(CALL_DATA &call)
+{
+	if (!call[0].getNum()) return;
+	call.prg->m_i = call.prg->m_units.begin() + (int)(call.prg->m_i + 1)->num;
+}
+
+// For loop.
+void CProgram::forLoop(CALL_DATA &call)
+{
+	if (call[0].getNum()) return;
+	call.prg->m_i = call.prg->m_units.begin() + (int)(call.prg->m_i + 1)->num;
+}
+
+// Create an object.
+void CProgram::classFactory(CALL_DATA &call)
+{
+	const STRING cls = call[0].lit;
+	const LPCLASS pClass = &call.prg->m_classes[cls];
+
+	unsigned int obj = m_objects.size() + 1;
+	while (m_objects.count(obj)) ++obj;
+	m_objects.insert(std::map<unsigned int, STRING>::value_type(obj, cls));
+
+	call.ret().udt = UNIT_DATA_TYPE(UDT_OBJ | UDT_NUM);
+	call.ret().num = obj;
+}
+
+void CProgram::verifyType(CALL_DATA &call)
+{
+	const STRING cls = call[1].lit;
+	if (call.prg->m_classes.find(cls) == call.prg->m_classes.end())
+	{
+		throw CError("Could not find class referenced in parameter list: " + cls);
+	}
+
+	STACK_FRAME &frame = *call.prg->getVar(call[0].lit);
+	if (!(frame.udt & UDT_OBJ))
+	{
+		throw CError("The method requires a parameter of type " + cls + ".");
+	}
+	const unsigned int obj = (unsigned int)frame.num;
+	const STRING type = m_objects[obj];
+	if (type == cls) return;
+
+	LPCLASS pClass = &call.prg->m_classes[type];
+
+	std::deque<STRING>::const_iterator j = pClass->inherits.begin();
+	for (; j != pClass->inherits.end(); ++j)
+	{
+		if (*j == cls) return;
+	}
+
+	throw CError("The method requires a parameter of type " + cls + ".");
+}
+
+void CProgram::runtimeInclusion(CALL_DATA &call)
+{
+	extern STRING g_projectPath;
+
+	// Qualify the file name.
+	const STRING file = g_projectPath + PRG_PATH + call[0].getLit();
+
+	std::vector<STRING>::const_iterator i = call.prg->m_inclusions.begin();
+	for (; i != call.prg->m_inclusions.end(); ++i)
+	{
+		if (*i == file)
+		{
+			// Silently fail for backward compatibility.
+			return;
+		}
+	}
+
+	CProgram inclusion;
+	if (!inclusion.open(file))
+	{
+		throw CError(_T("Runtime inclusion: could not find ") + call[0].getLit() + _T("."));
+	}
+
+	// Add the file to the list of inclusions.
+	call.prg->m_inclusions.push_back(file);
+
+	// CProgram::include() will modify m_units, which will invalidate m_i,
+	// so we save the value of m_i relative to m_units.begin() here.
+	const unsigned int pos = call.prg->m_i - call.prg->m_units.begin();
+	const unsigned int size = call.prg->m_units.size();
+
+	call.prg->include(inclusion);
+
+	// Restore the position.
+	call.prg->m_i = call.prg->m_units.begin() + pos;
+
+	// And update references to the code that we just injected into the program.
+	call.prg->updateLocations(call.prg->m_units.begin() + size);
+	call.prg->resolveFunctions();
+}
+
+void CProgram::initialize()
+{
+	// Special.
+	addFunction(_T(" null"), NULL);
+
+	// Operators.
+	addFunction(_T("+"), operators::add);
+	addFunction(_T("-"), operators::sub);
+	addFunction(_T("*"), operators::mul);
+	addFunction(_T("|"), operators::bor);
+	addFunction(_T("`"), operators::bxor);
+	addFunction(_T("&"), operators::band);
+	addFunction(_T("||"), operators::lor);
+	addFunction(_T("&&"), operators::land);
+	addFunction(_T("!="), operators::ieq);
+	addFunction(_T("=="), operators::eq);
+	addFunction(_T(">="), operators::gte);
+	addFunction(_T("<="), operators::lte);
+	addFunction(_T(">"), operators::gt);
+	addFunction(_T("<"), operators::lt);
+	addFunction(_T(">>"), operators::rs);
+	addFunction(_T("<<"), operators::ls);
+	addFunction(_T("%"), operators::mod);
+	addFunction(_T("/"), operators::div);
+	addFunction(_T("^"), operators::pow);
+	addFunction(_T("="), operators::assign);
+	addFunction(_T("`="), operators::xor_assign);
+	addFunction(_T("|="), operators::or_assign);
+	addFunction(_T("&="), operators::and_assign);
+	addFunction(_T(">>="), operators::rs_assign);
+	addFunction(_T("<<="), operators::ls_assign);
+	addFunction(_T("-="), operators::sub_assign);
+	addFunction(_T("+="), operators::add_assign);
+	addFunction(_T("%="), operators::mod_assign);
+	addFunction(_T("/="), operators::div_assign);
+	addFunction(_T("*="), operators::mul_assign);
+	addFunction(_T("^="), operators::pow_assign);
+	addFunction(_T("||="), operators::lor_assign);
+	addFunction(_T("&&="), operators::land_assign);
+	addFunction(_T("[]"), operators::array);
+	addFunction(_T("++i"), operators::prefixIncrement);
+	addFunction(_T("i++"), operators::postfixIncrement);
+	addFunction(_T("--i"), operators::prefixDecrement);
+	addFunction(_T("i--"), operators::postfixDecrement);
+	addFunction(_T("-i"), operators::unaryNegation);
+	addFunction(_T("!"), operators::lnot);
+	addFunction(_T("?:"), operators::tertiary);
+	addFunction(_T("->"), operators::member);
+
+	// Reserved.
+	addFunction(_T("method a"), skipMethod);
+	addFunction(_T("method b"), methodCall);
+	addFunction(_T(" plugin"), pluginCall);
+	addFunction(_T("class a"), skipClass);
+	addFunction(_T("class b"), classFactory);
+	addFunction(_T("if"), conditional);
+	addFunction(_T("else"), skipElse);
+	addFunction(_T("elseif"), elseIf);
+	addFunction(_T("while"), whileLoop);
+	addFunction(_T("until"), untilLoop);
+	addFunction(_T("for"), forLoop);
+	addFunction(_T(" rtinclude"), runtimeInclusion);
+	addFunction(_T(" verifyType"), verifyType);
+	addFunction(_T(" returnVal"), returnVal);
+	addFunction(_T(" returnReference"), returnReference);
+
+	// Get the mutex for program execution.
+	g_mutex = CGarbageCollector::getInstance().getMutex();
+}
+
+/*
+ * *************************************************************************
+ * CThread
+ * *************************************************************************
+ */
+
+// Protected constructor.
+CThread::CThread(const STRING str):
+CProgram(),
+m_bSleeping(false) 
+{
+	extern STRING g_projectPath;
+	m_fileName = g_projectPath + PRG_PATH + str;
+	if (CFile::fileExists(m_fileName))
+	{
+		open(m_fileName);
+	}
+	else
+	{
+		m_fileName = str;
+		loadFromString(str);
+	}
+}
+
+// Create a thread.
+CThread *CThread::create(const STRING str)
+{
+	CThread *p = new CThread(str);
+	m_threads.insert(p);
+	return p;
+}
+
+// Destroy a thread.
+void CThread::destroy(CThread *p)
+{
+	std::set<CThread *>::iterator i = m_threads.find(p);
+	if (i != m_threads.end())
+	{
+		m_threads.erase(i);
+		delete p;
+	}
+}
+
+// Destroy all threads.
+void CThread::destroyAll()
+{
+	std::set<CThread *>::iterator i = m_threads.begin();
+	for (; i != m_threads.end(); ++i)
+	{
+		delete *i;
+	}
+	m_threads.clear();
+}
+
+// Multitask now.
+void CThread::multitask(const unsigned int units)
+{
+	std::set<CThread *>::iterator i = m_threads.begin();
+	for (; i != m_threads.end(); ++i)
+	{
+		(*i)->execute(units);
+	}
+}
+
+// Put a thread to sleep.
+// 0 milliseconds = indefinite sleep
+void CThread::sleep(const unsigned long milliseconds)
+{
+	m_bSleeping = true;
+	m_sleepDuration = milliseconds;
+	m_sleepBegin = GetTickCount();
+}
+
+// Is a thread sleeping?
+bool CThread::isSleeping() const
+{
+	if (!m_bSleeping) return false;
+
+	if (m_sleepDuration && (GetTickCount() - m_sleepBegin >= m_sleepDuration))
+	{
+		m_bSleeping = false;
+		return false;
+	}
+	return true;
+}
+
+// Check how much sleep is remaining.
+unsigned long CThread::sleepRemaining() const
+{
+	if (!isSleeping() || !m_sleepDuration) return 0;
+	return (m_sleepDuration - (GetTickCount() - m_sleepBegin));
+}
+
+// Execute n units from a program.
+bool CThread::execute(const unsigned int units)
+{
+	unsigned int i = 0;
+	while ((m_i != m_units.end()) && (i++ < units) && !isSleeping())
+	{
+		m_i->execute(this);
+		++m_i; 
+	}
+	return true;
+}
+
+/*
+ * *************************************************************************
+ * tagClass
+ * *************************************************************************
+ */
+
+tagNamedMethod *tagClass::locate(const STRING name, const int params, const CLASS_VISIBILITY vis)
+{
+	std::deque<std::pair<NAMED_METHOD, CLASS_VISIBILITY> >::iterator i = methods.begin();
+	for (; i != methods.end(); ++i)
+	{
+		if ((i->second >= vis) && (i->first.name == name) && (i->first.params == params))
+		{
+			return &i->first;
+		}
+	}
+	return NULL;
+}
+
+// Check whether the class has a member.
+bool tagClass::memberExists(const STRING name, const CLASS_VISIBILITY vis) const
+{
+	std::deque<std::pair<STRING, CLASS_VISIBILITY> >::const_iterator i = members.begin();
+	for (; i != members.end(); ++i)
+	{
+		if ((i->second >= vis) && (i->first == name)) return true;
+	}
+	return false;
+}
+
+// Inherit a class.
+void tagClass::inherit(const tagClass &cls)
+{
+	std::deque<std::pair<STRING, CLASS_VISIBILITY> >::const_iterator i = cls.members.begin();
+	for (; i != cls.members.end(); ++i)
+	{
+		if (!memberExists(i->first, CV_PRIVATE))
+		{
+			members.push_back(*i);
+		}
+	}
+
+	std::deque<std::pair<NAMED_METHOD, CLASS_VISIBILITY> >::const_iterator j = cls.methods.begin();
+	for (; j != cls.methods.end(); ++j)
+	{
+		if (!locate(j->first.name, j->first.params, CV_PRIVATE))
+		{
+			methods.push_back(*j);
+		}
+	}
+
+	std::deque<STRING>::const_iterator k = cls.inherits.begin();
+	for (; k != cls.inherits.end(); ++k)
+	{
+		inherits.push_back(*k);
+	}
+}
+
+/*
+ * *************************************************************************
+ * tagMachineUnit
+ * *************************************************************************
+ */
+
+// Show the contents of the instruction unit.
+/*inline */void tagMachineUnit::show() const
+{
+	STRINGSTREAM ss;
+
+	ss			<< "Lit: " << getAsciiString(lit)
+				<< "\nNum: " << num
+				<< "\nType: " << getUnitDataType(udt)
+				<< "\nFunc: " << getAsciiString(CProgram::getFunctionName(func))
+				<< "\nParams: " << params;
+				//<< "\n\n";
+
+	CProgram::debugger(ss.str());
 }
 
 // Execute an instruction unit.
@@ -2166,6 +2435,45 @@ void tagMachineUnit::execute(CProgram *prg) const
 	LeaveCriticalSection(g_mutex);
 }
 
+/*
+ * *************************************************************************
+ * tagNamedMethod
+ * *************************************************************************
+ */
+
+// Locate a named method.
+tagNamedMethod *tagNamedMethod::locate(const STRING name, const int params, const bool bMethod, CProgram &prg)
+{
+	std::vector<NAMED_METHOD>::iterator i = prg.m_methods.begin();
+	for (; i != prg.m_methods.end(); ++i)
+	{
+		if ((i->name == name) && (i->params == params) && (bMethod || (i->i != 0xffffff)))
+		{
+			return &*i;
+		}
+	}
+	return NULL;
+}
+
+tagNamedMethod *tagNamedMethod::locate(const STRING name, const int params, const bool bMethod)
+{
+	std::vector<NAMED_METHOD>::iterator i = m_methods.begin();
+	for (; i != m_methods.end(); ++i)
+	{
+		if ((i->name == name) && (i->params == params) && (bMethod || (i->i != 0xffffff)))
+		{
+			return &*i;
+		}
+	}
+	return NULL;
+}
+
+/*
+ * *************************************************************************
+ * tagStackFrame
+ * *************************************************************************
+ */
+
 // Get the numerical value from a stack frame.
 double tagStackFrame::getNum() const
 {
@@ -2254,48 +2562,11 @@ tagStackFrame tagStackFrame::getValue() const
 	return sf;
 }
 
-// opr - the overloaded operator to check for
-// call[0] must be an object.
-inline bool checkOverloadedOperator(const STRING opr, CALL_DATA &call)
-{
-	const unsigned int obj = (unsigned int)call[0].getNum();
-
-	const STRING type = CProgram::m_objects[obj];
-	std::map<STRING, tagClass>::iterator k = call.prg->m_classes.find(type);
-	if (k == call.prg->m_classes.end())
-	{
-		throw CError(_T("Could not find class ") + type + _T("."));
-	}
-
-	const STRING method = _T("operator") + opr;
-	const CLASS_VISIBILITY cv = (call.prg->m_calls.size() && (CProgram::m_objects[call.prg->m_calls.back().obj] == type)) ? CV_PRIVATE : CV_PUBLIC;
-	if (!k->second.locate(method, call.params - 1, cv)) return false;
-
-	STACK_FRAME &fra = call.ret();
-	fra.udt = UDT_OBJ;
-	fra.lit = method;
-	call.prg->m_pStack->push_back(call.prg);
-	call.p = &call.prg->m_pStack->back() - (++call.params);
-	CProgram::methodCall(call);
-	return true;
-}
-
-// The point of this macro is to avoid a massive slowdown because I don't trust
-// VC++ to inline this the way I want it to.
-#define CHECK_OVERLOADED_OPERATOR(opr, fail) \
-	if (call[0].getType() & UDT_OBJ) \
-	{ \
-		try \
-		{ \
-			if (!checkOverloadedOperator(_T(#opr), call)) \
-				throw CError(_T("No overloaded operator ") _T(#opr) _T(" found!")); \
-			return; \
-		} \
-		catch (CError err) \
-		{ \
-			if (fail) throw err; \
-		} \
-	}
+/*
+ * *************************************************************************
+ * Operators
+ * *************************************************************************
+ */
 
 void operators::add(CALL_DATA &call)
 {
@@ -2681,7 +2952,8 @@ void operators::member(CALL_DATA &call)
 		throw CError(_T("Could not find class ") + type + _T("."));
 	}
 
-	const CLASS_VISIBILITY cv = (call.prg->m_calls.size() && (CProgram::m_objects[call.prg->m_calls.back().obj] == type)) ? CV_PRIVATE : CV_PUBLIC;
+	const CLASS_VISIBILITY cv = (call.prg->m_calls.size() && 
+		(CProgram::m_objects[call.prg->m_calls.back().obj] == type)) ? CV_PRIVATE : CV_PUBLIC;
 	const STRING mem = call[1].lit;
 	if (!i->second.memberExists(mem, cv))
 	{
@@ -2703,220 +2975,4 @@ void operators::array(CALL_DATA &call)
 	const std::pair<bool, STRING> res = call.prg->getInstanceVar(call[0].lit);
 	const STRING prefix = (res.first ? (_T(':') + res.second) : call[0].lit);
 	call.ret().lit = prefix + _T('[') + call[1].getLit() + _T(']');
-}
-
-// If...else control structure.
-void CProgram::conditional(CALL_DATA &call)
-{
-	if (call[0].getNum()) return;
-	int i = (int)(call.prg->m_i + 1)->num;
-	CONST_POS close = call.prg->m_units.begin() + i;
-	if (close == call.prg->m_units.end() - 1)
-	{
-		call.prg->m_i = close;
-		return;
-	}
-	if ((close != call.prg->m_units.end()) && ((close + 1)->udt & UDT_FUNC) && ((close + 1)->func == skipElse))
-	{
-		// Set the current unit to the else so that it is not
-		// executed in CProgram::run(). Execution would cause
-		// the else clause to be skipped.
-		call.prg->m_i = close + 1;
-	}
-	else
-	{
-		call.prg->m_i = close;
-	}
-}
-
-// Skip an else block.
-void CProgram::skipElse(CALL_DATA &call)
-{
-	call.prg->m_i = call.prg->m_units.begin() + (int)(call.prg->m_i + 1)->num;
-}
-
-// Skip a method block.
-void CProgram::skipMethod(CALL_DATA &call)
-{
-	call.prg->m_i = call.prg->m_units.begin() + (int)(call.prg->m_i + 1)->num;
-}
-
-// Skip a class block.
-void CProgram::skipClass(CALL_DATA &call)
-{
-	call.prg->m_i = call.prg->m_units.begin() + (int)(call.prg->m_i + 1)->num;
-}
-
-// While loop.
-void CProgram::whileLoop(CALL_DATA &call)
-{
-	if (call[0].getNum()) return;
-	call.prg->m_i = call.prg->m_units.begin() + (int)(call.prg->m_i + 1)->num;
-}
-
-// Until loop.
-void CProgram::untilLoop(CALL_DATA &call)
-{
-	if (!call[0].getNum()) return;
-	call.prg->m_i = call.prg->m_units.begin() + (int)(call.prg->m_i + 1)->num;
-}
-
-// For loop.
-void CProgram::forLoop(CALL_DATA &call)
-{
-	if (call[0].getNum()) return;
-	call.prg->m_i = call.prg->m_units.begin() + (int)(call.prg->m_i + 1)->num;
-}
-
-// Create an object.
-void CProgram::classFactory(CALL_DATA &call)
-{
-	const STRING cls = call[0].lit;
-	const LPCLASS pClass = &call.prg->m_classes[cls];
-
-	unsigned int obj = m_objects.size() + 1;
-	while (m_objects.count(obj)) ++obj;
-	m_objects.insert(std::map<unsigned int, STRING>::value_type(obj, cls));
-
-	call.ret().udt = UNIT_DATA_TYPE(UDT_OBJ | UDT_NUM);
-	call.ret().num = obj;
-}
-
-void CProgram::verifyType(CALL_DATA &call)
-{
-	const STRING cls = call[1].lit;
-	if (call.prg->m_classes.find(cls) == call.prg->m_classes.end())
-	{
-		throw CError("Could not find class referenced in parameter list: " + cls);
-	}
-
-	STACK_FRAME &frame = *call.prg->getVar(call[0].lit);
-	if (!(frame.udt & UDT_OBJ))
-	{
-		throw CError("The method requires a parameter of type " + cls + ".");
-	}
-	const unsigned int obj = (unsigned int)frame.num;
-	const STRING type = m_objects[obj];
-	if (type == cls) return;
-
-	LPCLASS pClass = &call.prg->m_classes[type];
-
-	std::deque<STRING>::const_iterator j = pClass->inherits.begin();
-	for (; j != pClass->inherits.end(); ++j)
-	{
-		if (*j == cls) return;
-	}
-
-	throw CError("The method requires a parameter of type " + cls + ".");
-}
-
-void CProgram::runtimeInclusion(CALL_DATA &call)
-{
-	extern STRING g_projectPath;
-
-	// Qualify the file name.
-	const STRING file = g_projectPath + PRG_PATH + call[0].getLit();
-
-	std::vector<STRING>::const_iterator i = call.prg->m_inclusions.begin();
-	for (; i != call.prg->m_inclusions.end(); ++i)
-	{
-		if (*i == file)
-		{
-			// Silently fail for backward compatibility.
-			return;
-		}
-	}
-
-	CProgram inclusion;
-	if (!inclusion.open(file))
-	{
-		throw CError(_T("Runtime inclusion: could not find ") + call[0].getLit() + _T("."));
-	}
-
-	// Add the file to the list of inclusions.
-	call.prg->m_inclusions.push_back(file);
-
-	// CProgram::include() will modify m_units, which will invalidate m_i,
-	// so we save the value of m_i relative to m_units.begin() here.
-	const unsigned int pos = call.prg->m_i - call.prg->m_units.begin();
-	const unsigned int size = call.prg->m_units.size();
-
-	call.prg->include(inclusion);
-
-	// Restore the position.
-	call.prg->m_i = call.prg->m_units.begin() + pos;
-
-	// And update references to the code that we just injected into the program.
-	call.prg->updateLocations(call.prg->m_units.begin() + size);
-	call.prg->resolveFunctions();
-}
-
-void CProgram::initialize()
-{
-	// Special.
-	addFunction(_T(" null"), NULL);
-
-	// Operators.
-	addFunction(_T("+"), operators::add);
-	addFunction(_T("-"), operators::sub);
-	addFunction(_T("*"), operators::mul);
-	addFunction(_T("|"), operators::bor);
-	addFunction(_T("`"), operators::bxor);
-	addFunction(_T("&"), operators::band);
-	addFunction(_T("||"), operators::lor);
-	addFunction(_T("&&"), operators::land);
-	addFunction(_T("!="), operators::ieq);
-	addFunction(_T("=="), operators::eq);
-	addFunction(_T(">="), operators::gte);
-	addFunction(_T("<="), operators::lte);
-	addFunction(_T(">"), operators::gt);
-	addFunction(_T("<"), operators::lt);
-	addFunction(_T(">>"), operators::rs);
-	addFunction(_T("<<"), operators::ls);
-	addFunction(_T("%"), operators::mod);
-	addFunction(_T("/"), operators::div);
-	addFunction(_T("^"), operators::pow);
-	addFunction(_T("="), operators::assign);
-	addFunction(_T("`="), operators::xor_assign);
-	addFunction(_T("|="), operators::or_assign);
-	addFunction(_T("&="), operators::and_assign);
-	addFunction(_T(">>="), operators::rs_assign);
-	addFunction(_T("<<="), operators::ls_assign);
-	addFunction(_T("-="), operators::sub_assign);
-	addFunction(_T("+="), operators::add_assign);
-	addFunction(_T("%="), operators::mod_assign);
-	addFunction(_T("/="), operators::div_assign);
-	addFunction(_T("*="), operators::mul_assign);
-	addFunction(_T("^="), operators::pow_assign);
-	addFunction(_T("||="), operators::lor_assign);
-	addFunction(_T("&&="), operators::land_assign);
-	addFunction(_T("[]"), operators::array);
-	addFunction(_T("++i"), operators::prefixIncrement);
-	addFunction(_T("i++"), operators::postfixIncrement);
-	addFunction(_T("--i"), operators::prefixDecrement);
-	addFunction(_T("i--"), operators::postfixDecrement);
-	addFunction(_T("-i"), operators::unaryNegation);
-	addFunction(_T("!"), operators::lnot);
-	addFunction(_T("?:"), operators::tertiary);
-	addFunction(_T("->"), operators::member);
-
-	// Reserved.
-	addFunction(_T("method a"), skipMethod);
-	addFunction(_T("method b"), methodCall);
-	addFunction(_T(" plugin"), pluginCall);
-	addFunction(_T("class a"), skipClass);
-	addFunction(_T("class b"), classFactory);
-	addFunction(_T("if"), conditional);
-	addFunction(_T("else"), skipElse);
-	addFunction(_T("elseif"), elseIf);
-	addFunction(_T("while"), whileLoop);
-	addFunction(_T("until"), untilLoop);
-	addFunction(_T("for"), forLoop);
-	addFunction(_T(" rtinclude"), runtimeInclusion);
-	addFunction(_T(" verifyType"), verifyType);
-	addFunction(_T(" returnVal"), returnVal);
-	addFunction(_T(" returnReference"), returnReference);
-
-	// Get the mutex for program execution.
-	g_mutex = CGarbageCollector::getInstance().getMutex();
 }
