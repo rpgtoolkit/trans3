@@ -1430,7 +1430,7 @@ void tagBoard::renderBackground(CCanvas *const cnv, const RECT bounds)
 		}
 		else
 		{
-			rect.left = long(img.scroll.x) * g_screen.left;
+			rect.left = img.scroll.x * g_screen.left;
 		}
 
 		if (img.scroll.y < 0 || height < resY)
@@ -1439,7 +1439,7 @@ void tagBoard::renderBackground(CCanvas *const cnv, const RECT bounds)
 		}
 		else
 		{
-			rect.top = long(img.scroll.y) * g_screen.top;
+			rect.top = img.scroll.y * g_screen.top;
 		}
 
 		img.pCnv->BltTransparentPart(

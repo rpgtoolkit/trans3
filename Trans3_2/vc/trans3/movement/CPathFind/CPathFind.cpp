@@ -333,7 +333,7 @@ void CTilePathFind::addVector(CVector &vector, PF_SWEEPS &sweeps, PF_MATRIX &poi
 					// Block movement in the opposite direction.
 					// Obtain the tile coordinate of the target tile.
 					const DB_POINT target = sweeps[k].second;
-					int m = int(pt.x + target.x), n = int(pt.y + target.y);
+					int m = pt.x + target.x, n = pt.y + target.y;
 					coords::pixelToTile(m, n, coord, false, g_pBoard->sizeX);
 
 					if (m >= 0 && m < points.size() && n >= 0 && n < points[0].size())
@@ -383,7 +383,7 @@ PF_PATH CTilePathFind::constructPath(NODE node, const CSprite *) const
  */
 int CTilePathFind::distance(const NODE &a, const NODE &b) const
 {
-	const int dx = int(abs(a.pos.x - b.pos.x)), dy = int(abs(a.pos.y - b.pos.y));
+	const int dx = abs(a.pos.x - b.pos.x), dy = abs(a.pos.y - b.pos.y);
 	int di = 0;
 
 	switch(m_heuristic)
@@ -393,7 +393,7 @@ int CTilePathFind::distance(const NODE &a, const NODE &b) const
 		case PF_DIAGONAL:
 			// Diagonals cost sqrt(2):
 			di = (dx < dy ? dx : dy);
-			return (int(1.41) * di + (dx + dy - 2 * di));
+			return (1.41 * di + (dx + dy - 2 * di));
 	}
 	return 0;
 }
@@ -774,7 +774,7 @@ void CTilePathFind::sizeMatrix(PF_MATRIX &points)
 {
 	extern LPBOARD g_pBoard;
 	points.clear();
-	const int width = g_pBoard->effectiveWidth() * int(PF_TILE_RATIO), height = g_pBoard->effectiveHeight() * int(PF_TILE_RATIO);
+	const int width = g_pBoard->effectiveWidth() * PF_TILE_RATIO, height = g_pBoard->effectiveHeight() * PF_TILE_RATIO;
 	for (int i = 0; i <= width; ++i)
 	{
 		points.push_back(std::vector<PF_MATRIX_ELEMENT>(height + 1, 0));
@@ -811,8 +811,8 @@ PF_PATH CVectorPathFind::constructPath(NODE node, const CSprite *pSprite) const
  */
 int CVectorPathFind::distance(const NODE &a, const NODE &b) const
 {
-	const int dx = int(abs(a.pos.x - b.pos.x)), dy = int(abs(a.pos.y - b.pos.y));
-	return int(sqrt((DOUBLE)(dx * dx + dy * dy)));
+	const int dx = abs(a.pos.x - b.pos.x), dy = abs(a.pos.y - b.pos.y);
+	return sqrt((DOUBLE)(dx * dx + dy * dy));
 }
 
 /*

@@ -604,8 +604,8 @@ GAME_STATE gameLogic()
 		{
 			// Frames per millisecond.
 			g_fpms = (m_renderCount / m_renderTime);
-			const unsigned long fps = unsigned long(g_fpms) * MILLISECONDS;
-			g_mainFile.bFpsInTitleBar = 1;//~TEMP
+			const unsigned long fps = g_fpms * MILLISECONDS;
+g_mainFile.bFpsInTitleBar = 1;//~TEMP
 			if (g_mainFile.bFpsInTitleBar)
 			{
 				extern HWND g_hHostWnd;
@@ -635,7 +635,7 @@ GAME_STATE gameLogic()
 			// threads are roughly 50 times slower than normal programs...
 			//unsigned int units = HALF_FPS_CAP / fps;
 
-			unsigned int units = fps / (unsigned int(HALF_FPS_CAP) / 2);
+			unsigned int units = fps / (HALF_FPS_CAP / 2);
 			CThread::multitask((units < 1) ? 10 : ((units > 8) ? 80 : units*10));
 
 			// Movement.

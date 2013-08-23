@@ -70,7 +70,7 @@ bool tagTileAnim::open(const STRING fileName)
 	// (The editor (as of 3.1.0 and before) stores the value of
 	// a scrollbar whose maximum value of 200 corresponds to an intended
 	// delay of 5ms, and minimum of 1, corresponding to 1000ms.)
-	frameDelay = MILLISECONDS / frameDelay;
+	frameDelay = MILLISECONDS / double(frameDelay);
 
 	int frameCount;
 	file >> frameCount;

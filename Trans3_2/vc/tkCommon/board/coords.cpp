@@ -88,8 +88,8 @@ void coords::pixelToTile(int &x, int &y, const COORD_TYPE coord, const bool bRem
 	{
 		case TILE_NORMAL:
 		{
-			x = int(floor(x / 32.0) + 1);
-			y = int(floor(y / 32.0) + 1);
+			x = floor(x / 32.0) + 1;
+			y = floor(y / 32.0) + 1;
 		} break;
 		case ISO_STACKED:
 		{
