@@ -63,7 +63,7 @@ void messageBox(const STRING str)
 	RECT r;
 	r.left = 0;
 	r.top = 0;
-	r.right = g_resX * 0.7;
+	r.right = long(g_resX * 0.7);
 	r.bottom = g_resY / 2;
 	DrawText(hdc, str.c_str(), str.length(), &r, DT_CALCRECT | DT_WORDBREAK);
 
@@ -114,13 +114,13 @@ STRING prompt(const STRING str)
 	RECT r;
 	r.left = 0;
 	r.top = 0;
-	r.right = g_resX * 0.8;
+	r.right = long(g_resX * 0.8);
 	r.bottom = g_resY / 2;
 	DrawText(hdc, str.c_str(), str.length(), &r, DT_CALCRECT | DT_WORDBREAK);
 
 	backup.CloseDC(hdc);
 
-	const int minRight = g_resX * 0.6;
+	const int minRight = int(g_resX * 0.6);
 	if (r.right < minRight) r.right = minRight;
 
 	CCanvas box;
@@ -238,7 +238,7 @@ int rpgcodeMsgBox(STRING text, int buttons, const long textColor, const long bac
 	// this flag is set.
 
 	HDC hdc = backup.OpenDC();
-	RECT r = {0, 0, g_resX * 0.5, g_resY * 0.5};
+	RECT r = {0, 0, long(g_resX * 0.5), long(g_resY * 0.5)};
 	DrawText(hdc, text.c_str(), text.length(), &r, DT_CALCRECT | DT_WORDBREAK);
 	backup.CloseDC(hdc);
 

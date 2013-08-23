@@ -134,7 +134,7 @@ int performAttack(const int sourcePartyIdx, const int sourceFightIdx, const int 
 	int amount = damage;
 	if (amount > 0)
 	{
-		amount += ((rand() % 20) - 10) / 100.0 * amount;
+		amount += ((rand() % 20) - 10) / 100 * amount;
 		if (rand() % (((sourcePartyIdx == PLAYER_PARTY) ? ((targetPartyIdx == ENEMY_PARTY) ? pTarget->pEnemy->takeCrit : 0) : ((targetPartyIdx == ENEMY_PARTY) ? pSource->pEnemy->giveCrit : pTarget->pEnemy->takeCrit)) + 1))
 		{
 			amount -= pTarget->pFighter->defence();

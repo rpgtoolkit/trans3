@@ -424,7 +424,7 @@ void loadSaveState(const STRING str)
 					} 
 
 					// Set the position. Sprite location is always stored in pixels.
-					pItem->setPosition(x, y, z, PX_ABSOLUTE);
+					pItem->setPosition(int(x), int(y), z, PX_ABSOLUTE);
 					pItem->setActive(active != 0);
 					g_pBoard->items.push_back(pItem);
 				}

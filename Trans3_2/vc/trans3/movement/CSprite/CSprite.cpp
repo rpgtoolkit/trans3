@@ -191,7 +191,7 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 			// will operate on different target locations.
 			
 			// Test every pixel. 
-			const int fpp = m_pos.loopSpeed / PX_FACTOR;	// frames per pixel, rounded down.
+			const int fpp = m_pos.loopSpeed / int(PX_FACTOR);	// frames per pixel, rounded down.
 			if (!(m_pos.loopFrame % (!fpp ? 1 : fpp)))
 			{
 				// Reassign the direction in case of alteration.
@@ -409,7 +409,7 @@ bool CSprite::findDiversion(void)
 		{
 			// Pass PF_QUIT_BLOCKED for the last point.
 			const int flags = (path() ? PF_AVOID_SPRITE : PF_AVOID_SPRITE | PF_QUIT_BLOCKED);
-			p = pathFind(pt.x, pt.y, PF_PREVIOUS, flags);
+			p = pathFind(int(pt.x), int(pt.y), PF_PREVIOUS, flags);
 
 			if (!p.empty()) break;
 			else p.clear();
@@ -445,7 +445,7 @@ bool CSprite::findDiversion(void)
 			// Try each point along the path in turn.
 
 			const int flags = (i != path.end() - 1 ? PF_AVOID_SPRITE : PF_AVOID_SPRITE | PF_QUIT_BLOCKED);
-			p = pathFind(i->x, i->y, PF_PREVIOUS, flags);
+			p = pathFind(int(i->x), int(i->y), PF_PREVIOUS, flags);
 
 			if (!p.empty()) break;
 			else p.clear();
@@ -1285,7 +1285,7 @@ bool CSprite::doBoardEdges(void)
 	// Place sprite so base is touching the edge of the board, aligned
 	// to the grid dictated by moveSize() -- possibly should be only
 	// 8px or 32px, to make it uniform for all users.
-	const int mvSize = (m_bPxMovement ? 8.0 : 32.0); // = moveSize();
+	const int mvSize = (m_bPxMovement ? 8 : 32); // = moveSize();
 	const double width = (r.right - r.left) + (mvSize - (r.right - r.left) % mvSize),
 				height = (r.bottom - r.top) + (mvSize - (r.bottom - r.top) % mvSize),
 				offset = (pBoard->isIsometric() ? 0.0 : 32.0);
@@ -1323,7 +1323,7 @@ bool CSprite::doBoardEdges(void)
 	}
 
 	// Update the target co-ordinates for boardCollisions().
-	setPosition(m_pos.x, m_pos.y, m_pos.l, PX_ABSOLUTE);
+	setPosition(int(m_pos.x), int(m_pos.y), m_pos.l, PX_ABSOLUTE);
 
 	// Check the target board extends to the player's location.
 	if (m_pos.x > pBoard->pxWidth() || 
@@ -1332,7 +1332,7 @@ bool CSprite::doBoardEdges(void)
 		boardCollisions(pBoard) == TT_SOLID)		// Tiletype at target.
 	{
 		// Restore.
-		setPosition(pos.x, pos.y, m_pos.l, PX_ABSOLUTE);
+		setPosition(int(pos.x), int(pos.y), m_pos.l, PX_ABSOLUTE);
 		g_boards.free(pBoard);
 		return false;
 	}
@@ -1777,10 +1777,10 @@ void CSprite::drawVector(CCanvas *const cnv)
 		getDestination(pt);
 
 		cnv->DrawEllipse(
-			pt.x - dx - g_screen.left, 
-			pt.y - dy - g_screen.top, 
-			pt.x + dx - g_screen.left, 
-			pt.y + dy - g_screen.top, 
+			int(pt.x) - dx - g_screen.left, 
+			int(pt.y) - dy - g_screen.top, 
+			int(pt.x) + dx - g_screen.left, 
+			int(pt.y) + dy - g_screen.top, 
 			g_mainFile.pathColor
 		);
 	}
@@ -1800,7 +1800,7 @@ void CSprite::drawPath(CCanvas *const cnv, const LONG color)
 		round(m_pos.y) == m_pos.target.y && 
 		m_pos.path.empty())) return;
 
-	const int x = m_pos.target.x - g_screen.left, y = m_pos.target.y - g_screen.top;
+	const int x = int(m_pos.target.x) - g_screen.left, y = int(m_pos.target.y) - g_screen.top;
 
 	// Draw to the first point of the queue.
 	cnv->DrawLine(round(m_pos.x) - g_screen.left, round(m_pos.y) - g_screen.top, x, y, color);
@@ -1809,15 +1809,15 @@ void CSprite::drawPath(CCanvas *const cnv, const LONG color)
 	if (!m_pos.path.empty())
 	{
 		MV_PATH_ITR i = m_pos.path.begin();
-		cnv->DrawLine(x, y,	i->x - g_screen.left, i->y - g_screen.top, color);
+		cnv->DrawLine(x, y,	int(i->x) - g_screen.left, int(i->y) - g_screen.top, color);
 
 		for (; i != m_pos.path.end() - 1; ++i)
 		{
 			cnv->DrawLine(
-				i->x - g_screen.left, 
-				i->y - g_screen.top, 
-				(i + 1)->x - g_screen.left, 
-				(i + 1)->y - g_screen.top, 
+				int(i->x) - g_screen.left, 
+				int(i->y) - g_screen.top, 
+				int((i + 1)->x) - g_screen.left, 
+				int((i + 1)->y) - g_screen.top, 
 				color
 			);
 		}
@@ -1881,7 +1881,7 @@ void CSprite::alignBoard(RECT &rect, const bool bAllowNegatives)
 	else
 	{
 		// Centre around the player.
-		rect.left = m_pos.x - (width >> 1);
+		rect.left = long(m_pos.x) - (width >> 1);
 		if (rect.left < 0)
 		{
 			// Align to left of board.
@@ -1908,7 +1908,7 @@ void CSprite::alignBoard(RECT &rect, const bool bAllowNegatives)
 	}
 	else
 	{
-		rect.top = m_pos.y - (height >> 1);
+		rect.top = long(m_pos.y) - (height >> 1);
 		if (rect.top < 0)
 		{
 			rect.top = 0;
@@ -1939,7 +1939,7 @@ void CSprite::customStance(const STRING stance, const CProgram *prg, const bool 
 	if (i == m_attr.mapCustomGfx.end()) return;
 
 	m_pos.pAnm = i->second.pAnm->m_pAnm;
-	m_pos.timer.frameDelay = m_pos.pAnm->data()->delay * MILLISECONDS;
+	m_pos.timer.frameDelay = int(m_pos.pAnm->data()->delay) * MILLISECONDS;
 	
 	// Set .idleTime to hold the *number of frames this will run for*.
 	m_pos.timer.idleTime = m_pos.pAnm->data()->frameCount;
@@ -1990,7 +1990,7 @@ void CSprite::setAnm(MV_ENUM dir)
 			if (m_attr.mapGfx[GFX_MOVE][dir].pAnm)
 			{
 				m_pos.pAnm = m_attr.mapGfx[GFX_MOVE][dir].pAnm->m_pAnm;
-				m_pos.timer.frameDelay = m_pos.pAnm->data()->delay * MILLISECONDS;
+				m_pos.timer.frameDelay = int(m_pos.pAnm->data()->delay) * MILLISECONDS;
 			}
 	}
 }
@@ -2023,7 +2023,7 @@ void CSprite::checkIdling(void)
 				m_pos.timer.frameTime = GetTickCount();
 
 				// Frame delay for the idle animation.
-				m_pos.timer.frameDelay = m_pos.pAnm->data()->delay * MILLISECONDS;
+				m_pos.timer.frameDelay = int(m_pos.pAnm->data()->delay) * MILLISECONDS;
 			}
 		} // if (time player has been idle > idle time)
 

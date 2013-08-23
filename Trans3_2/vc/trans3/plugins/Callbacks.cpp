@@ -1029,7 +1029,7 @@ STDMETHODIMP CCallbacks::CBGetGeneralNum(int infoCode, int arrayPos, int playerS
 			if (pPlayer)
 			{
 				const SPRITE_POSITION p = pPlayer->getPosition();
-				int x = p.x, y = p.y;
+				int x = (int)p.x, y = (int)p.y;
 				coords::pixelToTile(x, y, g_pBoard->coordType, false, g_pBoard->sizeX);
 				*pRet = (infoCode == GEN_CURX ? x : y);
 			} break;
@@ -1042,11 +1042,11 @@ STDMETHODIMP CCallbacks::CBGetGeneralNum(int infoCode, int arrayPos, int playerS
 			break;
 		case GEN_TILESX:
 			// Unused.
-			*pRet = (g_screen.right - g_screen.left) / 32.0;
+			*pRet = int((g_screen.right - g_screen.left) / 32.0);
 			break;
 		case GEN_TILESY:
 			// Unused.
-			*pRet = (g_screen.bottom - g_screen.top) / 32.0;
+			*pRet = int((g_screen.bottom - g_screen.top) / 32.0);
 			break;
 		case GEN_RESX:
 			*pRet = g_screen.right - g_screen.left;
@@ -1279,7 +1279,7 @@ STDMETHODIMP CCallbacks::CBSetGeneralNum(int infoCode, int arrayPos, int playerS
 			{
 				// Get current x and y in board coordinates.
 				const SPRITE_POSITION p = pPlayer->getPosition();
-				int x = p.x, y = p.y;
+				int x = int(p.x), y = int(p.y);
 				coords::pixelToTile(x, y, g_pBoard->coordType, false, g_pBoard->sizeX);
 
 				// Pass board coordinates to CSprite to convert back to pixel.
@@ -2231,7 +2231,7 @@ STDMETHODIMP CCallbacks::CBSetBoardString(int infoCode, int arrayPos1, int array
 						// Create standard vectors for old items.
 						pItem->createVectors();
 					}
-					pItem->setPosition(pos.x, pos.y, pos.l, PX_ABSOLUTE);
+					pItem->setPosition(int(pos.x), int(pos.y), pos.l, PX_ABSOLUTE);
 				}
 				catch (CInvalidItem) { }
 			} break;
@@ -2549,7 +2549,7 @@ STDMETHODIMP CCallbacks::CBCanvasDrawText(int canvasID, BSTR text, BSTR font, in
 	CCanvas *p = g_canvases.cast(canvasID);
 	if (p)
 	{
-		*pRet = p->DrawText(x * size - size, y * size - size, getString(text), getString(font), size, crColor, isBold, isItalics, isUnderline, isCentred, isOutlined);
+		*pRet = p->DrawText(int(x) * size - size, int(y) * size - size, getString(text), getString(font), size, crColor, isBold, isItalics, isUnderline, isCentred, isOutlined);
 	}
 	else
 	{

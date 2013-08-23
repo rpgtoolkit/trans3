@@ -45,10 +45,10 @@ std::vector<CONV_POINT> tileToVector(
 		const double dx = (y % 2 ? 0 : 32);
 
 		// Isometric diamond at the location (3.0-).
-		vector.push_back(CONV_POINT((x - 1.0) * 64.0 - dx, (y - 1.0) * 16.0));
-		vector.push_back(CONV_POINT((x - 0.5) * 64.0 - dx, (y - 2.0) * 16.0));
-		vector.push_back(CONV_POINT(x * 64.0 - dx, (y - 1.0) * 16.0));
-		vector.push_back(CONV_POINT((x - 0.5) * 64.0 - dx, y * 16.0));
+		vector.push_back(CONV_POINT(int((x - 1.0) * 64.0 - dx), int((y - 1.0) * 16.0)));
+		vector.push_back(CONV_POINT(int((x - 0.5) * 64.0 - dx), int((y - 2.0) * 16.0)));
+		vector.push_back(CONV_POINT(int(x * 64.0 - dx), int((y - 1.0) * 16.0)));
+		vector.push_back(CONV_POINT(int((x - 0.5) * 64.0 - dx), int(y * 16.0)));
 	}
 	else if(coordType & ISO_ROTATED)
 	{
@@ -58,10 +58,10 @@ std::vector<CONV_POINT> tileToVector(
 	{
 		// Create a 32x32 vector at the location.
 		// Order: top-left, bot-left, bot-right, top-right.
-		vector.push_back(CONV_POINT((x - 1.0) * 32.0, (y - 1.0) * 32.0));
-		vector.push_back(CONV_POINT((x - 1.0) * 32.0, y * 32.0));
-		vector.push_back(CONV_POINT(x * 32.0, y * 32.0));
-		vector.push_back(CONV_POINT(x * 32.0, (y - 1.0) * 32.0));
+		vector.push_back(CONV_POINT(int((x - 1.0) * 32.0), int((y - 1.0) * 32.0)));
+		vector.push_back(CONV_POINT(int((x - 1.0) * 32.0), int(y * 32.0)));
+		vector.push_back(CONV_POINT(int(x * 32.0), int(y * 32.0)));
+		vector.push_back(CONV_POINT(int(x * 32.0), int((y - 1.0) * 32.0)));
 	}
 	return vector;
 }
