@@ -663,7 +663,7 @@
 				ObjectFile=".\Optimised/"
 				ProgramDataBaseFileName=".\Optimised/"
 				BrowseInformation="2"
-				WarningLevel="0"
+				WarningLevel="1"
 				SuppressStartupBanner="true"
 				DebugInformationFormat="0"
 			/>

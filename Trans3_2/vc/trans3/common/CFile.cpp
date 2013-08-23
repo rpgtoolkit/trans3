@@ -178,42 +178,42 @@ CFile &CFile::operator>>(SystemFont &data)
 CFile &CFile::operator>>(BYTE &data)
 {
 	DWORD read = 0;
-	!ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
+	ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
 	m_ptr.Offset += sizeof(data);
 	return *this;
 }
 CFile &CFile::operator>>(CHAR &data)
 {
 	DWORD read = 0;
-	!ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
+	ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
 	m_ptr.Offset += sizeof(data);
 	return *this;
 }
 CFile &CFile::operator>>(SHORT &data)
 {
 	DWORD read = 0;
-	!ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
+	ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
 	m_ptr.Offset += sizeof(data);
 	return *this;
 }
 CFile &CFile::operator>>(INT &data)
 {
 	DWORD read = 0;
-	!ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
+	ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
 	m_ptr.Offset += sizeof(data);
 	return *this;
 }
 CFile &CFile::operator>>(UINT &data)
 {
 	DWORD read = 0;
-	!ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
+	ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
 	m_ptr.Offset += sizeof(data);
 	return *this;
 }
 CFile &CFile::operator>>(double &data)
 {
 	DWORD read = 0;
-	!ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
+	ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
 	m_ptr.Offset += sizeof(data);
 	return *this;
 }

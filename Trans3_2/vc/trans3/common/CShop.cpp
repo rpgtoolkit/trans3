@@ -462,6 +462,7 @@ BOOL CShop::transaction(CONST SHOP_OPTION type, CONST STRING file)
 					return TRUE;
 				}
 			}
+
 			break;
 		} 
 		case SHOP_SELL:
@@ -474,5 +475,7 @@ BOOL CShop::transaction(CONST SHOP_OPTION type, CONST STRING file)
 				return TRUE;
 			}
 		}
-	} // switch (type)
+	} 
+
+	return FALSE;
 }
