@@ -553,17 +553,21 @@ void send(CALL_DATA &params)
 void text(CALL_DATA &params)
 {
 	const int count = params.params;
+
 	if (count != 3 && count != 4)
 	{
 		throw CError(_T("Text() requires 3 or 4 parameters!"));
 	}
+
 	CCanvas *cnv = (count == 3) ? g_cnvRpgCode : g_canvases.cast(int(params[3].getNum()));
+
 	if (cnv)
 	{
 		STRING lit = params[2].getLit();
 		STRING temp = spliceVariables(params.prg, lit);
-		cnv->DrawText(int(params[0].getNum()) * g_fontSize - g_fontSize, int(params[1].getNum()) * g_fontSize - g_fontSize, temp, g_fontFace, g_fontSize, g_color, g_bold, g_italic, g_underline);
+		cnv->DrawText(int(params[0].getNum()) * g_fontSize - g_fontSize, int(params[1].getNum() * g_fontSize - g_fontSize), temp, g_fontFace, g_fontSize, g_color, g_bold, g_italic, g_underline);
 	}
+
 	if (count == 3)
 	{
 		g_textX = params[0].getNum();
