@@ -1342,7 +1342,7 @@ STDMETHODIMP CCallbacks::CBSetGeneralNum(int infoCode, int arrayPos, int playerS
 			g_pxStepsTaken = newVal * 32;
 			break;
 		case GEN_ENE_RUN:
-			canRunFromFight(newVal);
+			canRunFromFight(newVal != 0);
 			break;
 		case GEN_TILESX:
 		case GEN_TILESY:
@@ -2107,7 +2107,7 @@ STDMETHODIMP CCallbacks::CBSetBoardNum(int infoCode, int arrayPos1, int arrayPos
 			g_pBoard->battleSkill = short(nValue);
 			break;
 		case BRD_FIGHTINGYN:
-			g_pBoard->bAllowBattles = bool(nValue);
+			g_pBoard->bAllowBattles = nValue != 0;
 			break;
 		case BRD_PRG_X:
 		case BRD_PRG_Y:
@@ -2147,7 +2147,7 @@ STDMETHODIMP CCallbacks::CBSetBoardNum(int infoCode, int arrayPos1, int arrayPos
 			// cannot be changed before loading.
 			break;
 		case BRD_SAVING_DISABLED:
-			g_pBoard->bDisableSaving = bool(nValue);
+			g_pBoard->bDisableSaving = nValue != 0;
 			break;
 	}
 	return S_OK;

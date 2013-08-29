@@ -294,8 +294,8 @@ void CTilePathFind::addVector(CVector &vector, PF_SWEEPS &sweeps, PF_MATRIX &poi
 
 	// Round to sprite positions (pixel points corresponding
 	// to matrix elements).
-	coords::roundToTile(b.left, b.top, m_isIso, true);
-	coords::roundToTile(b.right, b.bottom, m_isIso, true);
+	coords::roundToTile(b.left, b.top, m_isIso != 0, true);
+	coords::roundToTile(b.right, b.bottom, m_isIso != 0, true);
 
 	// Allow negative points - since b.left/top will never be < 0,
 	// the expanded area will always be within the matrix range (i.e. 0, 0)
@@ -414,7 +414,7 @@ bool CTilePathFind::getChild(NODE &child, NODE &parent)
 	if (pt == m_start.pos)
 	{
 		// Cater for non-aligned starts.
-		coords::roundToTile(pt.x, pt.y, m_isIso, true);
+		coords::roundToTile(pt.x, pt.y, m_isIso != 0, true);
 	}
 	child.pos.x = g_directions[m_isIso][m_nextDir][0] * PF_GRID_SIZE + pt.x;
 	child.pos.y = g_directions[m_isIso][m_nextDir][1] * PF_GRID_SIZE + pt.y;
@@ -551,7 +551,7 @@ bool CTilePathFind::reset(
 
 	// Start must be aligned to grid.
 	DB_POINT newStart = start;
-	coords::roundToTile(newStart.x, newStart.y, m_isIso, true);
+	coords::roundToTile(newStart.x, newStart.y, m_isIso != 0, true);
 	m_movedStart = false;
 	bool movedGoal = false;
 
@@ -593,7 +593,7 @@ bool CTilePathFind::reset(
 				mv = MV_S;
 			}
 		}
-		coords::roundToTile(grid.x, grid.y, m_isIso, true);
+		coords::roundToTile(grid.x, grid.y, m_isIso != 0, true);
 		
 		CPfVector cpfvStart = CPfVector(cvStart);
 		for (int i = 0; i != 4; ++i, mv += 2)
@@ -678,7 +678,7 @@ bool CTilePathFind::reset(
 	}
 
 	// Round (potentially new) goal to tile and check for board vectors.
-	coords::roundToTile(goal.x, goal.y, m_isIso, true);
+	coords::roundToTile(goal.x, goal.y, m_isIso  != 0, true);
 	cvGoal = base + goal;
 
 	// Check for goal contained in board vectors. Select the nearest 
@@ -714,7 +714,7 @@ bool CTilePathFind::reset(
 	if (movedGoal)
 	{
 		// Find the first reachable grid point to the goal.
-		coords::roundToTile(goal.x, goal.y, m_isIso, true);
+		coords::roundToTile(goal.x, goal.y, m_isIso != 0, true);
 
 		// Switch the heuristic to check all children of the goal.
 		const PF_HEURISTIC heur = m_heuristic;

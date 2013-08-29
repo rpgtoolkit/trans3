@@ -541,9 +541,9 @@ layerEnd:
 		file >> battleBackground;
 		file >> battleSkill;
 		file >> var; 
-		bAllowBattles = bool(var);
+		bAllowBattles = var != 0;
 		file >> var; 
-		bDisableSaving = bool(var);
+		bDisableSaving = var != 0;
 
 		bool bUpdate = false;
 		file >> var; if (ambientEffect.r != var) bUpdate = true; ambientEffect.r = var;
@@ -599,7 +599,8 @@ pvVersion:
 		file >> startY;
 		file >> startL;
 
-		file >> var; bDisableSaving = bool(var);
+		file >> var; 
+		bDisableSaving = var != 0;
     
 		short lutSize;
 		file >> lutSize;
@@ -749,7 +750,8 @@ lutEndB:
 
 		file >> battleSkill;
 		file >> battleBackground;
-		file >> var; bAllowBattles = bool(var);
+		file >> var; 
+		bAllowBattles = var != 0;
 		file >> var;					// boardDayNight.
 		file >> var;					// boardNightBattleOverride.
 		file >> var;					// boardSkillNight.

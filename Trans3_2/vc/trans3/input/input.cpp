@@ -271,7 +271,7 @@ void scanKeys()
 
 	if (g_mainFile.movementControls & MF_USE_KEYS)
 	{
-		const bool diag = g_mainFile.movementControls & MF_ALLOW_DIAGONALS;
+		const bool diag = (g_mainFile.movementControls & MF_ALLOW_DIAGONALS) != 0;
 		
 		// movementKeys are ordered as MV_E to MV_NE.
 		// mv will cycle from MV_MIN to MV_MAX continually (i.e. multiple sets allowed).

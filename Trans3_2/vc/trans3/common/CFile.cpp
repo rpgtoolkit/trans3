@@ -164,15 +164,15 @@ CFile &CFile::operator>>(SystemFont &data)
 	*this >> i;
 	data.lColorDisable = i;
 	*this >> b;
-	data.bBold = b;
+	data.bBold = b != 0;
 	*this >> b;
-	data.bItalics = b;
+	data.bItalics = b != 0;
 	*this >> b;
-	data.bUnderline = b;
+	data.bUnderline = b != 0;
 	*this >> b;
-	data.bCenter = b;
+	data.bCenter = b != 0;
 	*this >> b;
-	data.bOutline = b;
+	data.bOutline = b != 0;
 	return *this;
 }
 CFile &CFile::operator>>(BYTE &data)

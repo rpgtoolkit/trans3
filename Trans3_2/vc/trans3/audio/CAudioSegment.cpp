@@ -228,8 +228,6 @@ bool CAudioSegment::isPlaying()
  */
 void CAudioSegment::init(STRING handle)
 {
-	HRESULT result;
-	
 	m_handle = handle;
 	m_mciErrLen = sizeof(m_mciErr);
 	m_audiere = false;
@@ -374,7 +372,6 @@ void CAudioSegment::setVolume(const int percent)
 void CAudioSegment::initLoader()
 {
 	extern STRING g_projectPath;
-	HRESULT result;
 
 	// Not loader related, but I don't feel like making another function.
 	m_notify = CreateEvent(NULL, FALSE, FALSE, NULL);

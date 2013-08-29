@@ -258,7 +258,7 @@ void setUpGame()
 		}
 	}
 
-	CSprite::m_bPxMovement = g_mainFile.pixelMovement;
+	CSprite::m_bPxMovement = g_mainFile.pixelMovement != 0;
 	CSprite::setLoopOffset(g_mainFile.getGameSpeed());
 	g_selectedPlayer = 0;
 
@@ -703,11 +703,11 @@ int mainEventLoop()
 			}
 			else if (message.message == WM_NCACTIVATE)
 			{
-				active = message.wParam;
+				active = message.wParam != 0;
 			}
 			else if (message.message == WM_ACTIVATEAPP)
 			{
-				active = message.wParam;
+				active = message.wParam != 0;
 			}
 			else
 			{

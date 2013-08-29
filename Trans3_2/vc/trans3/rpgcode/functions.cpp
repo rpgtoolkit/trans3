@@ -2049,7 +2049,7 @@ void playerstep(CALL_DATA &params)
 		path.resize(1);
 
 		// Initiate movement by program type.
-		p->setQueuedPath(path, flags & tkMV_CLEAR_QUEUE);
+		p->setQueuedPath(path, (flags & tkMV_CLEAR_QUEUE) != 0);
 		p->doMovement(params.prg, flags & tkMV_PAUSE_THREAD);
 	}
 }
@@ -2088,7 +2088,7 @@ void itemstep(CALL_DATA &params)
 		path.resize(1);
 
 		// Initiate movement by program type.
-		p->setQueuedPath(path, flags & tkMV_CLEAR_QUEUE);
+		p->setQueuedPath(path, (flags & tkMV_CLEAR_QUEUE) != 0);
 		p->doMovement(params.prg, flags & tkMV_PAUSE_THREAD);
 	}
 }
@@ -2128,7 +2128,7 @@ void push(CALL_DATA &params)
 	const unsigned int flags = (params.params > 2 ? (unsigned int)params[2].getNum() : 0);
 
 	// Parse and set queued movements.
-	p->parseQueuedMovements(str, flags & tkMV_CLEAR_QUEUE);
+	p->parseQueuedMovements(str, (flags & tkMV_CLEAR_QUEUE) != 0);
 	// Initiate movement by program type.
 	p->doMovement(params.prg, flags & tkMV_PAUSE_THREAD);
 }
@@ -2162,7 +2162,7 @@ void pushItem(CALL_DATA &params)
 	const unsigned int flags = (params.params > 2 ? (unsigned int)params[2].getNum() : 0);
 
 	// Parse and set queued movements.
-	p->parseQueuedMovements(str, flags & tkMV_CLEAR_QUEUE);
+	p->parseQueuedMovements(str, (flags & tkMV_CLEAR_QUEUE) != 0);
 	// Initiate movement by program type.
 	p->doMovement(params.prg, flags & tkMV_PAUSE_THREAD);
 }
@@ -7273,7 +7273,7 @@ void spritepath(CALL_DATA &params, CSprite *p)
 		if (!path.empty())
 		{
 			// Initiate movement by program type.
-			p->setQueuedPath(path, flags & tkMV_CLEAR_QUEUE);
+			p->setQueuedPath(path, (flags & tkMV_CLEAR_QUEUE) != 0);
 			p->doMovement(params.prg, flags & tkMV_PAUSE_THREAD);
 		}
 	}
@@ -7294,7 +7294,7 @@ void spritepath(CALL_DATA &params, CSprite *p)
 			{
 				// The last point is the same as the first of the waypoint vector.
 				path.pop_back();
-				p->setQueuedPath(path, flags & tkMV_CLEAR_QUEUE);
+				p->setQueuedPath(path, (flags & tkMV_CLEAR_QUEUE) != 0);
 			}
 			p->setBoardPath(brd->pV, cycles, flags);
 			p->doMovement(params.prg, flags & tkMV_PAUSE_THREAD);

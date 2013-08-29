@@ -463,7 +463,7 @@ bool CVector::createMask(CCanvas *const cnv, const int x, const int y, CONST LON
 	DeleteObject(rgn);
 	delete [] ppts;
 
-	return success;
+	return (success != 0);
 }
 
 /*
