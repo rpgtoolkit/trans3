@@ -374,12 +374,7 @@ CThreadAnimation *CThreadAnimation::create(const STRING file, const int x, const
 		CThreadAnimation *p = new CThreadAnimation(file, x, y, bPersist);
 		p->m_pAnm->resize(width, height);
 		m_threads.insert(p);
-
 		return p;
-	}
-	else
-	{
-		return 0;
 	}
 }
 

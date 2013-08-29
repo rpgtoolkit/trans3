@@ -242,20 +242,8 @@ typedef struct tagSpriteBoardPath
 			}
 		}
 	}
-
 	bool operator() (void) { return pVector; }
-
-	int size(void) 
-	{ 
-		if (pVector) 
-		{
-			return pVector->size();
-		}
-		else 
-		{
-			return 0;
-		}
-	}
+	int size(void) { if (pVector) return pVector->size(); }
 
 } SPR_BRDPATH, *LPSPR_BRDPATH;
 

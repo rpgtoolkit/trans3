@@ -136,8 +136,6 @@ void* GetMenuFontProperty(int iFont, int iProperty)
 		return &p->iSize;
 	case GEN_MENUFONT_UNDERLINE:
 		return &p->bUnderline;
-	default:
-		return 0;
 	}
 }
 
