@@ -149,7 +149,7 @@ bool tagMainFile::open(const STRING fileName)
 
 	short len;
 	file >> len;
-	short i;
+	unsigned int i;
 	for (i = 0; i <= len; i++)
 	{
 		short sUnused;

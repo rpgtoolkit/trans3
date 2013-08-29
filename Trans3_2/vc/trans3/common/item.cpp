@@ -114,7 +114,7 @@ short tagItem::open(const STRING fileName, SPRITE_ATTR *pAttr)
 	file >> usedBy;
 
 	itmChars.clear();
-	int i;
+	unsigned int i;
 	for (i = 0; i <= 50; i++)
 	{
 		STRING str;

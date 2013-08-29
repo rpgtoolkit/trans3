@@ -74,7 +74,7 @@ bool tagEnemy::open(const STRING strFile)
 		short count;
 		file >> count;
 		specials.clear();
-		short i;
+		unsigned int i;
 		for (i = 0; i <= count; i++)
 		{
 			STRING str;
@@ -147,8 +147,7 @@ bool tagEnemy::open(const STRING strFile)
 
 		TILE_BITMAP tbm;
 		tbm.resize(width, height);
-
-		int i, j;
+		unsigned int i, j;
 		for (i = 0; i < width; i++)
 		{
 			for (j = 0; j < height; j++)

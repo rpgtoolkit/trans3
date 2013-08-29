@@ -355,9 +355,9 @@ bool CSprite::push(const bool bScroll)
 	if (bScroll)
 	{
 		// Bitshift in place of divide by two (>> 1 equivalent to / 2)
-		if ((m_v.y < 0 && m_pos.y < (g_screen.top + (g_screen.bottom >> 1)) && g_screen.top > 0) ||
+		if ((m_v.y < 0 && m_pos.y < (g_screen.top + g_screen.bottom >> 1) && g_screen.top > 0) ||
 			// North. Scroll if in upper half of screen.
-			(m_v.y > 0 && m_pos.y > (g_screen.top + (g_screen.bottom >> 1)) && g_screen.bottom < g_pBoard->pxHeight()))
+			(m_v.y > 0 && m_pos.y > (g_screen.top + g_screen.bottom >> 1) && g_screen.bottom < g_pBoard->pxHeight()))
 			// South. Scroll if in lower half of screen.
 		{
 			const int height = g_screen.bottom - g_screen.top;
@@ -370,9 +370,9 @@ bool CSprite::push(const bool bScroll)
 			g_screen.bottom = g_screen.top + height;
 		}
 
-		if ((m_v.x < 0 && m_pos.x < (g_screen.left + (g_screen.right >> 1)) && g_screen.left > 0) ||
+		if ((m_v.x < 0 && m_pos.x < (g_screen.left + g_screen.right >> 1) && g_screen.left > 0) ||
 			// West. Scroll if in left half of screen.
-			(m_v.x > 0 && m_pos.x > (g_screen.left + (g_screen.right >> 1)) && g_screen.right < g_pBoard->pxWidth()))
+			(m_v.x > 0 && m_pos.x > (g_screen.left + g_screen.right >> 1) && g_screen.right < g_pBoard->pxWidth()))
 			// East. Scroll if in right half of screen.
 		{
 			const int width = g_screen.right - g_screen.left;

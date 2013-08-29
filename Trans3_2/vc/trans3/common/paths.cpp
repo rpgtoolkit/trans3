@@ -205,6 +205,6 @@ void uninitialisePakFile()
 	// If we are a standalone game, also delete the tag on archive.
 	if (g_bStandalone)
 	{
-		_unlink(g_pakFile.c_str());
+		unlink(g_pakFile.c_str());
 	}
 }

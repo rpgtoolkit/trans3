@@ -635,7 +635,7 @@ void skillFight(const int skill, const STRING bkg)
 {
 	const int num = rand() % 4 + 1;
 	std::vector<STRING> enemies;
-	for (int i = 0; i < num; ++i)
+	for (unsigned int i = 0; i < num; ++i)
 	{
 		const STRING enemy = getEnemy(skill);
 		if (enemy.empty())

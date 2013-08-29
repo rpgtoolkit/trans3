@@ -79,10 +79,10 @@ public:
 	void equipmentFP(const int val) { m_equipment.mFP = val; }
 	void equipmentHP(const int val) { m_equipment.mHP = val; }
 	void equipmentSM(const int val) { m_equipment.mSM = val; }
-	LPEQ_SLOT equipment(const int i) { return (m_equipment.data.size() > size_t(abs(i)) ? &m_equipment.data[i] : NULL);}
+	LPEQ_SLOT equipment(const int i) { return (m_equipment.data.size() > abs(i) ? &m_equipment.data[i] : NULL);}
 	void equipment(const EQ_SLOT eq, const int i) 
 	{ 
-		while (size_t(abs(i)) >= m_equipment.data.size())
+		while (abs(i) >= m_equipment.data.size())
 		{
 			m_equipment.data.push_back(EQ_SLOT());
 		}

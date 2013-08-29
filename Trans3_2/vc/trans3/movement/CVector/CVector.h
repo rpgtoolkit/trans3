@@ -165,7 +165,6 @@ public:
 	{
 		return (windingNumber(p) % 2);
 	}
-
 	int windingNumber(const DB_POINT p) const;
 
 	// Create a mask from a closed vector.

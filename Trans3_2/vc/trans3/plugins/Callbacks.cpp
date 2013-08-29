@@ -520,7 +520,7 @@ STDMETHODIMP CCallbacks::CBSetEnemyString(int infoCode, BSTR newValue, int eneSl
 STDMETHODIMP CCallbacks::CBGetPlayerNum(int infoCode, int arrayPos, int playerSlot, int *pRet)
 {
 	extern double g_fpms;
-	if (size_t(playerSlot) >= g_players.size())
+	if (playerSlot >= g_players.size())
 	{
 		*pRet = 0;
 		return S_OK;
@@ -613,7 +613,7 @@ STDMETHODIMP CCallbacks::CBGetPlayerNum(int infoCode, int arrayPos, int playerSl
 
 STDMETHODIMP CCallbacks::CBGetPlayerString(int infoCode, int arrayPos, int playerSlot, BSTR *pRet)
 {
-	if (size_t(playerSlot) >= g_players.size())
+	if (playerSlot >= g_players.size())
 	{
 		SysReAllocString(pRet, L"");
 		return S_OK;
@@ -693,7 +693,7 @@ STDMETHODIMP CCallbacks::CBGetPlayerString(int infoCode, int arrayPos, int playe
 
 STDMETHODIMP CCallbacks::CBSetPlayerNum(int infoCode, int arrayPos, int newVal, int playerSlot)
 {
-	if (size_t(playerSlot) >= g_players.size())
+	if (playerSlot >= g_players.size())
 	{
 		return S_OK;
 	}
@@ -774,7 +774,7 @@ STDMETHODIMP CCallbacks::CBSetPlayerNum(int infoCode, int arrayPos, int newVal, 
 
 STDMETHODIMP CCallbacks::CBSetPlayerString(int infoCode, int arrayPos, BSTR newVal, int playerSlot)
 {
-	if (size_t(playerSlot) >= g_players.size())
+	if (playerSlot >= g_players.size())
 	{
 		return S_OK;
 	}
@@ -853,11 +853,7 @@ STDMETHODIMP CCallbacks::CBGetGeneralString(int infoCode, int arrayPos, int play
 	extern MAIN_FILE g_mainFile;
 
 	CPlayer *pPlayer = NULL;
-
-	if (size_t(abs(playerSlot)) < g_players.size()) 
-	{
-		pPlayer = g_players[abs(playerSlot)]; 
-	}
+	if (abs(playerSlot) < g_players.size()) pPlayer = g_players[abs(playerSlot)]; 
 
 	BSTR bstr = NULL;
 	switch (infoCode)
@@ -948,7 +944,7 @@ STDMETHODIMP CCallbacks::CBGetGeneralString(int infoCode, int arrayPos, int play
 				{
 					std::map<STRING, STATUS_EFFECT>::iterator i = pFighter->statuses.begin();
 					if (arrayPos < 0) arrayPos = 0;
-					if (pFighter->statuses.size() > size_t(arrayPos))
+					if (pFighter->statuses.size() > arrayPos)
 					{
 						advance(i, arrayPos);
 						bstr = getString(i->first);
@@ -986,11 +982,7 @@ STDMETHODIMP CCallbacks::CBGetGeneralNum(int infoCode, int arrayPos, int playerS
 	extern RECT g_screen;
 
 	CPlayer *pPlayer = NULL;
-
-	if (size_t(abs(playerSlot)) < g_players.size()) 
-	{
-		pPlayer = g_players[abs(playerSlot)]; 
-	}
+	if (abs(playerSlot) < g_players.size()) pPlayer = g_players[abs(playerSlot)]; 
 
 	switch (infoCode)
 	{
@@ -1119,11 +1111,7 @@ STDMETHODIMP CCallbacks::CBSetGeneralString(int infoCode, int arrayPos, int play
 
 	CPlayer *pPlayer = NULL;
 	playerSlot = abs(playerSlot);
-
-	if (size_t(playerSlot) < g_players.size())
-	{
-		pPlayer = g_players[playerSlot]; 
-	}
+	if (playerSlot < g_players.size()) pPlayer = g_players[playerSlot]; 
 
 	switch (infoCode)
 	{
@@ -1135,7 +1123,7 @@ STDMETHODIMP CCallbacks::CBSetGeneralString(int infoCode, int arrayPos, int play
 			break;
 		case GEN_PLAYERFILES:
 			// Change a player.
-			if (size_t(playerSlot) < g_players.size())
+			if (playerSlot < g_players.size())
 			{
 				delete pPlayer;
 				g_players[playerSlot] = new CPlayer(g_projectPath + TEM_PATH + removePath(getString(newVal)), false, true);
@@ -1221,7 +1209,7 @@ STDMETHODIMP CCallbacks::CBSetGeneralString(int infoCode, int arrayPos, int play
 				{
 					std::map<STRING, STATUS_EFFECT>::iterator i = pFighter->statuses.begin();
 					if (arrayPos < 0) arrayPos = 0;
-					if (pFighter->statuses.size() > size_t(arrayPos))
+					if (pFighter->statuses.size() > arrayPos)
 					{
 						advance(i, arrayPos);
 
@@ -1251,11 +1239,7 @@ STDMETHODIMP CCallbacks::CBSetGeneralNum(int infoCode, int arrayPos, int playerS
 	extern GAME_TIME g_gameTime;
 
 	CPlayer *pPlayer = NULL;
-
-	if (size_t(abs(playerSlot)) < g_players.size())
-	{
-		pPlayer = g_players[abs(playerSlot)]; 
-	}
+	if (abs(playerSlot) < g_players.size()) pPlayer = g_players[abs(playerSlot)]; 
 
 	switch (infoCode)
 	{
@@ -1310,7 +1294,7 @@ STDMETHODIMP CCallbacks::CBSetGeneralNum(int infoCode, int arrayPos, int playerS
 			} break;
 		case GEN_CURRENT_PLYR:
 			extern int g_selectedPlayer;
-			if (size_t(abs(newVal)) < g_players.size())
+			if (abs(newVal) < g_players.size())
 			{
 				g_selectedPlayer = abs(newVal);
 				g_pSelectedPlayer = g_players[g_selectedPlayer];
@@ -1423,7 +1407,7 @@ STDMETHODIMP CCallbacks::CBGetBracketElement(BSTR rpgcodeCommand, int elemNum, B
 	const STRING str = getString(rpgcodeCommand);
 	std::vector<STRING> parts;
 	getParameters(str, parts);
-	if (parts.size() > size_t(--elemNum))
+	if (parts.size() > --elemNum)
 	{
 		BSTR bstr = getString(parts[elemNum]);
 		SysReAllocString(pRet, bstr);
@@ -1655,12 +1639,12 @@ LPITEM getItemFromSlot(int itmSlot)
 	if (itmSlot < 0)
 	{
 		itmSlot = -itmSlot;
-		if (g_items.size() > size_t(itmSlot))
+		if (g_items.size() > itmSlot)
 		{
 			return &g_items[itmSlot];
 		}
 	}
-	else if (g_pBoard->items.size() > size_t(itmSlot))
+	else if (g_pBoard->items.size() > itmSlot)
 	{
 		return g_pBoard->items[itmSlot]->getItem();
 	}
@@ -2826,7 +2810,7 @@ STDMETHODIMP CCallbacks::CBDetermineSpecialMoves(BSTR playerHandle, int *pRet)
 
 STDMETHODIMP CCallbacks::CBGetSpecialMoveListEntry(int idx, BSTR *pRet)
 {
-	if (g_specials.size() > size_t(idx))
+	if (g_specials.size() > idx)
 	{
 		BSTR bstr = getString(g_specials[idx]);
 		SysReAllocString(pRet, bstr);
@@ -2853,7 +2837,7 @@ void setEntity(LPENTITY p, int idx, int type)
 	p->type = ET_EMPTY;
 	if (type == TYPE_PLAYER)
 	{
-		if (g_players.size() > size_t(idx))
+		if (g_players.size() > idx)
 		{
 			p->type = ET_PLAYER;
 			p->p = &g_players[idx];
@@ -2861,7 +2845,7 @@ void setEntity(LPENTITY p, int idx, int type)
 	}
 	else if (type == TYPE_ITEM)
 	{
-		if ((idx >= 0) && (g_pBoard->items.size() > size_t(idx)))
+		if ((idx >= 0) && (g_pBoard->items.size() > idx))
 		{
 			p->type = ET_ITEM;
 			p->p = g_pBoard->items[idx];
@@ -2894,7 +2878,7 @@ STDMETHODIMP CCallbacks::CBSetSource(int sourceIdx, int stype)
 
 STDMETHODIMP CCallbacks::CBGetPlayerHP(int playerIdx, double *pRet)
 {
-	if (g_players.size() > size_t(playerIdx))
+	if (g_players.size() > playerIdx)
 	{
 		*pRet = g_players[playerIdx]->health();
 	}
@@ -2907,7 +2891,7 @@ STDMETHODIMP CCallbacks::CBGetPlayerHP(int playerIdx, double *pRet)
 
 STDMETHODIMP CCallbacks::CBGetPlayerMaxHP(int playerIdx, double *pRet)
 {
-	if (g_players.size() > size_t(playerIdx))
+	if (g_players.size() > playerIdx)
 	{
 		*pRet = g_players[playerIdx]->maxHealth();
 	}
@@ -2920,7 +2904,7 @@ STDMETHODIMP CCallbacks::CBGetPlayerMaxHP(int playerIdx, double *pRet)
 
 STDMETHODIMP CCallbacks::CBGetPlayerSMP(int playerIdx, double *pRet)
 {
-	if (g_players.size() > size_t(playerIdx))
+	if (g_players.size() > playerIdx)
 	{
 		*pRet = g_players[playerIdx]->smp();
 	}
@@ -2933,7 +2917,7 @@ STDMETHODIMP CCallbacks::CBGetPlayerSMP(int playerIdx, double *pRet)
 
 STDMETHODIMP CCallbacks::CBGetPlayerMaxSMP(int playerIdx, double *pRet)
 {
-	if (g_players.size() > size_t(playerIdx))
+	if (g_players.size() > playerIdx)
 	{
 		*pRet = g_players[playerIdx]->maxSmp();
 	}
@@ -2946,7 +2930,7 @@ STDMETHODIMP CCallbacks::CBGetPlayerMaxSMP(int playerIdx, double *pRet)
 
 STDMETHODIMP CCallbacks::CBGetPlayerFP(int playerIdx, double *pRet)
 {
-	if (g_players.size() > size_t(playerIdx))
+	if (g_players.size() > playerIdx)
 	{
 		*pRet = g_players[playerIdx]->fight();
 	}
@@ -2959,7 +2943,7 @@ STDMETHODIMP CCallbacks::CBGetPlayerFP(int playerIdx, double *pRet)
 
 STDMETHODIMP CCallbacks::CBGetPlayerDP(int playerIdx, double *pRet)
 {
-	if (g_players.size() > size_t(playerIdx))
+	if (g_players.size() > playerIdx)
 	{
 		*pRet = g_players[playerIdx]->defence();
 	}
@@ -2972,7 +2956,7 @@ STDMETHODIMP CCallbacks::CBGetPlayerDP(int playerIdx, double *pRet)
 
 STDMETHODIMP CCallbacks::CBGetPlayerName(int playerIdx, BSTR *pRet)
 {
-	if (g_players.size() > size_t(playerIdx))
+	if (g_players.size() > playerIdx)
 	{
 		BSTR bstr = getString(g_players[playerIdx]->name());
 		SysReAllocString(pRet, bstr);
@@ -2987,7 +2971,7 @@ STDMETHODIMP CCallbacks::CBGetPlayerName(int playerIdx, BSTR *pRet)
 
 STDMETHODIMP CCallbacks::CBAddPlayerHP(int amount, int playerIdx)
 {
-	if (g_players.size() > size_t(playerIdx))
+	if (g_players.size() > playerIdx)
 	{
 		g_players[playerIdx]->health(g_players[playerIdx]->health() + amount);
 	}
@@ -2996,7 +2980,7 @@ STDMETHODIMP CCallbacks::CBAddPlayerHP(int amount, int playerIdx)
 
 STDMETHODIMP CCallbacks::CBAddPlayerSMP(int amount, int playerIdx)
 {
-	if (g_players.size() > size_t(playerIdx))
+	if (g_players.size() > playerIdx)
 	{
 		g_players[playerIdx]->smp(g_players[playerIdx]->smp() + amount);
 	}
@@ -3005,7 +2989,7 @@ STDMETHODIMP CCallbacks::CBAddPlayerSMP(int amount, int playerIdx)
 
 STDMETHODIMP CCallbacks::CBSetPlayerHP(int amount, int playerIdx)
 {
-	if (g_players.size() > size_t(playerIdx))
+	if (g_players.size() > playerIdx)
 	{
 		g_players[playerIdx]->health(amount);
 	}
@@ -3014,7 +2998,7 @@ STDMETHODIMP CCallbacks::CBSetPlayerHP(int amount, int playerIdx)
 
 STDMETHODIMP CCallbacks::CBSetPlayerSMP(int amount, int playerIdx)
 {
-	if (g_players.size() > size_t(playerIdx))
+	if (g_players.size() > playerIdx)
 	{
 		g_players[playerIdx]->smp(amount);
 	}
@@ -3023,7 +3007,7 @@ STDMETHODIMP CCallbacks::CBSetPlayerSMP(int amount, int playerIdx)
 
 STDMETHODIMP CCallbacks::CBSetPlayerFP(int amount, int playerIdx)
 {
-	if (g_players.size() > size_t(playerIdx))
+	if (g_players.size() > playerIdx)
 	{
 		g_players[playerIdx]->fight(amount);
 	}
@@ -3032,7 +3016,7 @@ STDMETHODIMP CCallbacks::CBSetPlayerFP(int amount, int playerIdx)
 
 STDMETHODIMP CCallbacks::CBSetPlayerDP(int amount, int playerIdx)
 {
-	if (g_players.size() > size_t(playerIdx))
+	if (g_players.size() > playerIdx)
 	{
 		g_players[playerIdx]->defence(amount);
 	}
@@ -3249,8 +3233,7 @@ STDMETHODIMP CCallbacks::CBAnimationFrameImage(int idx, int frame, BSTR *pRet)
 STDMETHODIMP CCallbacks::CBGetPartySize(int partyIdx, int *pRet)
 {
 	extern BATTLE g_battle;
-
-	if (size_t(partyIdx) < g_battle.parties.size())
+	if (partyIdx < g_battle.parties.size())
 	{
 		*pRet = g_battle.parties[partyIdx].size();
 	}

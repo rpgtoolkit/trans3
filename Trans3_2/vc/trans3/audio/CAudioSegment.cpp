@@ -134,7 +134,7 @@ void CAudioSegment::play(const bool repeat)
 		{
 			if (m_outputStream)
 			{
-				m_outputStream->setVolume(float(m_volume / 100.0));
+				m_outputStream->setVolume(m_volume / 100.0);
 				m_outputStream->setRepeat(repeat);
 				m_outputStream->play();
 			}
@@ -355,7 +355,7 @@ void CAudioSegment::setVolume(const int percent)
 		// Volume is a float between 0.0 and 1.0.
 		if (m_outputStream)
 		{			
-			m_outputStream->setVolume(float(percent / 100.0));
+			m_outputStream->setVolume(percent / 100.0);
 		}
 	}
 	else

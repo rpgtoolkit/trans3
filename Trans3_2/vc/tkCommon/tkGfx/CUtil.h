@@ -69,7 +69,7 @@ inline std::string util::upperCase(std::string strString)
 {
 	std::string strToRet = "";
 
-	for (size_t c = 0; c < strString.length(); c++)
+	for (int c = 0; c < strString.length(); c++)
 	{
 		strToRet += toupper(strString.at(c));
 	}

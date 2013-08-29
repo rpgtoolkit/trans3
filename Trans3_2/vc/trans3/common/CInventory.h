@@ -97,11 +97,11 @@ public:
 	{
 		m_data.clear();
 	}
-	STRING fileAt(const size_t i)
+	STRING fileAt(const int i)
 	{
 		return (m_data.size() > i ? at(i)->first : _T(""));
 	}
-	void fileAt(const size_t i, const STRING value)
+	void fileAt(const int i, const STRING value)
 	{
 		// Problems changing the key since it is const in a map.
 		if (m_data.size() > i)
@@ -112,19 +112,19 @@ public:
 			m_data[parser::uppercase(removePath(value, ITM_PATH))] = p;
 		}
 	}
-	STRING handleAt(const size_t i)
+	STRING handleAt(const int i)
 	{
 		return (m_data.size() > i ? at(i)->second.first : _T(""));
 	}
-	void handleAt(const size_t i, const STRING value)
+	void handleAt(const int i, const STRING value)
 	{
 		if (m_data.size() > i) at(i)->second.first = value;
 	}
-	unsigned int quantityAt(const size_t i)
+	unsigned int quantityAt(const int i)
 	{
 		return (m_data.size() > i ? at(i)->second.second : 0);
 	}
-	void quantityAt(const size_t i, const unsigned int value)
+	void quantityAt(const int i, const unsigned int value)
 	{
 		if (m_data.size() > i) at(i)->second.second = value;
 	}

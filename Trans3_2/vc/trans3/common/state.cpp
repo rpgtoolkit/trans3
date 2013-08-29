@@ -218,12 +218,12 @@ void loadSaveState(const STRING str)
 	// Equipment - slot numbers run from 1.
 	for (i = 1; i <= 16; ++i)
 	{
-		for (int j = 0; j < players; ++j)
+		for (unsigned int j = 0; j < players; ++j)
 		{
 			STRING fileName, handle;
 			file >> fileName >> handle;
 
-			if (!fileName.empty() && size_t(j) < g_players.size())
+			if (!fileName.empty() && j < g_players.size())
 			{ 
 				CPlayer *p = g_players[j];
 				if (p) p->equipment(EQ_SLOT(fileName, handle), i);
@@ -237,7 +237,7 @@ void loadSaveState(const STRING str)
 		int hp, sm, dp, fp;
 		file >> hp >> sm >> dp >> fp;
 
-		if (size_t(i) < g_players.size())
+		if (i < g_players.size())
 		{
 			CPlayer *p = g_players[i];
 			if (p)
@@ -254,7 +254,7 @@ void loadSaveState(const STRING str)
 	file >> unused; // menuColor
 
 	file >> g_selectedPlayer;
-	if (size_t(g_selectedPlayer) >= g_players.size()) g_selectedPlayer = 0;
+	if (g_selectedPlayer >= g_players.size()) g_selectedPlayer = 0;
 	g_pSelectedPlayer = g_players[g_selectedPlayer];
 
 	int gp;
@@ -321,12 +321,12 @@ void loadSaveState(const STRING str)
 			file >> path.cycles;
 			file >> path.nextNode;
 			file >> path.attributes;
-			if (iVar >= 0 && g_pBoard->vectors.size() > size_t(iVar))
+			if (iVar >= 0 && g_pBoard->vectors.size() > iVar)
 			{
 				path.pVector = g_pBoard->vectors[iVar].pV;
 			}
 		}
-		if (size_t(i) < g_players.size() && g_players[i])
+		if (i < g_players.size() && g_players[i])
 		{
 			g_players[i]->setPosition(int(x), int(y), z, ct);
 			g_players[i]->setActive(active != 0);
@@ -339,7 +339,7 @@ void loadSaveState(const STRING str)
 	{
 		int nl, lp;
 		file >> nl >> lp;
-		if (size_t(i) < g_players.size())
+		if (i < g_players.size())
 		{
 			CPlayer *p = g_players[i];
 			if (p)
@@ -407,7 +407,7 @@ void loadSaveState(const STRING str)
 					file >> spr.boardPath.cycles;
 					file >> spr.boardPath.nextNode;
 					file >> spr.boardPath.attributes;
-					if (iVar >= 0 && g_pBoard->vectors.size() > size_t(iVar))
+					if (iVar >= 0 && g_pBoard->vectors.size() > iVar)
 					{
 						spr.boardPath.pVector = g_pBoard->vectors[iVar].pV;
 					}
@@ -480,7 +480,7 @@ void loadSaveState(const STRING str)
 
 		if (!fileName.empty())
 		{
-			if ((itm != -1) && (g_pBoard->items.size() > size_t(itm)) && g_pBoard->items[itm])
+			if ((itm != -1) && (g_pBoard->items.size() > itm) && g_pBoard->items[itm])
 			{
 				CItemThread *pItemThread = CItemThread::create(fileName, g_pBoard->items[itm]);
 				g_pBoard->items[itm]->attachThread(pItemThread);
@@ -515,7 +515,7 @@ void loadSaveState(const STRING str)
 			file >> heaps;
 			if (heaps >= 0)
 			{
-				int j;
+				unsigned int j;
 				for (j = 0; j <= heaps; ++j)
 				{
 					// Create local heaps...
@@ -538,7 +538,7 @@ void loadSaveState(const STRING str)
 			}
 		} // if (minorVer >= 4)
 
-		if ((itm != -1) && ((g_pBoard->items.size() <= size_t(itm)) || !g_pBoard->items[itm]))
+		if ((itm != -1) && ((g_pBoard->items.size() <= itm) || !g_pBoard->items[itm]))
 		{
 			// This thread formerly belonged to an item created with CreateItem(),
 			// but since rpgcode-created items aren't restored, we shouldn't

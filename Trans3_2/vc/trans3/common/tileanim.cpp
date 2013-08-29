@@ -76,7 +76,7 @@ bool tagTileAnim::open(const STRING fileName)
 	file >> frameCount;
 
 	frames.clear();
-	for (int i = 0; i < frameCount; i++)
+	for (unsigned int i = 0; i < frameCount; i++)
 	{
 		STRING frame;
 		file >> frame;

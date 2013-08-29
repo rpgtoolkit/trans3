@@ -336,7 +336,7 @@ void CTilePathFind::addVector(CVector &vector, PF_SWEEPS &sweeps, PF_MATRIX &poi
 					int m = int(pt.x + target.x), n = int(pt.y + target.y);
 					coords::pixelToTile(m, n, coord, false, g_pBoard->sizeX);
 
-					if (m >= 0 && m < int(points.size()) && n >= 0 && n < int(points[0].size()))
+					if (m >= 0 && m < points.size() && n >= 0 && n < points[0].size())
 					{
 						points[m][n] |= 1 << (k - 1 + 4);
 					}
@@ -516,7 +516,7 @@ bool CTilePathFind::isChild(const NODE &child, const NODE &parent) const
 	coords::pixelToTile(i, j, m_isIso ? ISO_ROTATED : TILE_NORMAL, false, g_pBoard->sizeX);
 
 	PF_MATRIX &pts = *m_pBoardPoints;
-	if (i < int(pts.size()) && j < int(pts[0].size()))
+	if (i < pts.size() && j < pts[0].size())
 	{
 		const PF_MATRIX_ELEMENT dir = 1 << (child.direction - 1);
 		if ((pts[i][j] & dir) || (m_spritePoints[i][j] & dir)) return false;
@@ -735,7 +735,7 @@ bool CTilePathFind::reset(
 				int x = int(target.pos.x), y = int(target.pos.y);
 				coords::pixelToTile(x, y, m_isIso ? ISO_ROTATED : TILE_NORMAL, false, g_pBoard->sizeX);
 
-				if (x < int(pts.size()) && y < int(pts[0].size()))
+				if (x < pts.size() && y < pts[0].size())
 				{
 					if (pts[x][y] != blocked && m_spritePoints[x][y] != blocked) 
 					{

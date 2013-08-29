@@ -87,7 +87,7 @@ int yyerror(const char *error)
 	TCHAR str[255];
 	// No +1 because the first line is a hacky bug fix.
 	// See CProgram::open().
-	_itot_s(g_lines, str, 10);
+	_itot(g_lines, str, 10);
 #ifndef _UNICODE
 	STRING strError = error;
 #else
@@ -337,7 +337,7 @@ inline std::pair<bool, STRING> CProgram::getInstanceVar(const STRING name) const
 	if ((i != m_classes.end()) && i->second.memberExists(name, CV_PRIVATE))
 	{
 		TCHAR str[255];
-		_itot_s(obj, str, 10);
+		_itot(obj, str, 10);
 		return std::pair<bool, STRING>(true, STRING(str) + _T("::") + name);
 	}
 
@@ -456,7 +456,7 @@ void CProgram::freeObject(unsigned int obj)
 	}
 
 	TCHAR str[255];
-	_itot_s(obj, str, 10);
+	_itot(obj, str, 10);
 
 	std::deque<std::pair<STRING, CLASS_VISIBILITY> >::const_iterator j = i->second.members.begin();
 	for (; j != i->second.members.end(); ++j)
@@ -558,7 +558,7 @@ void CProgram::methodCall(CALL_DATA &call)
 			if (!bRelease)
 			{
 				TCHAR str[255];
-				_itot_s(call.params - 2, str, 10);
+				_itot(call.params - 2, str, 10);
 				throw CError(_T("Class ") + k->first + _T(" has no accessible ") + 
 					fra.lit + _T(" method with a parameter count of ") + str + _T("."));
 			}
@@ -618,7 +618,7 @@ void CProgram::methodCall(CALL_DATA &call)
 	}
 
 	// Add each parameter's value to the new local heap.
-	for (int i = 0; i < (call.params - 1); ++i)
+	for (unsigned int i = 0; i < (call.params - 1); ++i)
 	{
 		if (i == j) continue;
 		TCHAR pos = call.params - i - (i < j) - bObjectCall;
@@ -719,7 +719,7 @@ void CProgram::pluginCall(CALL_DATA &call)
 
 	// Prepare the command line.
 	STRING line = fra.lit + _T('(');
-	for (int i = 0; i < (call.params - 1); ++i)
+	for (unsigned int i = 0; i < (call.params - 1); ++i)
 	{
 		STACK_FRAME &param = call[i];
 		if (param.udt & UDT_NUM)
@@ -1166,8 +1166,8 @@ void CProgram::parseFile(FILE *pFile)
 				}
 				else
 				{
-					TCHAR str[255]; _itot_s(i->params - 1, str, 10);
-					TCHAR line[255]; _itot_s(getLine(i), line, 10);
+					TCHAR str[255]; _itot(i->params - 1, str, 10);
+					TCHAR line[255]; _itot(getLine(i), line, 10);
 					debugger(STRING(_T("Near line ")) + line + _T(": No accessible constructor for ") + unit->lit + 
 						_T(" has a parameter count of ") + str + _T("."));
 				}
@@ -1189,7 +1189,7 @@ void CProgram::parseFile(FILE *pFile)
 		for (unsigned int i = 0; i < depth; ++i)
 		{
 			TCHAR str[255];
-			_itot_s(getLine(m_units.begin() + matchBrace(m_units.insert(m_units.end(), mu))) + 1, str, 10);
+			_itot(getLine(m_units.begin() + matchBrace(m_units.insert(m_units.end(), mu))) + 1, str, 10);
 			debugger(m_fileName + STRING(_T("\nNear line ")) + str + _T(": Unmatched curly brace."));
 		}
 	}
@@ -1291,12 +1291,12 @@ void CProgram::updateInheritedMethodCalls()
 		if (!classIterator->second.inherits.empty())
 		{			
 			// Loop through all of this classes methods.
-			for (size_t i = 0; i < classIterator->second.methods.size(); i++)
+			for (int i = 0; i < classIterator->second.methods.size(); i++)
 			{	
 				NAMED_METHOD classMethod = classIterator->second.methods[i].first;
 
 				// Loop through all the methods declared in this RPGCode program and do some comparing.
-				for(size_t j = 0; j < m_methods.size(); j++) 
+				for(int j = 0; j < m_methods.size(); j++) 
 				{
 					NAMED_METHOD method = m_methods[j];
 
@@ -1334,7 +1334,7 @@ void CProgram::updateInheritedMethodCalls()
 // If the sub class inherits from the super class it returns a true value.
 bool CProgram::checkForInheritance(std::deque<STRING> inheritsFrom, const STRING compareClass)
 {
-	for (size_t i = 0; i < inheritsFrom.size(); i++)
+	for (int i = 0; i < inheritsFrom.size(); i++)
 	{
 		if (inheritsFrom[i] == compareClass)
 		{
@@ -1596,7 +1596,7 @@ void CProgram::reconstructState(CFile &stream)
 
 		int stackSize = 0;
 		stream >> stackSize;
-		for (int i = 0; i < stackSize; ++i)
+		for (unsigned int i = 0; i < stackSize; ++i)
 		{
 			m_stack.push_back(std::vector<STACK_FRAME>());
 
@@ -1605,7 +1605,7 @@ void CProgram::reconstructState(CFile &stream)
 
 			std::vector<STACK_FRAME> &frame = m_stack.back();
 
-			for (int j = 0; j < frameSize; ++j)
+			for (unsigned int j = 0; j < frameSize; ++j)
 			{
 				STACK_FRAME sf;
 				reconstructStackFrame(stream, sf);
@@ -1623,7 +1623,7 @@ void CProgram::reconstructState(CFile &stream)
 
 		int stackSize = 0;
 		stream >> stackSize;
-		for (int i = 0; i < stackSize; ++i)
+		for (unsigned int i = 0; i < stackSize; ++i)
 		{
 			m_locals.push_back(std::map<STRING, STACK_FRAME>());
 
@@ -1632,7 +1632,7 @@ void CProgram::reconstructState(CFile &stream)
 
 			std::map<STRING, STACK_FRAME> &frame = m_locals.back();
 
-			for (int j = 0; j < frameSize; ++j)
+			for (unsigned int j = 0; j < frameSize; ++j)
 			{
 				STRING str; STACK_FRAME sf;
 				stream >> str;
@@ -1649,11 +1649,11 @@ void CProgram::reconstructState(CFile &stream)
 
 		int stackSize = 0;
 		stream >> stackSize;
-		for (int i = 0, j = stackSize + 1; i < stackSize; ++i, --j)
+		for (unsigned int i = 0, j = stackSize + 1; i < stackSize; ++i, --j)
 		{
 			CALL_FRAME cf; int b = 0;
 			stream >> b;
-			cf.bReturn = (b != 0);
+			cf.bReturn = bool(b);
 			stream >> cf.i;
 			stream >> cf.j;
 			stream >> cf.obj;
@@ -1685,12 +1685,7 @@ void CProgram::reconstructState(CFile &stream)
 						continue;
 					}
 					std::list<std::map<STRING, STACK_FRAME> >::iterator itr = getLocals()->begin();
-
-					for (unsigned int i = 0; i < frame - 1; ++i) 
-					{
-						++itr;
-					}
-
+					for (int i = 0; i < frame - 1; ++i) ++itr;
 					ref.first = &itr->find(ref.second.second)->second;
 				}
 			}
@@ -2966,7 +2961,7 @@ void operators::member(CALL_DATA &call)
 	}
 
 	TCHAR str[255];
-	_itot_s(obj, str, 10);
+	_itot(obj, str, 10);
 	call.ret().udt = UDT_ID;
 	call.ret().lit = _T(":") + STRING(str) + _T("::") + mem;
 }

@@ -424,7 +424,7 @@ STRING fileDialog(
 		{
 			int j;
 			// Advance the iterator to the first visible entry.
-			for (j = 0; j < int(firstLine) && i != files.end(); ++j) ++i;
+			for (j = 0; j < firstLine && i != files.end(); ++j) ++i;
 			
 			// Draw each visible entry.
 			for (j = 0; j < lines && i != files.end(); ++i, ++j)

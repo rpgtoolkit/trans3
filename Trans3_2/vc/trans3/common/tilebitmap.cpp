@@ -71,9 +71,9 @@ bool tagTileBitmap::open(const STRING fileName)
 	file >> height;
 	resize(width, height);
 
-	for (unsigned int i = 0; i <= unsigned int(width); i++)
+	for (unsigned int i = 0; i <= width; i++)
 	{
-		for (unsigned int j = 0; j <= unsigned int(height); j++)
+		for (unsigned int j = 0; j <= height; j++)
 		{
 			file >> tiles[i][j];
 			file >> red[i][j];
@@ -101,9 +101,9 @@ void tagTileBitmap::save(const STRING fileName) const
 	file << width;
 	file << height;
 
-	for (unsigned int i = 0; i <= unsigned int(width); i++)
+	for (unsigned int i = 0; i <= width; i++)
 	{
-		for (unsigned int j = 0; j <= unsigned int(height); j++)
+		for (unsigned int j = 0; j <= height; j++)
 		{
 			file << tiles[i][j];
 			file << red[i][j];
@@ -128,7 +128,7 @@ void tagTileBitmap::resize(const int width, const int height)
 	red.clear();
 	green.clear();
 	blue.clear();
-	for (unsigned int i = 0; i <= unsigned int(width); i++)
+	for (unsigned int i = 0; i <= width; i++)
 	{
 		tiles.push_back(VECTOR_STR());
 		VECTOR_STR &a = tiles.back();
@@ -141,7 +141,7 @@ void tagTileBitmap::resize(const int width, const int height)
 		//
 		blue.push_back(VECTOR_SHORT());
 		VECTOR_SHORT &d = blue.back();
-		for (unsigned int j = 0; j <= unsigned int(height); j++)
+		for (unsigned int j = 0; j <= height; j++)
 		{
 			a.push_back(_T(""));
 			b.push_back(0);

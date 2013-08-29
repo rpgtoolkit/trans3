@@ -76,7 +76,7 @@ bool tagAnimation::open(const STRING fileName)
 			frameFiles.clear();
 			transpColors.clear();
 			sounds.clear();
-			for (int i = 0; i <= frameCount; ++i)
+			for (unsigned int i = 0; i <= frameCount; ++i)
 			{
 				STRING strA, strB;
 				int num;
@@ -115,7 +115,7 @@ bool tagAnimation::open(const STRING fileName)
 		frameFiles.clear();
 		transpColors.clear();
 		sounds.clear();
-		for (int i = 0; i <= frameCount; ++i)
+		for (unsigned int i = 0; i <= frameCount; ++i)
 		{
 			frameFiles.push_back(file.line());
 			transpColors.push_back(_ttoi(file.line().c_str()));
@@ -147,7 +147,7 @@ void tagAnimation::save(const STRING fileName) const
 
 	const int frames = frameFiles.size() - 1;
 	file << frames;
-	for (int i = 0; i <= frames; i++)
+	for (unsigned int i = 0; i <= frames; i++)
 	{
 		file << frameFiles[i];
 		file << transpColors[i];

@@ -696,7 +696,7 @@ bool CComPlugin::execute(const STRING line, int &retValDt, STRING &retValLit, do
 
 	DISPPARAMS params = {vars, NULL, 5, 0};
 
-	m_plugin->Invoke(
+	HRESULT hr = m_plugin->Invoke(
 		member,
 		IID_NULL,
 		LOCALE_USER_DEFAULT,
@@ -742,7 +742,7 @@ int CComPlugin::fight(const int enemyCount, const int skillLevel, const STRING b
 	CComVariant vars[] = {int(canRun), background.c_str(), skillLevel, enemyCount}, ret;
 	DISPPARAMS params = {vars, NULL, 4, 0};
 
-	m_plugin->Invoke(
+	HRESULT hr = m_plugin->Invoke(
 		member,
 		IID_NULL,
 		LOCALE_USER_DEFAULT,
@@ -776,7 +776,7 @@ int CComPlugin::fightInform(const int sourcePartyIndex, const int sourceFighterI
 	CComVariant vars[] = {attackCode, strMessage.c_str(), targetSmpLost, targetHpLost, sourceSmpLost, sourceHpLost, targetFighterIndex, targetPartyIndex, sourceFighterIndex, sourcePartyIndex}, ret;
 	DISPPARAMS params = {vars, NULL, 10, 0};
 
-	m_plugin->Invoke(
+	HRESULT hr = m_plugin->Invoke(
 		member,
 		IID_NULL,
 		LOCALE_USER_DEFAULT,
@@ -819,7 +819,7 @@ bool CComPlugin::getFighterLocation(const int party, const int idx, int &x, int 
 
 	DISPPARAMS params = {vars, NULL, 4, 0};
 
-	m_plugin->Invoke(
+	HRESULT hr = m_plugin->Invoke(
 		member,
 		IID_NULL,
 		LOCALE_USER_DEFAULT,
@@ -846,7 +846,7 @@ int CComPlugin::menu(const int request)
 	CComVariant vars[] = {request}, ret;
 	DISPPARAMS params = {vars, NULL, 1, 0};
 
-	m_plugin->Invoke(
+	HRESULT hr = m_plugin->Invoke(
 		member,
 		IID_NULL,
 		LOCALE_USER_DEFAULT,
@@ -879,7 +879,7 @@ bool CComPlugin::plugType(const int request)
 	CComVariant vars[] = {request}, ret;
 	DISPPARAMS params = {vars, NULL, 1, 0};
 
-	m_plugin->Invoke(
+	HRESULT hr = m_plugin->Invoke(
 		member,
 		IID_NULL,
 		LOCALE_USER_DEFAULT,
