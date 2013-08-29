@@ -872,8 +872,7 @@ INT FAST_CALL CCanvas::BltPart(
 	{
 		SetSrcColorKey(TRANSP_COLOR);
 
-		// Setup the rects
-		RECT destRect = {x, y, x + width, y + height};
+		// Setup the rects;
 		RECT rect = {xSrc, ySrc, xSrc + width, ySrc + height};
 
 		// Execute the blt
@@ -1390,7 +1389,6 @@ INT FAST_CALL CCanvas::BltTransparentPart(
 		GetDXSurface()->SetColorKey(DDCKEY_SRCBLT, &ddck);
 
 		// Setup rectangles
-		RECT destRect = {x, y, x + width, y + height};
 		RECT rect = {xSrc, ySrc, xSrc + width, ySrc + height};
 
 		// Execute the blt
@@ -1782,7 +1780,7 @@ INT FAST_CALL CCanvas::BltTranslucentPart(
 						if (srcRGB == crUnaffectedColor)
 						{
 							// Directly copy
-							pSurfDest[idxd] = ConvertColorRef(srcRGB, &ddpfDest);
+							pSurfDest[idxd] = WORD(ConvertColorRef(srcRGB, &ddpfDest));
 						}
 
 						// Check for opaque color
@@ -1798,7 +1796,7 @@ INT FAST_CALL CCanvas::BltTranslucentPart(
 							CONST INT b = int((GetBValue(srcRGB) * dIntensity) + (GetBValue(destRGB) * (1 - dIntensity)));
 
 							// Lay down translucently
-							pSurfDest[idxd] = ConvertColorRef(RGB(r, g, b), &ddpfDest);
+							pSurfDest[idxd] = WORD(ConvertColorRef(RGB(r, g, b), &ddpfDest));
 
 						}
 
@@ -2271,7 +2269,7 @@ INT FAST_CALL CCanvas::BltAdditivePart(
 					if (srcRGB == crUnaffectedColor)
 					{
 						// Directly copy
-						pSurfDest[idxd] = ConvertColorRef(srcRGB, &ddpfDest);
+						pSurfDest[idxd] = WORD(ConvertColorRef(srcRGB, &ddpfDest));
 					}
 
 					// Check for opaque color
@@ -2284,7 +2282,7 @@ INT FAST_CALL CCanvas::BltAdditivePart(
 						CONST LONG b = long(GetBValue(srcRGB) * percent + GetBValue(destRGB));
 
 						CONST LONG res = RGB(BOUND(r), BOUND(g), BOUND(b));
-						pSurfDest[idxd] = ConvertColorRef(res, &ddpfDest);
+						pSurfDest[idxd] = WORD(ConvertColorRef(res, &ddpfDest));
 
 					}
 
@@ -2516,9 +2514,9 @@ INLINE LONG CCanvas::GetRGBPixel(
 	//CONST WORD wBPos = GetMaskPos(pddpf->dwBBitMask);
 	CONST DWORD offset = y * destSurface->lPitch + x * (pddpf->dwRGBBitCount >> 3);
 	CONST DWORD pixel = *((LPDWORD)((DWORD)destSurface->lpSurface + offset));
-	CONST BYTE r = (pixel & pddpf->dwRBitMask) << (8 - wRBits);
-	CONST BYTE g = (pixel & pddpf->dwGBitMask) << (8 - wGBits);
-	CONST BYTE b = (pixel & pddpf->dwBBitMask) << (8 - wBBits);
+	CONST BYTE r = BYTE((pixel & pddpf->dwRBitMask) << (8 - wRBits));
+	CONST BYTE g = BYTE((pixel & pddpf->dwGBitMask) << (8 - wGBits));
+	CONST BYTE b = BYTE((pixel & pddpf->dwBBitMask) << (8 - wBBits));
 	return RGB(r, g, b);
 }
 
@@ -2546,7 +2544,7 @@ VOID CCanvas::EmulateGamma()
 	CONST WORD wRPos = GetMaskPos(ddpf.dwRBitMask);
 	CONST WORD wGPos = GetMaskPos(ddpf.dwGBitMask);
 	CONST WORD wBPos = GetMaskPos(ddpf.dwBBitMask);
-	CONST WORD rgbOffset = (ddpf.dwRGBBitCount >> 3);
+	CONST WORD rgbOffset = WORD((ddpf.dwRGBBitCount >> 3));
 
 	// Get the gamma ramp.
 	DDGAMMARAMP ramp;
@@ -2561,9 +2559,9 @@ VOID CCanvas::EmulateGamma()
 			const DWORD offset = x + j * ddsd.lPitch;
 
 			CONST DWORD pixel = *((LPDWORD)((DWORD)ddsd.lpSurface + offset));
-			BYTE r = (pixel & ddpf.dwRBitMask) << (8 - wRBits);
-			BYTE g = (pixel & ddpf.dwGBitMask) << (8 - wGBits);
-			BYTE b = (pixel & ddpf.dwBBitMask) << (8 - wBBits);
+			BYTE r = BYTE((pixel & ddpf.dwRBitMask) << (8 - wRBits));
+			BYTE g = BYTE((pixel & ddpf.dwGBitMask) << (8 - wGBits));
+			BYTE b = BYTE((pixel & ddpf.dwBBitMask) << (8 - wBBits));
 
 			// Note: This division is _slow_.
 			r = ramp.red[r] / 255;
@@ -2666,7 +2664,7 @@ VOID FAST_CALL CCanvas::SetPixelsDX(
 							CONST LONG srcRGB = p_crPixelArray[idx];
 
 							// Set down the pixel
-							CONST WORD dClr = ConvertColorRef(srcRGB, &ddpfDest);
+							CONST WORD dClr = WORD(ConvertColorRef(srcRGB, &ddpfDest));
 							pSurfDest[idxd] = dClr;
 
 							idx++;

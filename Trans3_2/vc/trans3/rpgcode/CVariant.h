@@ -116,7 +116,7 @@ public:
 			case DT_NUM:
 			{
 				char conv[255];
-				gcvt(*(double *)m_pData, 255, conv);
+				_gcvt(*(double *)m_pData, 255, conv);
 #ifndef _UNICODE
 				return (conv + rhs);
 #else
@@ -152,7 +152,7 @@ public:
 		else if (m_type == DT_NUM)
 		{
 			char conv[255];
-			gcvt(*(double *)m_pData, 255, conv);
+			_gcvt(*(double *)m_pData, 255, conv);
 			char &chr = conv[strlen(conv) - 1];
 			if (chr == _T('.'))
 			{

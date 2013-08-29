@@ -128,7 +128,8 @@ std::vector<LPCONV_VECTOR> vectorizeLayer(
 		 * the first tile that is neither "normal" nor included
 		 * in any vector.
 		 */
-		int x = -1, y, i, j;
+		int x = -1;
+		unsigned int y, i, j;
 		for (i = 0; i < width; ++i)
 		{
 			for (j = 0; j < height; ++j)
@@ -152,7 +153,7 @@ std::vector<LPCONV_VECTOR> vectorizeLayer(
 		// Find the lowest point where this type stops.
 		while ((y < height) && (pTypes[height * x + y + 1] == type)) y++;
 
-		while (x < width)
+		while (unsigned int (x) < width)
 		{
 			/*
 			 * Check whether this column, to the height of the first
@@ -177,7 +178,7 @@ std::vector<LPCONV_VECTOR> vectorizeLayer(
 		x++; y++;
 
 		// Mark off the tiles in this rectangle as in a vector.
-		for (i = origX; i < x; i++)
+		for (i = origX; i < unsigned int (x); i++)
 		{
 			memset(pFinished + height * i + origY, 1, y - origY);
 		}
@@ -200,7 +201,7 @@ std::vector<LPCONV_VECTOR> vectorizeLayer(
 			{
 				// vector->type = TT_SOLID;
 				// Vertical lines.
-				for (i = origX; i <= x; ++i)
+				for (i = origX; i <= unsigned int(x); ++i)
 				{
 					LPCONV_VECTOR vector = new CONV_VECTOR(type);
 					vector->pts.push_back(CONV_POINT(i * 32, origY * 32));

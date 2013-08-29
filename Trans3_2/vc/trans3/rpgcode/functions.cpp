@@ -285,7 +285,7 @@ CPlayer *getPlayerPointer(STACK_FRAME &param)
 	}
 
 	// g_players index.
-	const int i = int(param.getNum());
+	const size_t i = size_t(param.getNum());
 	if (i < g_players.size())
 	{
 		return g_players.at(i);
@@ -309,7 +309,7 @@ CItem *getItemPointer(STACK_FRAME &param)
 		}
 		else
 		{
-			char str[255]; itoa(i, str, 10);
+			char str[255]; _itoa(i, str, 10);
 			throw CError(_T("Item does not exist at board index ") + STRING(str) + _T("."));
 		}
 	}
@@ -2545,7 +2545,7 @@ void createitem(CALL_DATA &params)
 	// a constant, load the item into that position.
 	if ((params.params == 2) && !(params[1].udt & UDT_ID))
 	{
-		const int i = int(params[1].getNum());
+		const size_t i = size_t(params[1].getNum());
 
 		// Is the board item array large enough?
 		while (g_pBoard->items.size() <= i)
@@ -2960,7 +2960,7 @@ void sourcehandle(CALL_DATA &params)
 			if (p == *j) i = j - g_pBoard->items.begin();
 		}
 		char c[8];
-		str += itoa(i, c, 10);
+		str += _itoa(i, c, 10);
 	}
 	else if (g_source.type == ET_ENEMY)
 	{
@@ -3013,7 +3013,7 @@ void targethandle(CALL_DATA &params)
 			if (p == *j) i = j - g_pBoard->items.begin();
 		}
 		char c[8];
-		str += itoa(i, c, 10);
+		str += _itoa(i, c, 10);
 	}
 	else if (g_target.type == ET_ENEMY)
 	{
@@ -3192,7 +3192,7 @@ void scan(CALL_DATA &params)
 	int x = int(params[0].getNum()), y = int(params[1].getNum());
 	coords::tileToPixel(x, y, g_pBoard->coordType, false, g_pBoard->sizeX);
 
-	while (i >= g_cnvRpgScans.size())
+	while (size_t(i) >= g_cnvRpgScans.size())
 	{
 		g_cnvRpgScans.push_back(NULL);
 	}
@@ -3228,7 +3228,7 @@ void mem(CALL_DATA &params)
 		throw CError(_T("Mem() requires three parameters."));
 	}
 
-	const int i = int(params[2].getNum());
+	const size_t i = size_t(params[2].getNum());
 	int x = int(params[0].getNum()), y = int(params[1].getNum());
 	coords::tileToPixel(x, y, g_pBoard->coordType, false, g_pBoard->sizeX);
 
@@ -3387,7 +3387,7 @@ void remove(CALL_DATA &params)
  */
 void kill(CALL_DATA &params)
 {
-	for (unsigned int i = 0; i < params.params; ++i)
+	for (int i = 0; i < params.params; ++i)
 	{
 		params.prg->freeVar(params[i].lit);
 	}
@@ -3458,7 +3458,7 @@ void fightEnemy(CALL_DATA &params)
 		throw CError(_T("FightEnemy() requires at least two parameters."));
 	}
 	std::vector<STRING> enemies;
-	for (unsigned int i = 0; i < (params.params - 1); ++i)
+	for (int i = 0; i < (params.params - 1); ++i)
 	{
 		enemies.push_back(params[i].getLit());
 	}
@@ -3812,7 +3812,7 @@ void fade(CALL_DATA &params)
 
 			for (int j = 0; j != 2; ++j)
 			{
-				unsigned int i;
+				int i;
 				// First sweep.
 				for (i= 0; i != width / 2; i += pxStep * 2)
 				{
@@ -4818,7 +4818,7 @@ void savescreen(CALL_DATA &params)
 			  width = g_screen.right - g_screen.left, 
 			  height = g_screen.bottom - g_screen.top;
 
-	while (i >= g_cnvRpgScreens.size())
+	while (size_t(i) >= g_cnvRpgScreens.size())
 	{
 		g_cnvRpgScreens.push_back(NULL);
 	}
@@ -4903,7 +4903,7 @@ void restorescreenarray(CALL_DATA &params)
 		throw CError(_T("RestoreScreen() requires one or seven parameters."));
 	}
 
-	const int i = int(params[0].getNum());
+	const size_t i = size_t(params[0].getNum());
 	if (i < g_cnvRpgScreens.size() && g_cnvRpgScreens[i])
 	{
 		// Temporarily switch the pointers for
@@ -5324,7 +5324,7 @@ void getBoardTileType(CALL_DATA &params)
 				break;
 
 			case TT_STAIRS:
-				char str[255]; itoa(p->attributes, str, 10);
+				char str[255]; _itoa(p->attributes, str, 10);
 				type = STRING(_T("STAIRS")) + str;
 				break;
 		}
@@ -5534,7 +5534,7 @@ void posture(CALL_DATA &params)
 	if (!p) throw CError(_T("Posture(): player not found"));
 
 	STRING str = _T("Custom");
-	char ch[255]; itoa(int(params[0].getNum()), ch, 10);
+	char ch[255]; _itoa(int(params[0].getNum()), ch, 10);
 	p->customStance(str + ch, params.prg, false);
 }
 
@@ -6463,7 +6463,7 @@ void split(CALL_DATA &params)
 	std::vector<STRING>::const_iterator i = parts.begin();
 	for (unsigned int j = 0; i != parts.end(); ++i, ++j)
 	{
-		char str[255]; itoa(j, str, 10);
+		char str[255]; _itoa(j, str, 10);
 		LPSTACK_FRAME var = params.prg->getVar(array + _T('[') + str + _T(']'));
 		var->udt = UDT_LIT;
 		var->lit = *i;
@@ -7003,7 +7003,7 @@ void mousecursor(CALL_DATA &params)
 		file = tempFile;
 	}
 	changeCursor(file);
-	if (!tempFile.empty()) unlink(tempFile.c_str());
+	if (!tempFile.empty()) _unlink(tempFile.c_str());
 }
 
 /*

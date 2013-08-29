@@ -145,8 +145,8 @@ void CVector::resize(const unsigned int length)
 	// Unclose the vector.
 	if (m_closed) m_p.pop_back();
 
-	while (length < size()) m_p.pop_back();
-	while (size() < length) m_p.push_back(m_p.back());
+	while (length < unsigned int(size())) m_p.pop_back();
+	while (unsigned int(size()) < length) m_p.push_back(m_p.back());
 		
 	// Reclose the vector, if the new length permits.
 	if (closed) m_p.push_back(m_p.front());
@@ -158,7 +158,7 @@ void CVector::resize(const unsigned int length)
  */
 void CVector::setPoint(const unsigned int i, const double x, const double y)
 {
-	if (i < size())
+	if (i < unsigned int(size()))
 	{
 		m_p[i].x = x; 
 		m_p[i].y = y; 
@@ -483,12 +483,12 @@ void CVector::draw(CONST LONG color, const bool drawText, const int x, const int
 		{
 			STRING text; 
 			char c[5]; 
-			text = gcvt(i->x, 5, c);
+			text = _gcvt(i->x, 5, c);
 #ifdef _UNICODE
 			text = getUnicodeString(text);
 #endif
 			cnv->DrawText(int(i->x) - x, int(i->y) - y, text, _T("Arial"), 10, color);
-			text = gcvt(i->y, 5, c);
+			text = _gcvt(i->y, 5, c);
 #ifdef _UNICODE
 			text = getUnicodeString(text);
 #endif

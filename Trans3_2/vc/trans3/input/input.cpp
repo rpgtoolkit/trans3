@@ -421,10 +421,10 @@ LRESULT CALLBACK eventProcessor(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 			}
 
 			// Queue the character.
-			g_keys.push_back(key);
+			g_keys.push_back(char(key));
             g_vkeys.push_back(isVirtual);
 			// Pass the virtual key to the plugin.
-			const STRING strKey = getName(key, isVirtual, true);
+			const STRING strKey = getName(char(key), isVirtual, true);
 			informPluginEvent(vir, -1, -1, -1, state[VK_SHIFT], strKey, INPUT_KB);
 		} break;
 

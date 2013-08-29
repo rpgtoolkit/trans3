@@ -86,7 +86,7 @@ STRING replace(const STRING str, const char find, const char replace)
 {
 	STRING toRet = str;
 	const int len = str.length();
-	for (unsigned int i = 0; i < len; i++)
+	for (int i = 0; i < len; i++)
 	{
 		if (toRet[i] == find) toRet[i] = replace;
 	}
