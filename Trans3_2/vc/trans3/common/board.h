@@ -277,7 +277,7 @@ typedef struct tagBoard
 	int effectiveWidth() const { return (coordType & ISO_ROTATED ? sizeX + sizeY : sizeX); } 
 	int effectiveHeight() const { return (coordType & ISO_ROTATED ? sizeX + sizeY : sizeY); }
 	bool insertTile(const STRING tile, const int x, const int y, const int z);
-	bool isIsometric() const { return (coordType & (ISO_STACKED | ISO_ROTATED)) != 0; };
+	bool isIsometric() const { return (coordType & (ISO_STACKED | ISO_ROTATED)); };
 	void createProgramBase(LPBRD_PROGRAM pPrg, LPOBJ_POSITION pObj) const;
 	const BRD_VECTOR *getVectorFromTile(const int x, const int y, const int z) const;
 	LPBRD_VECTOR getVector(const LPSTACK_FRAME pParam);

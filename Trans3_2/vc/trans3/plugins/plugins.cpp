@@ -692,7 +692,7 @@ bool CComPlugin::execute(const STRING line, int &retValDt, STRING &retValLit, do
 	vars[2].pbstrVal = &bstr;
 	vars[1].vt = VT_R8 | VT_BYREF;
 	vars[1].pdblVal = &retValNum;
-	vars[0] = usingReturn != 0;
+	vars[0] = bool(usingReturn);
 
 	DISPPARAMS params = {vars, NULL, 5, 0};
 

@@ -525,7 +525,7 @@ void renderNow(CCanvas *cnv, const bool bForce)
 	if (g_pBoard->bLayerOccupied[0])
 	{		
 		// Check if we need to re-render the scroll cache.
-		g_scrollCache.render((g_scrollCache.cnv.CheckSurfaces() != 0));
+		g_scrollCache.render(g_scrollCache.cnv.CheckSurfaces());
 
 		// Advance animated tiles and update the scroll cache.
 		g_pBoard->renderAnimatedTiles(g_scrollCache);

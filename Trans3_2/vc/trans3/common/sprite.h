@@ -243,7 +243,7 @@ typedef struct tagSpriteBoardPath
 		}
 	}
 
-	bool operator() (void) { return pVector != 0; }
+	bool operator() (void) { return pVector; }
 
 	int size(void) 
 	{ 
