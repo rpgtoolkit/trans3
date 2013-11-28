@@ -690,14 +690,17 @@ void CSprite::parseQueuedMovements(const STRING str, const bool bClearQueue)
 				mv = MV_SW;
 
 			if (mv != MV_IDLE) setQueuedMovement(mv, false, step);
+
 			s.erase();
 		}
 		else
 		{
 			if (i[0] != _T(' ')) s += *i;
 		}
-	} // for (i)
 
+		if (i == str.end())
+			break;
+	}
 }
 
 /*
@@ -1230,7 +1233,10 @@ TILE_TYPE CSprite::checkBoardEdges(void)
 	if (link == LK_NONE) return TT_NORMAL;
 
 	// No board exists.
-	if (g_pBoard->links[link].empty()) return TT_SOLID; 
+	if (g_pBoard->links.size() >= link && g_pBoard->links.size() > 0)
+	{
+		if (g_pBoard->links[link].empty()) return TT_SOLID;
+	}
 
 	// Board exists - send after exit from g_sprites movement for().
 	return TT_NORMAL;

@@ -214,11 +214,22 @@ STRING formatDirectionString(STRING str)
 		}
 		else if (i[0] == _T('E'))
 		{
-			// Look at the 2nd next letter.
-			if (i >= str.end() - 2 || i[2] != _T('T'))
+			if (str.size() == 1)
 			{
 				// Not part of west.
 				s += delimiter;
+			}
+			else if (i >= str.end() - 2) // Look at the 2nd next letter.
+			{
+				// Not part of west.
+				s += delimiter;
+			}
+			else if (str.size() > 3)
+			{
+				if (i[2] != _T('T'))
+				{
+					s += delimiter;
+				}
 			}
 		}
 		s += *i;
