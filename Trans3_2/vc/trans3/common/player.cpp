@@ -121,7 +121,7 @@ short tagPlayer::open(const STRING fileName, SPRITE_ATTR &spriteAttr)
 		file >> stats.level;
 		file >> profilePic;
 
-		unsigned int i;
+		int i;
 
 		smlist.clear();
 		spcMinExp.clear();

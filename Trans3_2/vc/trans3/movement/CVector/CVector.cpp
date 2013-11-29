@@ -61,7 +61,7 @@ m_closed(false),
 m_curl(CURL_NDEF)
 {
 	// Create a vector of one point.
-	RECT bounds = {x, y, x, y}; 
+	RECT bounds = {long(x), long(y), long(x), long(y)}; 
 	m_bounds = bounds;
 	push_back(x, y);
 }
@@ -74,7 +74,7 @@ m_closed(false),
 m_curl(CURL_NDEF)
 {
 	// Create a vector of one point.
-	RECT bounds = {p.x, p.y, p.x, p.y}; 
+	RECT bounds = {long(p.x), long(p.y), long(p.x), long(p.y)}; 
 	m_bounds = bounds;
 	push_back(p);
 }
@@ -92,10 +92,10 @@ CVector &CVector::operator+= (const DB_POINT p)
 	}
 
 	// Offset the bounding box.
-	m_bounds.right += p.x;
-	m_bounds.left += p.x;
-	m_bounds.top += p.y;
-	m_bounds.bottom += p.y;
+	m_bounds.right += long(p.x);
+	m_bounds.left += long(p.x);
+	m_bounds.top += long(p.y);
+	m_bounds.bottom += long(p.y);
 	return *this;
 }
 
@@ -145,8 +145,8 @@ void CVector::resize(const unsigned int length)
 	// Unclose the vector.
 	if (m_closed) m_p.pop_back();
 
-	while (length < size()) m_p.pop_back();
-	while (size() < length) m_p.push_back(m_p.back());
+	while (length < unsigned int(size())) m_p.pop_back();
+	while (unsigned int(size()) < length) m_p.push_back(m_p.back());
 		
 	// Reclose the vector, if the new length permits.
 	if (closed) m_p.push_back(m_p.front());
@@ -158,7 +158,7 @@ void CVector::resize(const unsigned int length)
  */
 void CVector::setPoint(const unsigned int i, const double x, const double y)
 {
-	if (i < size())
+	if (i < unsigned int(size()))
 	{
 		m_p[i].x = x; 
 		m_p[i].y = y; 
@@ -184,10 +184,10 @@ void CVector::boundingBox(RECT &rect) const
 	// Loop over subvectors and find biggest and smallest points.
 	for (DB_CITR i = m_p.begin(); i != m_p.end(); ++i)
 	{
-		if ((i->x < rect.left) || (i == m_p.begin())) rect.left = i->x;
-		if ((i->y < rect.top) || (i == m_p.begin())) rect.top = i->y;
-		if (i->x > rect.right) rect.right = i->x;
-		if (i->y > rect.bottom) rect.bottom = i->y;
+		if ((i->x < rect.left) || (i == m_p.begin())) rect.left = long(i->x);
+		if ((i->y < rect.top) || (i == m_p.begin())) rect.top = long(i->y);
+		if (i->x > rect.right) rect.right = long(i->x);
+		if (i->y > rect.bottom) rect.bottom = long(i->y);
 	}
 }
 
@@ -463,7 +463,7 @@ bool CVector::createMask(CCanvas *const cnv, const int x, const int y, CONST LON
 	DeleteObject(rgn);
 	delete [] ppts;
 
-	return success;
+	return (success != 0);
 }
 
 /*
@@ -475,7 +475,7 @@ void CVector::draw(CONST LONG color, const bool drawText, const int x, const int
 	{
 		if (i != m_p.end() - 1)
 		{
-			cnv->DrawLine(i->x - x, i->y - y, (i + 1)->x - x, (i + 1)->y - y, color);
+			cnv->DrawLine(int(i->x) - x, int(i->y) - y, int((i + 1)->x) - x, int((i + 1)->y) - y, color);
 		}
 
 		// Draw the co-ordinates for each corner.
@@ -483,16 +483,16 @@ void CVector::draw(CONST LONG color, const bool drawText, const int x, const int
 		{
 			STRING text; 
 			char c[5]; 
-			text = gcvt(i->x, 5, c);
+			text = _gcvt(i->x, 5, c);
 #ifdef _UNICODE
 			text = getUnicodeString(text);
 #endif
-			cnv->DrawText(i->x - x, i->y - y, text, _T("Arial"), 10, color);
-			text = gcvt(i->y, 5, c);
+			cnv->DrawText(int(i->x) - x, int(i->y) - y, text, _T("Arial"), 10, color);
+			text = _gcvt(i->y, 5, c);
 #ifdef _UNICODE
 			text = getUnicodeString(text);
 #endif
-			cnv->DrawText(i->x - x, i->y - y + 8, text, _T("Arial"), 10, color);
+			cnv->DrawText(int(i->x) - x, int(i->y) - y + 8, text, _T("Arial"), 10, color);
 		}
 	}
 }
@@ -670,7 +670,7 @@ int CVector::sum(void) const
 	int s = 0, width = m_bounds.right - m_bounds.left;
 	for (DB_CITR i = m_p.begin(); i != m_p.end(); ++i)
 	{
-		s += (i->x - m_bounds.left) + (i->y - m_bounds.top) * width;
+		s += (int(i->x) - m_bounds.left) + (int(i->y) - m_bounds.top) * width;
 	}
 	return s;
 }

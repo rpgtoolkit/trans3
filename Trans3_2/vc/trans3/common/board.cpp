@@ -169,7 +169,6 @@ vVersion:
 					{
 						// Compression: stream of identical tiles 'test' long. 
 						count = -index;
-						short r, b, g;
 						file >> index;
 
 						// Determine if the layer contains tiles.
@@ -290,7 +289,6 @@ layerEnd:
 			for (i = 0; i <= ub; ++i)
 			{
 				BRD_LIGHT light;
-				short var;
 				
 				file >> light.layer;
 				int type;
@@ -490,7 +488,7 @@ layerEnd:
 			if (startThreads && (this == g_pBoard))
 			{
 				CThread *p = CThread::create(thread);
-				char str[255]; itoa(i, str, 10);
+				char str[255]; _itoa(i, str, 10);
 				LPSTACK_FRAME var = CProgram::getGlobal(STRING(_T("threads[")) + str + _T("]"));
 				var->udt = UDT_NUM;
 				var->num = double(int(p));
@@ -542,8 +540,10 @@ layerEnd:
 		file >> enterPrg;
 		file >> battleBackground;
 		file >> battleSkill;
-		file >> var; bAllowBattles = bool(var);
-		file >> var; bDisableSaving = bool(var);
+		file >> var; 
+		bAllowBattles = var != 0;
+		file >> var; 
+		bDisableSaving = var != 0;
 
 		bool bUpdate = false;
 		file >> var; if (ambientEffect.r != var) bUpdate = true; ambientEffect.r = var;
@@ -599,7 +599,8 @@ pvVersion:
 		file >> startY;
 		file >> startL;
 
-		file >> var; bDisableSaving = bool(var);
+		file >> var; 
+		bDisableSaving = var != 0;
     
 		short lutSize;
 		file >> lutSize;
@@ -749,7 +750,8 @@ lutEndB:
 
 		file >> battleSkill;
 		file >> battleBackground;
-		file >> var; bAllowBattles = bool(var);
+		file >> var; 
+		bAllowBattles = var != 0;
 		file >> var;					// boardDayNight.
 		file >> var;					// boardNightBattleOverride.
 		file >> var;					// boardSkillNight.
@@ -885,7 +887,7 @@ lutEndB:
 				if (startThreads && (this == g_pBoard))
 				{
 					CThread *p = CThread::create(thread);
-					char str[255]; itoa(i, str, 10);
+					char str[255]; _itoa(i, str, 10);
 					LPSTACK_FRAME var = CProgram::getGlobal(STRING(_T("threads[")) + str + _T("]"));
 					var->udt = UDT_NUM;
 					var->num = double(int(p));
@@ -1316,19 +1318,19 @@ void tagBoard::render(
 	}
 
 	// For each layer
-	for (unsigned int i = lLower; i <= lUpper; ++i)
+	for (int i = lLower; i <= lUpper; ++i)
 	{
 		if (bLayerOccupied[i] & LO_TILES)
 		{
 			const bool castShade = (tileShading[0]->layer >= i);
 
 			// For the x axis
-			for (unsigned int j = x; j <= x + nWidth; ++j)
+			for (int j = x; j <= x + nWidth; ++j)
 			{
 				if (j > wEffective) continue;
 
 				// For the y axis
-				for (unsigned int k = y; k <= y + nHeight; ++k)
+				for (int k = y; k <= y + nHeight; ++k)
 				{
 					if (k > hEffective) continue;
 
@@ -1430,7 +1432,7 @@ void tagBoard::renderBackground(CCanvas *const cnv, const RECT bounds)
 		}
 		else
 		{
-			rect.left = img.scroll.x * g_screen.left;
+			rect.left = long(img.scroll.x) * g_screen.left;
 		}
 
 		if (img.scroll.y < 0 || height < resY)
@@ -1439,7 +1441,7 @@ void tagBoard::renderBackground(CCanvas *const cnv, const RECT bounds)
 		}
 		else
 		{
-			rect.top = img.scroll.y * g_screen.top;
+			rect.top = long(img.scroll.y) * g_screen.top;
 		}
 
 		img.pCnv->BltTransparentPart(
@@ -1655,7 +1657,7 @@ void tagBoard::setSize(const int width, const int height, const int depth, const
 	{
 		VECTOR_SHORT row;
 		VECTOR_SHORT2D face;
-		unsigned int i;
+		int i;
 		board.clear();
 		for (i = 0; i <= width; ++i) row.push_back(0);
 		for (i = 0; i <= height; ++i) face.push_back(row);
@@ -1669,7 +1671,7 @@ void tagBoard::setSize(const int width, const int height, const int depth, const
 	{
 		VECTOR_CHAR row;
 		VECTOR_CHAR2D face;
-		unsigned int i;
+		int i;
 		for (i = 0; i <= width; ++i) row.push_back(_T('\0'));
 		for (i = 0; i <= height; ++i) face.push_back(row);
 		tiletype.clear();
@@ -1719,7 +1721,7 @@ LPBRD_VECTOR tagBoard::getVector(const LPSTACK_FRAME pParam)
 	}
 	else
 	{
-		const int i = int(pParam->getNum());
+		const size_t i = size_t(pParam->getNum());
 		if (i < vectors.size())
 		{
 			return &vectors.at(i);
@@ -1805,7 +1807,7 @@ void tagBoard::renderAnimatedTiles(SCROLL_CACHE &scrollCache)
 		TILEANIM &tan = i->tile;
 		const int x = i->x, y = i->y, z = i->z;
 
-		if (GetTickCount() - tan.frameTime > tan.frameDelay)
+		if ((int(GetTickCount()) - tan.frameTime) > tan.frameDelay)
 		{
 			(++tan.currentFrame) %= tan.frames.size();
 			tan.frameTime = GetTickCount();
@@ -1886,7 +1888,7 @@ void tagBoard::renderStack(
 	);
 	cnv->CloseDC(hdc);
 
-	for (unsigned int i = lLower; i <= lUpper; ++i)
+	for (int i = lLower; i <= lUpper; ++i)
 	{
 		if ((bLayerOccupied[i] & LO_TILES) && board[i][y][x])
 		{

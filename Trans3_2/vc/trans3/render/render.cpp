@@ -522,27 +522,24 @@ void renderNow(CCanvas *cnv, const bool bForce)
 	g_pBoard->renderBackground(cnv, g_screen);
 
 	// Render the flattened board if it exists ([0] represents any layer occupied).
-	if (g_pBoard->bLayerOccupied.size() > 0)
-	{
-		if (g_pBoard->bLayerOccupied[0])
-		{		
-			// Check if we need to re-render the scroll cache.
-			g_scrollCache.render(g_scrollCache.cnv.CheckSurfaces());
+	if (g_pBoard->bLayerOccupied[0])
+	{		
+		// Check if we need to re-render the scroll cache.
+		g_scrollCache.render((g_scrollCache.cnv.CheckSurfaces() != 0));
 
-			// Advance animated tiles and update the scroll cache.
-			g_pBoard->renderAnimatedTiles(g_scrollCache);
+		// Advance animated tiles and update the scroll cache.
+		g_pBoard->renderAnimatedTiles(g_scrollCache);
 
-			// Draw flattened layers.
-			g_scrollCache.cnv.BltTransparentPart(
-				cnv, 
-				g_scrollCache.r.left - g_screen.left,
-				g_scrollCache.r.top - g_screen.top,
-				0, 0, 
-				g_scrollCache.r.right - g_scrollCache.r.left, 
-				g_scrollCache.r.bottom - g_scrollCache.r.top,
-				TRANSP_COLOR
-			);
-		}
+		// Draw flattened layers.
+		g_scrollCache.cnv.BltTransparentPart(
+			cnv, 
+			g_scrollCache.r.left - g_screen.left,
+			g_scrollCache.r.top - g_screen.top,
+			0, 0, 
+			g_scrollCache.r.right - g_scrollCache.r.left, 
+			g_scrollCache.r.bottom - g_scrollCache.r.top,
+			TRANSP_COLOR
+		);
 	}
 
 	/*

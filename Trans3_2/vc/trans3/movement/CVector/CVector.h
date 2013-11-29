@@ -163,8 +163,9 @@ public:
 	// Determine if a polygon contains a point.
 	bool containsPoint(const DB_POINT p) const
 	{
-		return (windingNumber(p) % 2);
+		return (windingNumber(p) % 2) != 0;
 	}
+
 	int windingNumber(const DB_POINT p) const;
 
 	// Create a mask from a closed vector.

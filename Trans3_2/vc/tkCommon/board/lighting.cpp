@@ -120,9 +120,9 @@ VOID calculateLighting(RGB_MATRIX &shades, CONST BRD_LIGHT &bl, CONST COORD_TYPE
 					// Apply shading to points inside the ellipse.
 					if (fraction < 1.0)
 					{
-						shades[i][j].r += fraction * bl.colors[0].r + (1.0 - fraction) * bl.colors[1].r;
-						shades[i][j].g += fraction * bl.colors[0].g + (1.0 - fraction) * bl.colors[1].g;
-						shades[i][j].b += fraction * bl.colors[0].b + (1.0 - fraction) * bl.colors[1].b;
+						shades[i][j].r += short(fraction * bl.colors[0].r + (1.0 - fraction) * bl.colors[1].r);
+						shades[i][j].g += short(fraction * bl.colors[0].g + (1.0 - fraction) * bl.colors[1].g);
+						shades[i][j].b += short(fraction * bl.colors[0].b + (1.0 - fraction) * bl.colors[1].b);
 					}
 				} // for(j)
 			} // for(i)
@@ -172,9 +172,9 @@ VOID calculateLighting(RGB_MATRIX &shades, CONST BRD_LIGHT &bl, CONST COORD_TYPE
 					// To prevent shading past the node y-axes (clipped), only apply shading when (0 < fraction < 1).
 					if (fraction >= 0.0 && fraction <= 1.0)
 					{
-						shades[i][j].r += fraction * bl.colors[1].r + (1.0 - fraction) * bl.colors[0].r;
-						shades[i][j].g += fraction * bl.colors[1].g + (1.0 - fraction) * bl.colors[0].g;
-						shades[i][j].b += fraction * bl.colors[1].b + (1.0 - fraction) * bl.colors[0].b;
+						shades[i][j].r += short(fraction * bl.colors[1].r + (1.0 - fraction) * bl.colors[0].r);
+						shades[i][j].g += short(fraction * bl.colors[1].g + (1.0 - fraction) * bl.colors[0].g);
+						shades[i][j].b += short(fraction * bl.colors[1].b + (1.0 - fraction) * bl.colors[0].b);
 					}
 				}
 			}

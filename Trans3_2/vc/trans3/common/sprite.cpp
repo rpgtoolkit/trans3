@@ -243,7 +243,7 @@ void tagSpriteAttr::defaultVector(DB_POINT *pts, const bool bIsometric, const bo
 	const int flags = (bIsometric ? 4:0) | (bPixel ? 2:0) | (bActivate ? 1:0);
 	for (int i = 0; i != sizeof(spriteBases[flags]) / sizeof(DB_POINT); ++i)
 		pts[i] = spriteBases[flags][i];
-	offset(pts, 4, spriteBaseOffsets[flags].x, spriteBaseOffsets[flags].y);
+	offset(pts, 4, int(spriteBaseOffsets[flags].x), int(spriteBaseOffsets[flags].y));
 }
 
 /*

@@ -294,8 +294,8 @@ void CTilePathFind::addVector(CVector &vector, PF_SWEEPS &sweeps, PF_MATRIX &poi
 
 	// Round to sprite positions (pixel points corresponding
 	// to matrix elements).
-	coords::roundToTile(b.left, b.top, m_isIso, true);
-	coords::roundToTile(b.right, b.bottom, m_isIso, true);
+	coords::roundToTile(b.left, b.top, m_isIso != 0, true);
+	coords::roundToTile(b.right, b.bottom, m_isIso != 0, true);
 
 	// Allow negative points - since b.left/top will never be < 0,
 	// the expanded area will always be within the matrix range (i.e. 0, 0)
@@ -333,10 +333,10 @@ void CTilePathFind::addVector(CVector &vector, PF_SWEEPS &sweeps, PF_MATRIX &poi
 					// Block movement in the opposite direction.
 					// Obtain the tile coordinate of the target tile.
 					const DB_POINT target = sweeps[k].second;
-					int m = pt.x + target.x, n = pt.y + target.y;
+					int m = int(pt.x + target.x), n = int(pt.y + target.y);
 					coords::pixelToTile(m, n, coord, false, g_pBoard->sizeX);
 
-					if (m >= 0 && m < points.size() && n >= 0 && n < points[0].size())
+					if (m >= 0 && m < int(points.size()) && n >= 0 && n < int(points[0].size()))
 					{
 						points[m][n] |= 1 << (k - 1 + 4);
 					}
@@ -383,7 +383,7 @@ PF_PATH CTilePathFind::constructPath(NODE node, const CSprite *) const
  */
 int CTilePathFind::distance(const NODE &a, const NODE &b) const
 {
-	const int dx = abs(a.pos.x - b.pos.x), dy = abs(a.pos.y - b.pos.y);
+	const int dx = int(abs(a.pos.x - b.pos.x)), dy = int(abs(a.pos.y - b.pos.y));
 	int di = 0;
 
 	switch(m_heuristic)
@@ -393,7 +393,7 @@ int CTilePathFind::distance(const NODE &a, const NODE &b) const
 		case PF_DIAGONAL:
 			// Diagonals cost sqrt(2):
 			di = (dx < dy ? dx : dy);
-			return (1.41 * di + (dx + dy - 2 * di));
+			return (int(1.41) * di + (dx + dy - 2 * di));
 	}
 	return 0;
 }
@@ -414,7 +414,7 @@ bool CTilePathFind::getChild(NODE &child, NODE &parent)
 	if (pt == m_start.pos)
 	{
 		// Cater for non-aligned starts.
-		coords::roundToTile(pt.x, pt.y, m_isIso, true);
+		coords::roundToTile(pt.x, pt.y, m_isIso != 0, true);
 	}
 	child.pos.x = g_directions[m_isIso][m_nextDir][0] * PF_GRID_SIZE + pt.x;
 	child.pos.y = g_directions[m_isIso][m_nextDir][1] * PF_GRID_SIZE + pt.y;
@@ -516,7 +516,7 @@ bool CTilePathFind::isChild(const NODE &child, const NODE &parent) const
 	coords::pixelToTile(i, j, m_isIso ? ISO_ROTATED : TILE_NORMAL, false, g_pBoard->sizeX);
 
 	PF_MATRIX &pts = *m_pBoardPoints;
-	if (i < pts.size() && j < pts[0].size())
+	if (i < int(pts.size()) && j < int(pts[0].size()))
 	{
 		const PF_MATRIX_ELEMENT dir = 1 << (child.direction - 1);
 		if ((pts[i][j] & dir) || (m_spritePoints[i][j] & dir)) return false;
@@ -551,7 +551,7 @@ bool CTilePathFind::reset(
 
 	// Start must be aligned to grid.
 	DB_POINT newStart = start;
-	coords::roundToTile(newStart.x, newStart.y, m_isIso, true);
+	coords::roundToTile(newStart.x, newStart.y, m_isIso != 0, true);
 	m_movedStart = false;
 	bool movedGoal = false;
 
@@ -593,7 +593,7 @@ bool CTilePathFind::reset(
 				mv = MV_S;
 			}
 		}
-		coords::roundToTile(grid.x, grid.y, m_isIso, true);
+		coords::roundToTile(grid.x, grid.y, m_isIso != 0, true);
 		
 		CPfVector cpfvStart = CPfVector(cvStart);
 		for (int i = 0; i != 4; ++i, mv += 2)
@@ -678,7 +678,7 @@ bool CTilePathFind::reset(
 	}
 
 	// Round (potentially new) goal to tile and check for board vectors.
-	coords::roundToTile(goal.x, goal.y, m_isIso, true);
+	coords::roundToTile(goal.x, goal.y, m_isIso  != 0, true);
 	cvGoal = base + goal;
 
 	// Check for goal contained in board vectors. Select the nearest 
@@ -714,7 +714,7 @@ bool CTilePathFind::reset(
 	if (movedGoal)
 	{
 		// Find the first reachable grid point to the goal.
-		coords::roundToTile(goal.x, goal.y, m_isIso, true);
+		coords::roundToTile(goal.x, goal.y, m_isIso != 0, true);
 
 		// Switch the heuristic to check all children of the goal.
 		const PF_HEURISTIC heur = m_heuristic;
@@ -735,7 +735,7 @@ bool CTilePathFind::reset(
 				int x = int(target.pos.x), y = int(target.pos.y);
 				coords::pixelToTile(x, y, m_isIso ? ISO_ROTATED : TILE_NORMAL, false, g_pBoard->sizeX);
 
-				if (x < pts.size() && y < pts[0].size())
+				if (x < int(pts.size()) && y < int(pts[0].size()))
 				{
 					if (pts[x][y] != blocked && m_spritePoints[x][y] != blocked) 
 					{
@@ -774,7 +774,7 @@ void CTilePathFind::sizeMatrix(PF_MATRIX &points)
 {
 	extern LPBOARD g_pBoard;
 	points.clear();
-	const int width = g_pBoard->effectiveWidth() * PF_TILE_RATIO, height = g_pBoard->effectiveHeight() * PF_TILE_RATIO;
+	const int width = g_pBoard->effectiveWidth() * int(PF_TILE_RATIO), height = g_pBoard->effectiveHeight() * int(PF_TILE_RATIO);
 	for (int i = 0; i <= width; ++i)
 	{
 		points.push_back(std::vector<PF_MATRIX_ELEMENT>(height + 1, 0));
@@ -811,8 +811,8 @@ PF_PATH CVectorPathFind::constructPath(NODE node, const CSprite *pSprite) const
  */
 int CVectorPathFind::distance(const NODE &a, const NODE &b) const
 {
-	const int dx = abs(a.pos.x - b.pos.x), dy = abs(a.pos.y - b.pos.y);
-	return sqrt((DOUBLE)(dx * dx + dy * dy));
+	const int dx = int(abs(a.pos.x - b.pos.x)), dy = int(abs(a.pos.y - b.pos.y));
+	return int(sqrt((DOUBLE)(dx * dx + dy * dy)));
 }
 
 /*

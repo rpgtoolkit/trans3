@@ -134,7 +134,7 @@ void CAudioSegment::play(const bool repeat)
 		{
 			if (m_outputStream)
 			{
-				m_outputStream->setVolume(m_volume / 100.0);
+				m_outputStream->setVolume(float(m_volume / 100.0));
 				m_outputStream->setRepeat(repeat);
 				m_outputStream->play();
 			}
@@ -228,8 +228,6 @@ bool CAudioSegment::isPlaying()
  */
 void CAudioSegment::init(STRING handle)
 {
-	HRESULT result;
-	
 	m_handle = handle;
 	m_mciErrLen = sizeof(m_mciErr);
 	m_audiere = false;
@@ -355,7 +353,7 @@ void CAudioSegment::setVolume(const int percent)
 		// Volume is a float between 0.0 and 1.0.
 		if (m_outputStream)
 		{			
-			m_outputStream->setVolume(percent / 100.0);
+			m_outputStream->setVolume(float(percent / 100.0));
 		}
 	}
 	else
@@ -374,7 +372,6 @@ void CAudioSegment::setVolume(const int percent)
 void CAudioSegment::initLoader()
 {
 	extern STRING g_projectPath;
-	HRESULT result;
 
 	// Not loader related, but I don't feel like making another function.
 	m_notify = CreateEvent(NULL, FALSE, FALSE, NULL);

@@ -20,7 +20,7 @@ void CreateDir(char* pstrPathName)
 		strPath[i+1]=0;
 		if (strPath[i] == '\\' || strPath[i] == '/')
 		{
-			mkdir(strPath);
+			_mkdir(strPath);
 		}
 	}
 }

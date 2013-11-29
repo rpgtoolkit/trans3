@@ -446,7 +446,7 @@ BOOL CShop::transaction(CONST SHOP_OPTION type, CONST STRING file)
 	{
 		case SHOP_BUY:
 		{
-			if (*m_money < item->buyPrice)
+			if (int(*m_money) < item->buyPrice)
 			{
 				messageBox(_T("You do not have enough GP to buy this item!"));
 			}
@@ -462,6 +462,7 @@ BOOL CShop::transaction(CONST SHOP_OPTION type, CONST STRING file)
 					return TRUE;
 				}
 			}
+
 			break;
 		} 
 		case SHOP_SELL:
@@ -474,5 +475,7 @@ BOOL CShop::transaction(CONST SHOP_OPTION type, CONST STRING file)
 				return TRUE;
 			}
 		}
-	} // switch (type)
+	} 
+
+	return FALSE;
 }

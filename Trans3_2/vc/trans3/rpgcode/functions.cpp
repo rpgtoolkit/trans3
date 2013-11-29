@@ -296,7 +296,7 @@ CPlayer *getPlayerPointer(STACK_FRAME &param)
 	}
 
 	// g_players index.
-	const int i = int(param.getNum());
+	const size_t i = size_t(param.getNum());
 	if (i < g_players.size())
 	{
 		return g_players.at(i);
@@ -320,7 +320,7 @@ CItem *getItemPointer(STACK_FRAME &param)
 		}
 		else
 		{
-			char str[255]; itoa(i, str, 10);
+			char str[255]; _itoa(i, str, 10);
 			throw CError(_T("Item does not exist at board index ") + STRING(str) + _T("."));
 		}
 	}
@@ -533,7 +533,7 @@ void send(CALL_DATA &params)
 		{
 			throw CError(_T("Send() requires three or four parameters."));
 		}
-		layer = params[3].getNum();
+		layer = unsigned int(params[3].getNum());
 	}
 
 	g_pBoard->open(g_projectPath + BRD_PATH + params[0].getLit());
@@ -564,17 +564,21 @@ void send(CALL_DATA &params)
 void text(CALL_DATA &params)
 {
 	const int count = params.params;
+
 	if (count != 3 && count != 4)
 	{
 		throw CError(_T("Text() requires 3 or 4 parameters!"));
 	}
+
 	CCanvas *cnv = (count == 3) ? g_cnvRpgCode : g_canvases.cast(int(params[3].getNum()));
+
 	if (cnv)
 	{
 		STRING lit = params[2].getLit();
 		STRING temp = spliceVariables(params.prg, lit);
-		cnv->DrawText(params[0].getNum() * g_fontSize - g_fontSize, params[1].getNum() * g_fontSize - g_fontSize, temp, g_fontFace, g_fontSize, g_color, g_bold, g_italic, g_underline);
+		cnv->DrawText(int(params[0].getNum()) * g_fontSize - g_fontSize, int(params[1].getNum() * g_fontSize - g_fontSize), temp, g_fontFace, g_fontSize, g_color, g_bold, g_italic, g_underline);
 	}
+
 	if (count == 3)
 	{
 		g_textX = params[0].getNum();
@@ -874,8 +878,8 @@ void viewbrd(CALL_DATA &params)
 	int x = 0, y = 0;
 	if (params.params > 2)
 	{
-		x = params[1].getNum();
-		y = params[2].getNum();
+		x = int(params[1].getNum());
+		y = int(params[2].getNum());
 		coords::tileToPixel(x, y, pBoard->coordType, false, pBoard->sizeX);
 		if (pBoard->coordType == TILE_NORMAL)
 		{
@@ -1009,7 +1013,7 @@ void color(CALL_DATA &params)
 	{
 		throw CError(_T("Color() requires one parameter."));
 	}
-	int color = params[0].getNum();
+	int color = int(params[0].getNum());
 	if (color < 0) color = 0;
 	else if (color > 255) color = 255;
 	g_color = CTile::getDOSColor(color);
@@ -1338,7 +1342,7 @@ void maxHp(CALL_DATA &params)
 	IFighter *p = getFighter(params[0].getLit());
 	if (p)
 	{
-		p->maxHealth(params[1].getNum());
+		p->maxHealth(int(params[1].getNum()));
 	}
 }
 
@@ -1475,7 +1479,7 @@ void maxSmp(CALL_DATA &params)
 	IFighter *p = getFighter(params[0].getLit());
 	if (p)
 	{
-		p->maxSmp(params[1].getNum());
+		p->maxSmp(int(params[1].getNum()));
 	}
 }
 
@@ -1737,7 +1741,7 @@ void setPixel(CALL_DATA &params)
 {
 	if (params.params == 2)
 	{
-		g_cnvRpgCode->SetPixel(params[0].getNum(), params[1].getNum(), g_color);
+		g_cnvRpgCode->SetPixel(int(params[0].getNum()), int(params[1].getNum()), g_color);
 		renderRpgCodeScreen();
 	}
 	else if (params.params == 3)
@@ -1745,7 +1749,7 @@ void setPixel(CALL_DATA &params)
 		CCanvas *cnv = g_canvases.cast((int)params[2].getNum());
 		if (cnv)
 		{
-			cnv->SetPixel(params[0].getNum(), params[1].getNum(), g_color);
+			cnv->SetPixel(int(params[0].getNum()), int(params[1].getNum()), g_color);
 		}
 	}
 	else
@@ -1763,7 +1767,7 @@ void drawLine(CALL_DATA &params)
 {
 	if (params.params == 4)
 	{
-		g_cnvRpgCode->DrawLine(params[0].getNum(), params[1].getNum(), params[2].getNum(), params[3].getNum(), g_color);
+		g_cnvRpgCode->DrawLine(int(params[0].getNum()), int(params[1].getNum()), int(params[2].getNum()), int(params[3].getNum()), g_color);
 		renderRpgCodeScreen();
 	}
 	else if (params.params == 5)
@@ -1771,7 +1775,7 @@ void drawLine(CALL_DATA &params)
 		CCanvas *cnv = g_canvases.cast((int)params[4].getNum());
 		if (cnv)
 		{
-			cnv->DrawLine(params[0].getNum(), params[1].getNum(), params[2].getNum(), params[3].getNum(), g_color);
+			cnv->DrawLine(int(params[0].getNum()), int(params[1].getNum()), int(params[2].getNum()), int(params[3].getNum()), g_color);
 		}
 	}
 	else
@@ -1789,7 +1793,7 @@ void drawRect(CALL_DATA &params)
 {
 	if (params.params == 4)
 	{
-		g_cnvRpgCode->DrawRect(params[0].getNum(), params[1].getNum(), params[2].getNum(), params[3].getNum(), g_color);
+		g_cnvRpgCode->DrawRect(int(params[0].getNum()), int(params[1].getNum()), int(params[2].getNum()), int(params[3].getNum()), g_color);
 		renderRpgCodeScreen();
 	}
 	else if (params.params == 5)
@@ -1797,7 +1801,7 @@ void drawRect(CALL_DATA &params)
 		CCanvas *cnv = g_canvases.cast((int)params[4].getNum());
 		if (cnv)
 		{
-			cnv->DrawRect(params[0].getNum(), params[1].getNum(), params[2].getNum(), params[3].getNum(), g_color);
+			cnv->DrawRect(int(params[0].getNum()), int(params[1].getNum()), int(params[2].getNum()), int(params[3].getNum()), g_color);
 		}
 	}
 	else
@@ -1815,7 +1819,7 @@ void fillRect(CALL_DATA &params)
 {
 	if (params.params == 4)
 	{
-		g_cnvRpgCode->DrawFilledRect(params[0].getNum(), params[1].getNum(), params[2].getNum(), params[3].getNum(), g_color);
+		g_cnvRpgCode->DrawFilledRect(int(params[0].getNum()), int(params[1].getNum()), int(params[2].getNum()), int(params[3].getNum()), g_color);
 		renderRpgCodeScreen();
 	}
 	else if (params.params == 5)
@@ -1823,7 +1827,7 @@ void fillRect(CALL_DATA &params)
 		CCanvas *cnv = g_canvases.cast((int)params[4].getNum());
 		if (cnv)
 		{
-			cnv->DrawFilledRect(params[0].getNum(), params[1].getNum(), params[2].getNum(), params[3].getNum(), g_color);
+			cnv->DrawFilledRect(int(params[0].getNum()), int(params[1].getNum()), int(params[2].getNum()), int(params[3].getNum()), g_color);
 		}
 	}
 	else
@@ -2060,7 +2064,7 @@ void playerstep(CALL_DATA &params)
 		path.resize(1);
 
 		// Initiate movement by program type.
-		p->setQueuedPath(path, flags & tkMV_CLEAR_QUEUE);
+		p->setQueuedPath(path, (flags & tkMV_CLEAR_QUEUE) != 0);
 		p->doMovement(params.prg, flags & tkMV_PAUSE_THREAD);
 	}
 }
@@ -2099,7 +2103,7 @@ void itemstep(CALL_DATA &params)
 		path.resize(1);
 
 		// Initiate movement by program type.
-		p->setQueuedPath(path, flags & tkMV_CLEAR_QUEUE);
+		p->setQueuedPath(path, (flags & tkMV_CLEAR_QUEUE) != 0);
 		p->doMovement(params.prg, flags & tkMV_PAUSE_THREAD);
 	}
 }
@@ -2139,7 +2143,7 @@ void push(CALL_DATA &params)
 	const unsigned int flags = (params.params > 2 ? (unsigned int)params[2].getNum() : 0);
 
 	// Parse and set queued movements.
-	p->parseQueuedMovements(str, flags & tkMV_CLEAR_QUEUE);
+	p->parseQueuedMovements(str, (flags & tkMV_CLEAR_QUEUE) != 0);
 	// Initiate movement by program type.
 	p->doMovement(params.prg, flags & tkMV_PAUSE_THREAD);
 }
@@ -2173,7 +2177,7 @@ void pushItem(CALL_DATA &params)
 	const unsigned int flags = (params.params > 2 ? (unsigned int)params[2].getNum() : 0);
 
 	// Parse and set queued movements.
-	p->parseQueuedMovements(str, flags & tkMV_CLEAR_QUEUE);
+	p->parseQueuedMovements(str, (flags & tkMV_CLEAR_QUEUE) != 0);
 	// Initiate movement by program type.
 	p->doMovement(params.prg, flags & tkMV_PAUSE_THREAD);
 }
@@ -2246,7 +2250,7 @@ void wander(CALL_DATA &params)
 	if (pt.x > 0 && pt.x <= g_pBoard->pxWidth() && pt.y > 0 && pt.y < g_pBoard->pxHeight())
 	{
 		// Pathfind to ensure tile collision checks.
-		PF_PATH path = p->pathFind(pt.x, pt.y, heuristic, PF_QUIT_BLOCKED);
+		PF_PATH path = p->pathFind(int(pt.x), int(pt.y), heuristic, PF_QUIT_BLOCKED);
 		if (!path.empty())
 		{
 			p->setQueuedPath(path, true);
@@ -2556,7 +2560,7 @@ void createitem(CALL_DATA &params)
 	// a constant, load the item into that position.
 	if ((params.params == 2) && !(params[1].udt & UDT_ID))
 	{
-		const int i = params[1].getNum();
+		const size_t i = size_t(params[1].getNum());
 
 		// Is the board item array large enough?
 		while (g_pBoard->items.size() <= i)
@@ -2705,7 +2709,7 @@ void gamespeed(CALL_DATA &params)
 	{
 		throw CError(_T("GameSpeed() requires one parameter."));
 	}
-	CSprite::setLoopOffset(params[0].getNum());
+	CSprite::setLoopOffset(int(params[0].getNum()));
 }
 
 /*
@@ -2971,7 +2975,7 @@ void sourcehandle(CALL_DATA &params)
 			if (p == *j) i = j - g_pBoard->items.begin();
 		}
 		char c[8];
-		str += itoa(i, c, 10);
+		str += _itoa(i, c, 10);
 	}
 	else if (g_source.type == ET_ENEMY)
 	{
@@ -3024,7 +3028,7 @@ void targethandle(CALL_DATA &params)
 			if (p == *j) i = j - g_pBoard->items.begin();
 		}
 		char c[8];
-		str += itoa(i, c, 10);
+		str += _itoa(i, c, 10);
 	}
 	else if (g_target.type == ET_ENEMY)
 	{
@@ -3203,7 +3207,7 @@ void scan(CALL_DATA &params)
 	int x = int(params[0].getNum()), y = int(params[1].getNum());
 	coords::tileToPixel(x, y, g_pBoard->coordType, false, g_pBoard->sizeX);
 
-	while (i >= g_cnvRpgScans.size())
+	while (size_t(i) >= g_cnvRpgScans.size())
 	{
 		g_cnvRpgScans.push_back(NULL);
 	}
@@ -3239,7 +3243,7 @@ void mem(CALL_DATA &params)
 		throw CError(_T("Mem() requires three parameters."));
 	}
 
-	const int i = int(params[2].getNum());
+	const size_t i = size_t(params[2].getNum());
 	int x = int(params[0].getNum()), y = int(params[1].getNum());
 	coords::tileToPixel(x, y, g_pBoard->coordType, false, g_pBoard->sizeX);
 
@@ -3271,7 +3275,7 @@ void print(CALL_DATA &params)
 		throw CError(_T("Print() requires one parameter."));
 	}
 	g_textY += 1.0;
-	g_cnvRpgCode->DrawText(g_textX * g_fontSize - g_fontSize, g_textY * g_fontSize - g_fontSize, params[0].getLit(), g_fontFace, g_fontSize, g_color, g_bold, g_italic, g_underline);
+	g_cnvRpgCode->DrawText(int(g_textX) * g_fontSize - g_fontSize, int(g_textY) * g_fontSize - g_fontSize, params[0].getLit(), g_fontFace, g_fontSize, g_color, g_bold, g_italic, g_underline);
 	renderRpgCodeScreen();
 }
 
@@ -3344,7 +3348,7 @@ void equip(CALL_DATA &params)
 	
 	if (!p) throw CError(_T("Equip(): player not found."));
 
-	const unsigned int i = abs(params[1].getNum());
+	const unsigned int i = int(abs(params[1].getNum()));
 	
 
 	if(!CFile::fileExists(g_projectPath + ITM_PATH + params[2].getLit())){
@@ -3386,7 +3390,7 @@ void remove(CALL_DATA &params)
 	CPlayer *p = getPlayerPointer(params[0]);
 	if (!p) throw CError(_T("Remove(): player not found."));
 
-	unsigned int i = abs(params[1].getNum());
+	unsigned int i = int(abs(params[1].getNum()));
 
 	p->removeEquipment(i);
 }
@@ -3398,7 +3402,7 @@ void remove(CALL_DATA &params)
  */
 void kill(CALL_DATA &params)
 {
-	for (unsigned int i = 0; i < params.params; ++i)
+	for (int i = 0; i < params.params; ++i)
 	{
 		params.prg->freeVar(params[i].lit);
 	}
@@ -3415,7 +3419,7 @@ void giveGp(CALL_DATA &params)
 	{
 		throw CError(_T("GiveGP() requires one parameter."));
 	}
-	g_gp += params[0].getNum();
+	g_gp += unsigned long(params[0].getNum());
 }
 
 /*
@@ -3429,7 +3433,7 @@ void takeGp(CALL_DATA &params)
 	{
 		throw CError(_T("TakeGP() requires one parameter."));
 	}
-	g_gp -= params[0].getNum();
+	g_gp -= unsigned long(params[0].getNum());
 }
 
 /*
@@ -3469,7 +3473,7 @@ void fightEnemy(CALL_DATA &params)
 		throw CError(_T("FightEnemy() requires at least two parameters."));
 	}
 	std::vector<STRING> enemies;
-	for (unsigned int i = 0; i < (params.params - 1); ++i)
+	for (int i = 0; i < (params.params - 1); ++i)
 	{
 		enemies.push_back(params[i].getLit());
 	}
@@ -3823,7 +3827,7 @@ void fade(CALL_DATA &params)
 
 			for (int j = 0; j != 2; ++j)
 			{
-				unsigned int i;
+				int i;
 				// First sweep.
 				for (i= 0; i != width / 2; i += pxStep * 2)
 				{
@@ -3890,7 +3894,7 @@ void fade(CALL_DATA &params)
 			// Use the longest diagonal as the radius.
 			const int rX = (width - x > x ? width - x: x),
 					  rY = (height - y > y ? height - y: y);
-			int radius = sqrt((DOUBLE)(rX * rX + rY * rY));
+			int radius = int(sqrt((DOUBLE)(rX * rX + rY * rY)));
 
 			for (; radius > 0; radius -= 1)
 			{
@@ -3943,12 +3947,12 @@ void zoom(CALL_DATA &params)
 
 	for (double i = 1.0; i > percent; i -= 0.01 * speed)
 	{
-		const int w = width * i, h = height * i;
+		const int w = width * int(i), h = height * int(i);
 
 		cnv.BltStretch(
 			g_cnvRpgCode,
 			0, 0,
-			(width - w) * 0.5, (height - h) * 0.5,
+			(width - w) * int(0.5), (height - h) * int(0.5),
 			w, h,
 			width, height,
 			SRCCOPY);
@@ -4044,7 +4048,7 @@ void wipe(CALL_DATA &params)
 	cnv.CreateBlank(NULL, width, height, TRUE);
 	drawImage(g_projectPath + BMP_PATH + params[0].getLit(), &cnv, 0, 0, width, height);
 
-	int speed = (params.params == 3 ? abs(params[2].getNum()) : 1);
+	int speed = int((params.params == 3 ? abs(params[2].getNum()) : 1));
 
 	// Skip pixels for low fps. Factor by 20th of millisecond frametime.
 	const int factor = round(g_fpms * 0.05);
@@ -4409,7 +4413,7 @@ void menufont(CALL_DATA &params)
 			else
 			{
 				long l = RGB(params[2].getNum(), params[3].getNum(), params[4].getNum());
-				SetMenuFontProperty(params[0].getNum(), params[1].getNum(), &l);
+				SetMenuFontProperty(int(params[0].getNum()), int(params[1].getNum()), &l);
 			}
 			break;
 		}
@@ -4420,21 +4424,21 @@ void menufont(CALL_DATA &params)
 	case tkMNUFNT_PROP_UNDERLINE:
 		{
 			bool b = params[2].getBool();
-			SetMenuFontProperty(params[0].getNum(), params[1].getNum(), &b);
+			SetMenuFontProperty(int(params[0].getNum()), int(params[1].getNum()), &b);
 			break;
 		}
 	case tkMNUFNT_PROP_FACE:
 		{
 			char *s = new char[params[2].getLit().size() + 1];
 			strcpy(s, params[2].getLit().c_str());
-			SetMenuFontProperty(params[0].getNum(), params[1].getNum(), s);
+			SetMenuFontProperty(int(params[0].getNum()), int(params[1].getNum()), s);
 			delete s;
 			break;
 		}
 	case tkMNUFNT_PROP_SIZE:
 		{
 			int d = (int)params[2].getNum();
-			SetMenuFontProperty(params[0].getNum(), params[1].getNum(), &d);
+			SetMenuFontProperty(int(params[0].getNum()), int(params[1].getNum()), &d);
 			break;
 		}
 	}
@@ -4739,7 +4743,7 @@ void setImage(CALL_DATA &params)
 	if (cnv)
 	{
 		extern STRING g_projectPath;
-		drawImage(g_projectPath + BMP_PATH + params[0].getLit(), cnv, params[1].getNum(), params[2].getNum(), params[3].getNum(), params[4].getNum());
+		drawImage(g_projectPath + BMP_PATH + params[0].getLit(), cnv, int(params[1].getNum()), int(params[2].getNum()), int(params[3].getNum()), int(params[4].getNum()));
 		if (cnv == g_cnvRpgCode)
 		{
 			renderRpgCodeScreen();
@@ -4829,7 +4833,7 @@ void savescreen(CALL_DATA &params)
 			  width = g_screen.right - g_screen.left, 
 			  height = g_screen.bottom - g_screen.top;
 
-	while (i >= g_cnvRpgScreens.size())
+	while (size_t(i) >= g_cnvRpgScreens.size())
 	{
 		g_cnvRpgScreens.push_back(NULL);
 	}
@@ -4914,7 +4918,7 @@ void restorescreenarray(CALL_DATA &params)
 		throw CError(_T("RestoreScreen() requires one or seven parameters."));
 	}
 
-	const int i = int(params[0].getNum());
+	const size_t i = size_t(params[0].getNum());
 	if (i < g_cnvRpgScreens.size() && g_cnvRpgScreens[i])
 	{
 		// Temporarily switch the pointers for
@@ -5041,14 +5045,14 @@ void getPixel(CALL_DATA &params)
 	COLORREF color = 0;
 	if (params.params == 5)
 	{
-		color = g_cnvRpgCode->GetPixel(params[0].getNum(), params[1].getNum());
+		color = g_cnvRpgCode->GetPixel(int(params[0].getNum()), int(params[1].getNum()));
 	}
 	else if (params.params == 6)
 	{
 		CCanvas *cnv = g_canvases.cast(int(params[5].getNum()));
 		if (cnv)
 		{
-			color = cnv->GetPixel(params[0].getNum(), params[1].getNum());
+			color = cnv->GetPixel(int(params[0].getNum()), int(params[1].getNum()));
 		}
 	}
 	else
@@ -5142,9 +5146,9 @@ void setImageTransparent(CALL_DATA &params)
 	{
 		extern STRING g_projectPath;
 		CCanvas intermediate;
-		intermediate.CreateBlank(NULL, params[3].getNum(), params[4].getNum(), TRUE);
-		drawImage(g_projectPath + BMP_PATH + params[0].getLit(), &intermediate, 0, 0, params[3].getNum(), params[4].getNum());
-		intermediate.BltTransparent(cnv, params[1].getNum(), params[2].getNum(), RGB(params[5].getNum(), params[6].getNum(), params[7].getNum()));
+		intermediate.CreateBlank(NULL, int(params[3].getNum()), int(params[4].getNum()), TRUE);
+		drawImage(g_projectPath + BMP_PATH + params[0].getLit(), &intermediate, 0, 0, int(params[3].getNum()), int(params[4].getNum()));
+		intermediate.BltTransparent(cnv, int(params[1].getNum()), int(params[2].getNum()), RGB(params[5].getNum(), params[6].getNum(), params[7].getNum()));
 		if (cnv == g_cnvRpgCode)
 		{
 			renderRpgCodeScreen();
@@ -5176,9 +5180,9 @@ void setImageTranslucent(CALL_DATA &params)
 	{
 		extern STRING g_projectPath;
 		CCanvas intermediate;
-		intermediate.CreateBlank(NULL, params[3].getNum(), params[4].getNum(), TRUE);
-		drawImage(g_projectPath + BMP_PATH + params[0].getLit(), &intermediate, 0, 0, params[3].getNum(), params[4].getNum());
-		intermediate.BltTranslucent(cnv, params[1].getNum(), params[2].getNum(), 0.5, -1, -1);
+		intermediate.CreateBlank(NULL, int(params[3].getNum()), int(params[4].getNum()), TRUE);
+		drawImage(g_projectPath + BMP_PATH + params[0].getLit(), &intermediate, 0, 0, int(params[3].getNum()), int(params[4].getNum()));
+		intermediate.BltTranslucent(cnv, int(params[1].getNum()), int(params[2].getNum()), 0.5, -1, -1);
 		if (cnv == g_cnvRpgCode)
 		{
 			renderRpgCodeScreen();
@@ -5335,7 +5339,7 @@ void getBoardTileType(CALL_DATA &params)
 				break;
 
 			case TT_STAIRS:
-				char str[255]; itoa(p->attributes, str, 10);
+				char str[255]; _itoa(p->attributes, str, 10);
 				type = STRING(_T("STAIRS")) + str;
 				break;
 		}
@@ -5545,7 +5549,7 @@ void posture(CALL_DATA &params)
 	if (!p) throw CError(_T("Posture(): player not found"));
 
 	STRING str = _T("Custom");
-	char ch[255]; itoa(params[0].getNum(), ch, 10);
+	char ch[255]; _itoa(int(params[0].getNum()), ch, 10);
 	p->customStance(str + ch, params.prg, false);
 }
 
@@ -5982,7 +5986,7 @@ void createCanvas(CALL_DATA &params)
 		throw CError(_T("CreateCanvas() requires two or three parameters."));
 	}
 	CCanvas *p = g_canvases.allocate();
-	p->CreateBlank(NULL, params[0].getNum(), params[1].getNum(), TRUE);
+	p->CreateBlank(NULL, int(params[0].getNum()), int(params[1].getNum()), TRUE);
 	p->ClearScreen(0);
 	params.ret().udt = UDT_NUM;
 	params.ret().num = double(int(p));
@@ -6019,7 +6023,7 @@ void drawCanvas(CALL_DATA &params)
 		CCanvas *p = g_canvases.cast((int)params[0].getNum());
 		if (p)
 		{
-			p->Blt(g_cnvRpgCode, params[1].getNum(), params[2].getNum());
+			p->Blt(g_cnvRpgCode, int(params[1].getNum()), int(params[2].getNum()));
 			renderRpgCodeScreen();
 		}
 	}
@@ -6032,10 +6036,10 @@ void drawCanvas(CALL_DATA &params)
 		const int height = int(params[4].getNum());
 
 			if(width == p->GetWidth() && height == p->GetHeight()){
-				p->Blt(g_cnvRpgCode, params[1].getNum(), params[2].getNum());
+				p->Blt(g_cnvRpgCode, int(params[1].getNum()), int(params[2].getNum()));
 			}
 			else{
-				p->BltStretch(g_cnvRpgCode, params[1].getNum(), params[2].getNum(), 0, 0, p->GetWidth(), p->GetHeight(), params[3].getNum(), params[4].getNum(), SRCCOPY);
+				p->BltStretch(g_cnvRpgCode, int(params[1].getNum()), int(params[2].getNum()), 0, 0, p->GetWidth(), p->GetHeight(), int(params[3].getNum()), int(params[4].getNum()), SRCCOPY);
 			}
 			renderRpgCodeScreen();
 		}
@@ -6051,10 +6055,10 @@ void drawCanvas(CALL_DATA &params)
 				const int width = int(params[3].getNum());
 				const int height = int(params[4].getNum());
 				if(width == p->GetWidth() && height == p->GetHeight()){
-					p->Blt(pDest,params[1].getNum(),params[2].getNum());
+					p->Blt(pDest,int(params[1].getNum()),int(params[2].getNum()));
 				}
 				else{
-					p->BltStretch(pDest, params[1].getNum(), params[2].getNum(), 0, 0, p->GetWidth(), p->GetHeight(), params[3].getNum(), params[4].getNum(), SRCCOPY);
+					p->BltStretch(pDest, int(params[1].getNum()), int(params[2].getNum()), 0, 0, p->GetWidth(), p->GetHeight(), int(params[3].getNum()), int(params[4].getNum()), SRCCOPY);
 				}
 			}
 		}
@@ -6474,7 +6478,7 @@ void split(CALL_DATA &params)
 	std::vector<STRING>::const_iterator i = parts.begin();
 	for (unsigned int j = 0; i != parts.end(); ++i, ++j)
 	{
-		char str[255]; itoa(j, str, 10);
+		char str[255]; _itoa(j, str, 10);
 		LPSTACK_FRAME var = params.prg->getVar(array + _T('[') + str + _T(']'));
 		var->udt = UDT_LIT;
 		var->lit = *i;
@@ -7014,7 +7018,7 @@ void mousecursor(CALL_DATA &params)
 		file = tempFile;
 	}
 	changeCursor(file);
-	if (!tempFile.empty()) unlink(tempFile.c_str());
+	if (!tempFile.empty()) _unlink(tempFile.c_str());
 }
 
 /*
@@ -7284,7 +7288,7 @@ void spritepath(CALL_DATA &params, CSprite *p)
 		if (!path.empty())
 		{
 			// Initiate movement by program type.
-			p->setQueuedPath(path, flags & tkMV_CLEAR_QUEUE);
+			p->setQueuedPath(path, (flags & tkMV_CLEAR_QUEUE) != 0);
 			p->doMovement(params.prg, flags & tkMV_PAUSE_THREAD);
 		}
 	}
@@ -7300,12 +7304,12 @@ void spritepath(CALL_DATA &params, CSprite *p)
 		else
 		{
 			// Pathfind to start of vector.
-			PF_PATH path = p->pathFind((*brd->pV)[0].x, (*brd->pV)[0].y, PF_PREVIOUS, 0);
+			PF_PATH path = p->pathFind(int((*brd->pV)[0].x), int((*brd->pV)[0].y), PF_PREVIOUS, 0);
 			if (!path.empty())
 			{
 				// The last point is the same as the first of the waypoint vector.
 				path.pop_back();
-				p->setQueuedPath(path, flags & tkMV_CLEAR_QUEUE);
+				p->setQueuedPath(path, (flags & tkMV_CLEAR_QUEUE) != 0);
 			}
 			p->setBoardPath(brd->pV, cycles, flags);
 			p->doMovement(params.prg, flags & tkMV_PAUSE_THREAD);

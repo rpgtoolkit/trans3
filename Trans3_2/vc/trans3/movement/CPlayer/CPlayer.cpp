@@ -259,7 +259,7 @@ void CPlayer::levelUp()
 		int hp = maxHealth();
 		if (m_playerMem.charLevelUpType == 0)
 		{
-			hp += (hp - m_equipment.mHP) * m_playerMem.levelHp / 100.0;
+			hp += int((hp - m_equipment.mHP) * m_playerMem.levelHp / 100.0);
 		}
 		else
 		{
@@ -274,7 +274,7 @@ void CPlayer::levelUp()
 		int dp = defence();
 		if (m_playerMem.charLevelUpType == 0)
 		{
-			dp += (dp - m_equipment.mDP) * m_playerMem.levelDp / 100.0;
+			dp += int((dp - m_equipment.mDP) * m_playerMem.levelDp / 100.0);
 		}
 		else
 		{
@@ -289,7 +289,7 @@ void CPlayer::levelUp()
 		int fp = fight();
 		if (m_playerMem.charLevelUpType == 0)
 		{
-			fp += (fp - m_equipment.mFP) * m_playerMem.levelFp / 100.0;
+			fp += int((fp - m_equipment.mFP) * m_playerMem.levelFp / 100.0);
 		}
 		else
 		{
@@ -303,7 +303,7 @@ void CPlayer::levelUp()
 		int sm = maxSmp();
 		if (m_playerMem.charLevelUpType == 0)
 		{
-			sm += (sm - m_equipment.mSM) * m_playerMem.levelSm / 100.0;
+			sm += int((sm - m_equipment.mSM) * m_playerMem.levelSm / 100.0);
 		}
 		else
 		{
@@ -533,7 +533,7 @@ void CPlayer::restore(const bool bDoLevels)
 				{
 					// Linear increase.
 					levelUp += m_playerMem.experienceIncrease;
-					exp += levelUp;
+					exp += int(levelUp);
 				}
 			}
 			m_playerMem.nextLevel = exp - experience();

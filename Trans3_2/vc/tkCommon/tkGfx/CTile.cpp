@@ -975,7 +975,7 @@ INT FAST_CALL CTile::openTile(CONST std::string strFilename)
 
 	char dummy[255];
 	fgets(dummy,255,infile);
-	if (strcmpi(dummy,"RPGTLKIT TILE\n")==0) 
+	if (_strcmpi(dummy,"RPGTLKIT TILE\n")==0) 
 	{
 		//Version 2
 		fgets(dummy,255,infile);	//majorver
