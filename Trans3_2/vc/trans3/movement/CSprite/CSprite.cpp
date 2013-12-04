@@ -770,7 +770,9 @@ void CSprite::runQueuedMovements(void)
 		DWORD reframe = GetTickCount();
 		DWORD remaining = reframe - t - frame;
 		reframe = reframe - t;
-		if(reframe == remaining){
+
+		/*if(reframe == remaining)
+		{
 			
 			MessageBox(NULL, _T("Frame = 0"), _T("JUST HERE"), 0);
 		}
@@ -778,7 +780,7 @@ void CSprite::runQueuedMovements(void)
 		{
 			MessageBox(NULL, _T("remaining is larger than 0"), _T("JUST HERE"), 0);
 			Sleep(remaining);
-		} 
+		} */
 	}
 }
 
