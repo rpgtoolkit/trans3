@@ -45,7 +45,15 @@
 CFile::CFile(CONST STRING fileName, CONST UINT mode)
 {
 	OFSTRUCT ofs;
-	m_hFile = OpenFile(resolve(fileName.c_str()).c_str(), &ofs, mode);
+
+	m_hFile = (HFILE)CreateFile(resolve(fileName.c_str()).c_str(),	// file to open
+                       GENERIC_READ,						// open for reading
+                       FILE_SHARE_READ,						// share for reading
+                       NULL,								// default security
+                       OPEN_EXISTING,						// existing file only
+                       FILE_ATTRIBUTE_NORMAL,				// normal file
+                       NULL);        
+
 	memset(&m_ptr, 0, sizeof(m_ptr));
 }
 
@@ -56,7 +64,13 @@ void CFile::open(const STRING fileName, CONST UINT mode)
 		CloseHandle(HANDLE(m_hFile));
 	}
 	OFSTRUCT ofs;
-	m_hFile = OpenFile(resolve(fileName.c_str()).c_str(), &ofs, mode);
+	m_hFile = (HFILE)CreateFile(resolve(fileName.c_str()).c_str(),	// file to open
+                       GENERIC_READ,						// open for reading
+                       FILE_SHARE_READ,						// share for reading
+                       NULL,								// default security
+                       OPEN_EXISTING,						// existing file only
+                       FILE_ATTRIBUTE_NORMAL,				// normal file
+                       NULL);  
 	memset(&m_ptr, 0, sizeof(m_ptr));
 }
 
