@@ -6958,14 +6958,34 @@ void multiRunEnd(CProgram *prg)
 	{
 		// Run all sprite movements until all sprites have finished moving. 
 		bool moving = true;
+		int index;
 		while (moving)
 		{
 			moving = false;
+			index = 0;
 			std::vector<CSprite *>::const_iterator i = g_sprites.v.begin();
+
 			for (; i != g_sprites.v.end(); ++i)
 			{
-				if ((*i)->move(g_pSelectedPlayer, true)) moving = true;
+				if ((*i)->move(g_pSelectedPlayer, true)) 
+				{
+					moving = true;
+				
+					// Outside of the bounds after the erase.
+					if (index >= g_sprites.v.size())
+					{
+						break;
+					}
+
+					// Because an active sprites move method will call
+					// spriteCollisions which in turn invalidates the
+					// g_sprites iterator.
+					i = g_sprites.v.begin() + index;
+				}
+
+				index++;
 			}
+
 			renderNow(g_cnvRpgCode, true);
 			renderRpgCodeScreen();
 		}
