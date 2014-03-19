@@ -807,7 +807,7 @@ void get(CALL_DATA &params)
 	const char isVirtual = g_vkeys.front();
 	g_keys.erase(g_keys.begin());
 	g_vkeys.erase(g_vkeys.begin());
-	const STRING toRet = getName(chr, isVirtual, true);
+	const STRING toRet = getName(chr, isVirtual, false);
 	if (params.params == 1)
 	{
 		LPSTACK_FRAME var = params.prg->getVar(params[0].lit);
@@ -6972,7 +6972,7 @@ void multiRunEnd(CProgram *prg)
 					moving = true;
 				
 					// Outside of the bounds after the erase.
-					if (index >= g_sprites.v.size())
+					if (index >= g_sprites.v.size() - 1)
 					{
 						break;
 					}

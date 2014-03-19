@@ -90,24 +90,31 @@ void processEvent()
  */
 STRING getName(const char chr, const char isVirtual, const bool bCapital)
 {
-    if(isVirtual){
-	switch (chr)
+    if(isVirtual)
 	{
-		case 37: return _T("LEFT");
-		case 39: return _T("RIGHT");
-		case 38: return _T("UP");
-		case 40: return _T("DOWN");
-	}
+		switch (chr)
+		{
+			case 37: return _T("LEFT");
+			case 39: return _T("RIGHT");
+			case 38: return _T("UP");
+			case 40: return _T("DOWN");
+		}
     }
 	
-	if(chr == 13){ return _T("ENTER");}
-	else if(chr == 27){return _T("ESC");}
-	else if(chr == 8){return _T("BACKSPACE");}
-	else if(chr == 9){return _T("TAB");}
-	else if (chr == 20){return _T("CAPSLOCK");}
-	const TCHAR toRet[] = {
+	switch (chr)
+	{
+		case 13: return _T("ENTER");
+		case 27: return _T("ESC");
+		case 8: return _T("BACKSPACE");
+		case 9: return _T("TAB");
+		case 20: return _T("CAPSLOCK");
+	}
+
+	const TCHAR toRet[] = 
+	{
 		bCapital ? toupper(chr) : chr, _T('\0')
 	};
+
 	return toRet;
 }
 
