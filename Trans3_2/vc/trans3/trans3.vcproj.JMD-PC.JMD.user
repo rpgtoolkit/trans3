@@ -122,7 +122,7 @@
 			>
 			<DebugSettings
 				Command="$(TargetPath)"
-				WorkingDirectory="C:\Users\JMD\Desktop\Toolkit3"
+				WorkingDirectory="C:\Users\JMD\Desktop\rpgtoolkit321\RPGToolkit 3.2.1\Toolkit3"
 				CommandArguments=""
 				Attach="false"
 				DebuggerType="3"

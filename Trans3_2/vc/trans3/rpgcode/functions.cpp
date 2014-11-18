@@ -6089,8 +6089,10 @@ void openFileInput(CALL_DATA &params)
 	{
 		throw CError(_T("OpenFileInput() requires two parameters."));
 	}
+
 	CFile &file = g_files[parser::uppercase(params[0].getLit())];
 	file.open(getFolderPath(params[1].getLit()) + _T('\\') + params[0].getLit(), OF_READ);
+
 	if (!file.isOpen())
 	{
 		throw CError(_T("OpenFileInput(): file does not exist."));
@@ -6108,6 +6110,7 @@ void openFileOutput(CALL_DATA &params)
 	{
 		throw CError(_T("OpenFileOutput() requires two parameters."));
 	}
+
 	g_files[parser::uppercase(params[0].getLit())].open(getFolderPath(params[1].getLit()) + _T('\\') + params[0].getLit(), OF_CREATE | OF_WRITE);
 }
 
@@ -6156,7 +6159,9 @@ void closeFile(CALL_DATA &params)
 	{
 		throw CError(_T("CloseFile() requires one parameter."));
 	}
+
 	std::map<STRING, CFile>::iterator i = g_files.find(parser::uppercase(params[0].getLit()));
+
 	if (i != g_files.end())
 	{
 		g_files.erase(i);
@@ -6174,11 +6179,16 @@ void fileInput(CALL_DATA &params)
 	{
 		throw CError(_T("FileInput() requires one or two parameters."));
 	}
+
 	std::map<STRING, CFile>::iterator i = g_files.find(parser::uppercase(params[0].getLit()));
-	if (!((i != g_files.end()) && i->second.isOpen())) return;
+
+	if (!((i != g_files.end()) && i->second.isOpen())) 
+		return;
+
 	params.ret().udt = UDT_LIT;
 	params.ret().lit = i->second.line();
 	params.ret().lit = params.ret().lit.substr(0, params.ret().lit.length() - 1);
+
 	if (params.params == 2)
 	{
 		*params.prg->getVar(params[1].lit) = params.ret();
@@ -6196,13 +6206,19 @@ void filePrint(CALL_DATA &params)
 	{
 		throw CError(_T("FilePrint() requires two parameters."));
 	}
+
 	std::map<STRING, CFile>::iterator i = g_files.find(parser::uppercase(params[0].getLit()));
-	if (!((i != g_files.end()) && i->second.isOpen())) return;
+
+	if (!((i != g_files.end()) && i->second.isOpen())) 
+		return;
+
 	const STRING str = params[1].getLit();
+
 	for (STRING::const_iterator j = str.begin(); j != str.end(); ++j)
 	{
 		i->second << *j;
 	}
+
 	i->second << _T('\r') << _T('\n');
 }
 
@@ -6240,8 +6256,12 @@ void filePut(CALL_DATA &params)
 	{
 		throw CError(_T("FilePut() requires two parameters."));
 	}
+
 	std::map<STRING, CFile>::iterator i = g_files.find(parser::uppercase(params[0].getLit()));
-	if (!((i != g_files.end()) && i->second.isOpen())) return;
+
+	if (!((i != g_files.end()) && i->second.isOpen())) 
+		return;
+
 	i->second << params[1].getLit()[0];
 }
 
@@ -6962,10 +6982,15 @@ void multiRunEnd(CProgram *prg)
 		{
 			moving = false;
 			std::vector<CSprite *>::const_iterator i = g_sprites.v.begin();
+
 			for (; i != g_sprites.v.end(); ++i)
 			{
-				if ((*i)->move(g_pSelectedPlayer, true)) moving = true;
+				if ((*i)->move(g_pSelectedPlayer, true)) 
+				{
+					moving = true;
+				}
 			}
+
 			renderNow(g_cnvRpgCode, true);
 			renderRpgCodeScreen();
 		}

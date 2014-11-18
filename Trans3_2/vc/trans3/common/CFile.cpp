@@ -44,33 +44,49 @@
  */
 CFile::CFile(CONST STRING fileName, CONST UINT mode)
 {
-	OFSTRUCT ofs;
-
-	m_hFile = (HFILE)CreateFile(resolve(fileName.c_str()).c_str(),	// file to open
-                       GENERIC_READ,						// open for reading
-                       FILE_SHARE_READ,						// share for reading
-                       NULL,								// default security
-                       OPEN_EXISTING,						// existing file only
-                       FILE_ATTRIBUTE_NORMAL,				// normal file
-                       NULL);        
+	m_hFile = (HFILE)CreateFile(
+		resolve(fileName.c_str()).c_str(),	// file to open
+		GENERIC_READ | GENERIC_WRITE,		// open for reading and writing
+        FILE_SHARE_READ,					// share for reading
+        NULL,								// default security
+        OPEN_EXISTING,						// existing file only
+        FILE_ATTRIBUTE_NORMAL,				// normal file
+        NULL);        
 
 	memset(&m_ptr, 0, sizeof(m_ptr));
 }
 
 void CFile::open(const STRING fileName, CONST UINT mode)
 {
+	// If the file is already open close the handle.
 	if (m_hFile != HFILE_ERROR)
 	{
 		CloseHandle(HANDLE(m_hFile));
 	}
-	OFSTRUCT ofs;
-	m_hFile = (HFILE)CreateFile(resolve(fileName.c_str()).c_str(),	// file to open
-                       GENERIC_READ,						// open for reading
-                       FILE_SHARE_READ,						// share for reading
-                       NULL,								// default security
-                       OPEN_EXISTING,						// existing file only
-                       FILE_ATTRIBUTE_NORMAL,				// normal file
-                       NULL);  
+
+	// Try to open an existing file.
+	m_hFile = (HFILE)CreateFile(
+		resolve(fileName.c_str()).c_str(),			// file to open
+		GENERIC_READ | GENERIC_WRITE,				// open for reading and writing
+        FILE_SHARE_READ,							// share for reading
+        NULL,										// default security
+        OPEN_EXISTING,								// existing file only
+        FILE_ATTRIBUTE_NORMAL,						// normal file
+        NULL);
+
+	// If the above failed create a new one.
+	if (m_hFile == HFILE_ERROR)
+	{
+		m_hFile = (HFILE)CreateFile(
+		resolve(fileName.c_str()).c_str(),			// file to open
+		GENERIC_READ | GENERIC_WRITE,				// open for reading and writing
+        FILE_SHARE_READ,							// share for reading
+        NULL,										// default security
+        CREATE_NEW,									// create new
+        FILE_ATTRIBUTE_NORMAL,						// normal file
+        NULL);
+	}
+
 	memset(&m_ptr, 0, sizeof(m_ptr));
 }
 
@@ -83,24 +99,34 @@ CFile &CFile::operator<<(CONST SystemFont data)
 {
 	BYTE b;
 	INT i;
+
 	*this << data.strFont;
 	*this << data.iSize;
+
 	i = (INT)data.lColorDefault;
 	*this << i;
+
 	i = (INT)data.lColorHighlight;
 	*this << i;
+
 	i = (INT)data.lColorDefault;
 	*this << i;
+
 	i = (INT)data.lColorDisable;
 	*this << i;
+
 	b = (BYTE)data.bBold;
 	*this << b;
+
 	b = (BYTE)data.bItalics;
 	*this << b;
+
 	b = (BYTE)data.bUnderline;
 	*this << b;
+
 	b = (BYTE)data.bCenter;
 	*this << b;
+
 	b = (BYTE)data.bOutline;
 	*this << b;
 	
@@ -112,6 +138,7 @@ CFile &CFile::operator<<(CONST BYTE data)
 	DWORD write = 0;
 	WriteFile(HANDLE(m_hFile), &data, sizeof(data), &write, &m_ptr);
 	m_ptr.Offset += sizeof(data);
+
 	return *this;
 }
 CFile &CFile::operator<<(CONST CHAR data)
@@ -119,6 +146,7 @@ CFile &CFile::operator<<(CONST CHAR data)
 	DWORD write = 0;
 	WriteFile(HANDLE(m_hFile), &data, sizeof(data), &write, &m_ptr);
 	m_ptr.Offset += sizeof(data);
+
 	return *this;
 }
 CFile &CFile::operator<<(CONST SHORT data)
@@ -126,6 +154,7 @@ CFile &CFile::operator<<(CONST SHORT data)
 	DWORD write = 0;
 	WriteFile(HANDLE(m_hFile), &data, sizeof(data), &write, &m_ptr);
 	m_ptr.Offset += sizeof(data);
+
 	return *this;
 }
 CFile &CFile::operator<<(CONST INT data)
@@ -133,6 +162,7 @@ CFile &CFile::operator<<(CONST INT data)
 	DWORD write = 0;
 	WriteFile(HANDLE(m_hFile), &data, sizeof(data), &write, &m_ptr);
 	m_ptr.Offset += sizeof(data);
+
 	return *this;
 }
 CFile &CFile::operator<<(CONST UINT data)
@@ -140,6 +170,7 @@ CFile &CFile::operator<<(CONST UINT data)
 	DWORD write = 0;
 	WriteFile(HANDLE(m_hFile), &data, sizeof(data), &write, &m_ptr);
 	m_ptr.Offset += sizeof(data);
+
 	return *this;
 }
 CFile &CFile::operator<<(CONST double data)
@@ -147,6 +178,7 @@ CFile &CFile::operator<<(CONST double data)
 	DWORD write = 0;
 	WriteFile(HANDLE(m_hFile), &data, sizeof(data), &write, &m_ptr);
 	m_ptr.Offset += sizeof(data);
+
 	return *this;
 }
 CFile &CFile::operator<<(CONST STRING data)
@@ -155,6 +187,7 @@ CFile &CFile::operator<<(CONST STRING data)
 	CONST INT len = data.length() + 1;
 	WriteFile(HANDLE(m_hFile), getAsciiString(data).c_str(), len, &write, &m_ptr);
 	m_ptr.Offset += len;
+
 	return *this;
 }
 
@@ -167,26 +200,37 @@ CFile &CFile::operator>>(SystemFont &data)
 {
 	BYTE b;
 	INT i;
+
 	*this >> data.strFont;
 	*this >> data.iSize;
+
 	*this >> i;
 	data.lColorDefault = i;
+
 	*this >> i;
 	data.lColorHighlight = i;
+
 	*this >> i;
 	data.lColorDefault = i;
+
 	*this >> i;
 	data.lColorDisable = i;
+
 	*this >> b;
 	data.bBold = b;
+
 	*this >> b;
 	data.bItalics = b;
+
 	*this >> b;
 	data.bUnderline = b;
+
 	*this >> b;
 	data.bCenter = b;
+
 	*this >> b;
 	data.bOutline = b;
+
 	return *this;
 }
 CFile &CFile::operator>>(BYTE &data)
@@ -194,6 +238,7 @@ CFile &CFile::operator>>(BYTE &data)
 	DWORD read = 0;
 	!ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
 	m_ptr.Offset += sizeof(data);
+
 	return *this;
 }
 CFile &CFile::operator>>(CHAR &data)
@@ -201,6 +246,7 @@ CFile &CFile::operator>>(CHAR &data)
 	DWORD read = 0;
 	!ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
 	m_ptr.Offset += sizeof(data);
+
 	return *this;
 }
 CFile &CFile::operator>>(SHORT &data)
@@ -208,6 +254,7 @@ CFile &CFile::operator>>(SHORT &data)
 	DWORD read = 0;
 	!ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
 	m_ptr.Offset += sizeof(data);
+
 	return *this;
 }
 CFile &CFile::operator>>(INT &data)
@@ -215,6 +262,7 @@ CFile &CFile::operator>>(INT &data)
 	DWORD read = 0;
 	!ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
 	m_ptr.Offset += sizeof(data);
+
 	return *this;
 }
 CFile &CFile::operator>>(UINT &data)
@@ -222,6 +270,7 @@ CFile &CFile::operator>>(UINT &data)
 	DWORD read = 0;
 	!ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
 	m_ptr.Offset += sizeof(data);
+
 	return *this;
 }
 CFile &CFile::operator>>(double &data)
@@ -229,21 +278,26 @@ CFile &CFile::operator>>(double &data)
 	DWORD read = 0;
 	!ReadFile(HANDLE(m_hFile), &data, sizeof(data), &read, &m_ptr);
 	m_ptr.Offset += sizeof(data);
+
 	return *this;
 }
 CFile &CFile::operator>>(STRING &data)
 {
 	std::string toRet;
+
 	while (TRUE)
 	{
 		CHAR chr;
 		DWORD read;
+
 		if (!ReadFile(HANDLE(m_hFile), &chr, sizeof(chr), &read, &m_ptr))
 		{
 			toRet = "";
 			break;
 		}
+
 		m_ptr.Offset++;
+
 		if (chr == '\0')
 		{
 			break;
@@ -269,15 +323,19 @@ CFile &CFile::operator>>(STRING &data)
 STRING CFile::line()
 {
 	std::string toRet;
+
 	while (TRUE)
 	{
 		char chr;
 		DWORD read;
+
 		if (!ReadFile(HANDLE(m_hFile), &chr, sizeof(chr), &read, &m_ptr))
 		{
 			break;
 		}
+
 		m_ptr.Offset++;
+
 		if (chr == '\n')
 		{
 			break;

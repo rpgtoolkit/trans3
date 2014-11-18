@@ -405,7 +405,7 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="..\..\..\..\Documents and Settings\jmd\My Documents\RPGToolkit Organisation\RPGToolkit 3.2.0\Toolkit3"
+			OutputDirectory="..\..\..\..\Users\JMD\Desktop\rpgtoolkit321\RPGToolkit 3.2.1\Toolkit3"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="1"
 			UseOfMFC="0"
