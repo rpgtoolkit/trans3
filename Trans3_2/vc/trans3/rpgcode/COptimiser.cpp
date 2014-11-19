@@ -1,12 +1,16 @@
 /*
  ********************************************************************
  * The RPG Toolkit, Version 3
- * This file copyright (C) 2006  Colin James Fitzpatrick
+ * This file copyright (C) 2007-2014 
+ *				- Colin James Fitzpatrick
+ *
+ * Contributors:
+ *				- Joshua Michael Daly
  ********************************************************************
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
+ * as published by the Free Software Foundation; either version 3
  * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -53,9 +57,14 @@ void COptimiser::getCallSite(int required, POS &i, POS begin, std::deque<CALL_PA
 				std::deque<CALL_PARAM> reparams;
 				getCallSite(i->params, --j, begin, reparams);
 			}
+
 			params.push_front(std::pair<POS, POS>(j, i));
 			i = j;
-			if (!--required) break;
+
+			if (!--required)
+			{
+				break;
+			}
 		}
 
 	} while (i-- != begin);
@@ -76,17 +85,27 @@ bool COptimiser::inlineExpand()
 		std::vector<tagNamedMethod>::iterator i = m_prg.m_methods.begin();
 		for (; i != m_prg.m_methods.end(); ++i)
 		{
-			if (!i->bInline) continue;
+			if (!i->bInline)
+			{
+				continue;
+			}
 
 			MACHINE_UNITS &method = methods[&*i];
 			POS j = m_prg.m_units.begin() + i->i;
+
 			int depth = 0;
 			do
 			{
 				method.push_back(*j);
 
-				if (j->udt & UDT_OPEN) ++depth;
-				else if ((j->udt & UDT_CLOSE) && !--depth) break;
+				if (j->udt & UDT_OPEN)
+				{
+					++depth;
+				}
+				else if ((j->udt & UDT_CLOSE) && !--depth)
+				{
+					break;
+				}
 			} while (++j != m_prg.m_units.end());
 
 			method.pop_front();
@@ -96,29 +115,41 @@ bool COptimiser::inlineExpand()
 		}
 	}
 
-	if (!methods.size()) return false;
+	if (!methods.size())
+	{
+		return false;
+	}
 
 	// Locate method calls.
 	TCHAR chr = 0;
 	POS i = m_prg.m_units.begin();
 	for (; i != m_prg.m_units.end(); ++i)
 	{
-		if (!((i->udt & UDT_FUNC) && (i->func == CProgram::methodCall))) continue;
+		if (!((i->udt & UDT_FUNC) && (i->func == CProgram::methodCall)))
+		{
+			continue;
+		}
+
 		POS unit = i - 1;
-		if (unit->udt & UDT_OBJ) continue;
+		if (unit->udt & UDT_OBJ)
+		{
+			continue;
+		}
+
 		LPNAMED_METHOD p = NAMED_METHOD::locate(unit->lit, i->params - 1, false, m_prg);
-		if (!(p && p->bInline)) continue;
+		if (!(p && p->bInline))
+		{
+			continue;
+		}
 
 		LPMACHINE_UNITS pUnits = &methods.find(p)->second;
 
 		// Back peddle to find where this call site begins.
-
 		MACHINE_UNITS paramUnits;
 
 		POS j = i;
 
 		std::map<STRING, MACHINE_UNIT> subst;
-
 		{
 			std::deque<CALL_PARAM> params;
 			getCallSite(i->params, --j, m_prg.m_units.begin(), params);
@@ -181,9 +212,13 @@ bool COptimiser::inlineExpand()
 					// are not in a local scope.
 					k->lit[0] = '-';
 				}
+
 				continue;
 			}
-			if (!((k->udt & UDT_FUNC) && (k->func == CProgram::returnVal))) continue;
+			if (!((k->udt & UDT_FUNC) && (k->func == CProgram::returnVal)))
+			{
+				continue;
+			}
 
 			if (k == (paramUnits.end() - 1))
 			{
@@ -223,7 +258,10 @@ bool COptimiser::inlineExpand()
 
 		while (--k != m_prg.m_units.begin())
 		{
-			if (k->udt & UDT_LINE) break;
+			if (k->udt & UDT_LINE)
+			{
+				break;
+			}
 		}
 
 		// Now we insert the function's body!

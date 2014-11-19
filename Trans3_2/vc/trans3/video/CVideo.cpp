@@ -1,12 +1,16 @@
 /*
  ********************************************************************
  * The RPG Toolkit, Version 3
- * This file copyright (C) 2006  Colin James Fitzpatrick
+ * This file copyright (C) 2006-2014 
+ *				Christopher Matthews
+ *
+ * Contributors:
+ *				Joshua Michael Daly
  ********************************************************************
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
+ * as published by the Free Software Foundation; either version 3
  * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -51,6 +55,7 @@ CVideo::CVideo()
 		IID_IGraphBuilder,
 		(void **)&m_pGraphBuilder
 	);
+
 	if (FAILED(res))
 	{
 		throw CError(_T("ActiveMovie is required to play movies."));
@@ -83,6 +88,7 @@ int CVideo::getWidth()
 {
 	long width = 0;
 	m_pVideoWindow->get_Width(&width);
+
 	return width;
 }
 
@@ -91,6 +97,7 @@ int CVideo::getHeight()
 {
 	long height = 0;
 	m_pVideoWindow->get_Height(&height);
+
 	return height;
 }
 
@@ -104,6 +111,7 @@ void CVideo::setPosition(const int x, const int y, const int width, const int he
 void CVideo::play()
 {
 	HRESULT hr = m_pMediaControl->Run();
+
 	if (SUCCEEDED(hr))
 	{
 		while (true)
@@ -111,7 +119,12 @@ void CVideo::play()
 			double pos = 0, dur = 0;
 			m_pMediaPosition->get_CurrentPosition(&pos);
 			m_pMediaPosition->get_Duration(&dur);
-			if (pos >= dur) break;
+
+			if (pos >= dur)
+			{
+				break;
+			}
+
 			processEvent();
 		}
 	}

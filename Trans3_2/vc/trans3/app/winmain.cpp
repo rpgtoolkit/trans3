@@ -2,11 +2,14 @@
  ********************************************************************
  * The RPG Toolkit, Version 3
  * This file copyright (C) 2006  Colin Fitzpatrick & Jonathan Hughes
+ *
+ * Contributors:
+ *				Joshua Michael Daly, LJ Gutierrez
  ********************************************************************
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
+ * as published by the Free Software Foundation; either version 3
  * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -29,6 +32,11 @@
  * these exceptions from its distribution terms, or you may choose
  * to propagate them.
  */
+
+/*
+* This file contains the entry point for the engine defined as mainEntry().
+* Most of the initial setup and central processing is performed here.
+*/
 
 /*
  * Inclusions.
@@ -124,7 +132,9 @@ void *operator new(size_t size)
 	void *p = malloc(sizeof(size_t) + size);
 	*(size_t *)p = size;
 	g_allocated += size;
+
 	//memlog(p, size, "write <<");
+
 	return ((size_t *)p + 1);
 }
 
@@ -133,7 +143,9 @@ void operator delete(void *p)
 	if (!p) return;
 	p = (size_t *)p - 1;
 	g_allocated -= *(size_t *)p;
+
 	//memlog(p, *(size_t *)p, "free >>");
+
 	free(p);
 	p = NULL;
 }
@@ -159,8 +171,10 @@ void termFunc()
 void registerFonts(const STRING path, bool bRegister)
 {
 	WIN32_FIND_DATA fd;
+
 	// Fonts need a .ttf extension!
 	HANDLE hSearch = FindFirstFile((path + _T("*.ttf")).c_str(), &fd);
+
 	do
 	{
 		const STRING strFile = fd.cFileName;
@@ -352,7 +366,6 @@ void setUpGame()
 
 		// Set player position before rendering in order to align board.
 		g_pSelectedPlayer->setPosition(g_pBoard->startX, g_pBoard->startY, g_pBoard->startL, PX_ABSOLUTE);
-
 		g_pSelectedPlayer->alignBoard(g_screen, true);
 
 		g_scrollCache.render(true);
@@ -411,8 +424,8 @@ void saveSettings(void)
 					saveSetting(_T("gAvgTime_800_Full"), avgTime);
 					break;
 			}
-		} // if (fullscreen)
-	} // if (save fps)
+		}
+	}
 }
 
 /*
@@ -586,7 +599,10 @@ STRING getMainFileName(const STRING cmdLine)
 		}
 	}
 
-	if (CFile::fileExists(GAM_PATH + mainGam)) return GAM_PATH + mainGam;
+	if (CFile::fileExists(GAM_PATH + mainGam))
+	{
+		return GAM_PATH + mainGam;
+	}
 
 	TCHAR strFileName[MAX_PATH] = _T("");
 
@@ -595,13 +611,22 @@ STRING getMainFileName(const STRING cmdLine)
 		NULL,
 		g_hInstance,
 		_T("Supported Files\0*.gam;*.tpk\0RPG Toolkit Main File (*.gam)\0*.gam\0RPG Toolkit PakFile (*.tpk)\0*.tpk\0All files(*.*)\0*.*"),
-		NULL, 0, 1,
-		strFileName, MAX_PATH,
-		NULL, 0,
-		GAM_PATH, _T("Open Main File"),
-		OFN_FILEMUSTEXIST | OFN_HIDEREADONLY, 0, 0,
+		NULL, 
+		0, 
+		1,
+		strFileName, 
+		MAX_PATH,
+		NULL, 
+		0,
+		GAM_PATH, 
+		_T("Open Main File"),
+		OFN_FILEMUSTEXIST | OFN_HIDEREADONLY, 
+		0, 
+		0,
 		_T(".gam"),
-		0, NULL, NULL
+		0, 
+		NULL, 
+		NULL
 	};
 
 	const STRING fileName = (GetOpenFileName(&ofn) ? strFileName : _T(""));
@@ -836,6 +861,7 @@ int mainEntry(const HINSTANCE hInstance, const HINSTANCE /*hPrevInstance*/, cons
     GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 
 //	MessageBox(NULL, _T("We made it through"),_T("Just Checking"),0);
+
 	try
 	{
 		openSystems();
@@ -853,6 +879,7 @@ int mainEntry(const HINSTANCE hInstance, const HINSTANCE /*hPrevInstance*/, cons
 	}
 
 	GdiplusShutdown(gdiplusToken);
+
 	return EXIT_SUCCESS;
 }
 

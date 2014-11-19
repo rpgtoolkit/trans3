@@ -1,16 +1,18 @@
 /*
  ********************************************************************
  * The RPG Toolkit, Version 3
- * This file copyright (C) 2007  Christopher Matthews & contributors
+ * This file copyright (C) 2007-2014 
+ *				- Christopher Matthews
  *
  * Contributors:
- *    - Colin James Fitzpatrick
- *    - Jonathan D. Hughes
+ *				- Colin James Fitzpatrick
+ *				- Jonathan D. Hughes
+ *				- Joshua Michael Daly
  ********************************************************************
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
+ * as published by the Free Software Foundation; either version 3
  * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -44,6 +46,7 @@ std::string util::binReadString(CONST HFILE hFile, LPOVERLAPPED ptr)
 {
 	bool bDone = false;		// Done?
 	std::string toRet;		// String to return
+
 	while (!bDone)
 	{
 		// Read a character
@@ -51,18 +54,17 @@ std::string util::binReadString(CONST HFILE hFile, LPOVERLAPPED ptr)
 		DWORD read;
 		ReadFile(HANDLE(hFile), &chr, 1, &read, ptr);
 		ptr->Offset++;
+
 		if (chr == '\0')
 		{
-			// All done
 			bDone = true;
 		}
 		else
 		{
-			// Append to return string
 			toRet += chr;
 		}
 	}
-	// Return the result
+
 	return toRet;
 }
 

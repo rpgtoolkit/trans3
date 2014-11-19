@@ -1,16 +1,18 @@
 /*
  ********************************************************************
  * The RPG Toolkit, Version 3
- * This file copyright (C) 2007  Christopher Matthews & contributors
+ * This file copyright (C) 2007-2014 
+ *				- Christopher Matthews
  *
  * Contributors:
- *    - Colin James Fitzpatrick
- *    - Jonathan D. Hughes
+ *				- Colin James Fitzpatrick
+ *				- Jonathan D. Hughes
+ *				- Joshua Michael Daly
  ********************************************************************
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
+ * as published by the Free Software Foundation; either version 3
  * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -57,23 +59,37 @@ BOOL FAST_CALL CDirectDraw::supportsRop(
 	UINT idx = 0;
 	if (bLeftRam)
 	{
-		if (bRightRam) idx = 3;
-		else idx = 1;
+		if (bRightRam)
+		{
+			idx = 3;
+		}
+		else
+		{
+			idx = 1;
+		}
 	}
 	else
 	{
-		if (bRightRam) idx = 2;
-		else idx = 0;
+		if (bRightRam)
+		{
+			idx = 2;
+		}
+		else 
+		{
+			idx = 0;
+		}
 	}
 
 	// Switch on the ROP
 	switch (lRop)
 	{
-		case SRCAND:	return m_bSrcAnd[idx];
-		case SRCPAINT:	return m_bSrcPaint[idx];
-		default:		return TRUE;
+		case SRCAND:	
+			return m_bSrcAnd[idx];
+		case SRCPAINT:	
+			return m_bSrcPaint[idx];
+		default:		
+			return TRUE;
 	}
-
 }
 
 //------------------------------------------------------------------------
@@ -90,7 +106,10 @@ BOOL FAST_CALL CDirectDraw::InitGraphicsMode(
 	// Store the main window's handle
 	m_hWndMain = handle;
 
-	if (!m_hWndMain) return FALSE;
+	if (!m_hWndMain)
+	{
+		return FALSE;
+	}
 
 	// Initialize DirectX
 	InitDirectX(m_hWndMain, nWidth, nHeight, nColorDepth, bFullScreen);
@@ -99,6 +118,7 @@ BOOL FAST_CALL CDirectDraw::InitGraphicsMode(
 	{
 		// Problems initializing
 		KillGraphicsMode();
+
 		return FALSE;
 	}
 
@@ -145,7 +165,6 @@ VOID FAST_CALL CDirectDraw::InitDirectX(
 	CONST BOOL bFullScreen
 		)
 {
-
 	// Set some members
 	m_lpdd = NULL;
 	m_lpddsPrime = NULL;
@@ -158,10 +177,10 @@ VOID FAST_CALL CDirectDraw::InitDirectX(
 	m_nColorDepth = nColorDepth;
 
 	// Create DirectDraw
-	if (FAILED(DirectDrawCreateEx(
-		NULL,
-		reinterpret_cast<LPVOID *>(&m_lpdd),
-		IID_IDirectDraw7, NULL))) return;
+	if (FAILED(DirectDrawCreateEx(NULL, reinterpret_cast<LPVOID *>(&m_lpdd), IID_IDirectDraw7, NULL)))
+	{
+		return;
+	}
 
 	// Initiate the primary surface
 	DDSURFACEDESC2 ddsd;
@@ -170,8 +189,16 @@ VOID FAST_CALL CDirectDraw::InitDirectX(
 	if (bFullScreen)
 	{
 		// Full-screen mode
-		if (FAILED(m_lpdd->SetCooperativeLevel(hWnd,DDSCL_FULLSCREEN | DDSCL_EXCLUSIVE | DDSCL_ALLOWREBOOT))) return;
-		if (FAILED(m_lpdd->SetDisplayMode(nWidth, nHeight, nColorDepth, 0, 0))) return;
+		if (FAILED(m_lpdd->SetCooperativeLevel(hWnd,DDSCL_FULLSCREEN | DDSCL_EXCLUSIVE | DDSCL_ALLOWREBOOT)))
+		{
+			return;
+		}
+
+		if (FAILED(m_lpdd->SetDisplayMode(nWidth, nHeight, nColorDepth, 0, 0)))
+		{
+			return;
+		}
+
 		ddsd.dwFlags = DDSD_CAPS | DDSD_BACKBUFFERCOUNT;
 		ddsd.dwBackBufferCount = 1;		// Make a *real* backbuffer
 		ddsd.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE | DDSCAPS_COMPLEX | DDSCAPS_FLIP;
@@ -180,14 +207,21 @@ VOID FAST_CALL CDirectDraw::InitDirectX(
 	else
 	{
 		// Windowed mode
-		if (FAILED(m_lpdd->SetCooperativeLevel(hWnd,DDSCL_NORMAL))) return;
+		if (FAILED(m_lpdd->SetCooperativeLevel(hWnd,DDSCL_NORMAL)))
+		{
+			return;
+		}
+
 		ddsd.dwFlags = DDSD_CAPS;
 		ddsd.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;	// This will be the primary surface
 		m_pRefresh = &CDirectDraw::RefreshWindowed;
 	}
 
 	// Create the primary surface
-	if (FAILED(m_lpdd->CreateSurface(&ddsd, &m_lpddsPrime, NULL))) return;
+	if (FAILED(m_lpdd->CreateSurface(&ddsd, &m_lpddsPrime, NULL)))
+	{
+		return;
+	}
 
 	// Create rectangles for the window and for the surface
 	SetRect(&m_surfaceRect, 0, 0, m_nWidth, m_nHeight);
@@ -196,7 +230,12 @@ VOID FAST_CALL CDirectDraw::InitDirectX(
 	if (bFullScreen)
 	{
 		ddsd.ddsCaps.dwCaps = DDSCAPS_BACKBUFFER;
-		if (FAILED(m_lpddsPrime->GetAttachedSurface(&ddsd.ddsCaps, &m_lpddsSecond))) return;
+
+		if (FAILED(m_lpddsPrime->GetAttachedSurface(&ddsd.ddsCaps, &m_lpddsSecond)))
+		{
+			return;
+		}
+
 		m_pBackBuffer = new CCanvas(m_lpddsSecond, nWidth, nHeight, TRUE);
 	}
 	else
@@ -227,10 +266,14 @@ VOID FAST_CALL CDirectDraw::InitDirectX(
 		{
 			// Not enough video memory - use RAM
 			ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_SYSTEMMEMORY;
-			if (FAILED(m_lpdd->CreateSurface(&ddsd, &m_lpddsSecond, NULL))) return;
-		}
-		m_pBackBuffer = new CCanvas(m_lpddsSecond, nWidth, nHeight, bUseRam);
 
+			if (FAILED(m_lpdd->CreateSurface(&ddsd, &m_lpddsSecond, NULL)))
+			{
+				return;
+			}
+		}
+
+		m_pBackBuffer = new CCanvas(m_lpddsSecond, nWidth, nHeight, bUseRam);
 	}
 
 	m_lpddsPrime->QueryInterface(IID_IDirectDrawGammaControl, (void **)&m_lpddGammaControl);
@@ -267,7 +310,10 @@ BOOL FAST_CALL CDirectDraw::KillGraphicsMode(VOID)
 //------------------------------------------------------------------------
 BOOL CDirectDraw::OffsetGammaRamp(INT r, INT g, INT b)
 {
-	if (!m_lpddGammaControl) return FALSE;
+	if (!m_lpddGammaControl)
+	{
+		return FALSE;
+	}
 
 	DDGAMMARAMP ramp;
 
@@ -289,24 +335,45 @@ BOOL CDirectDraw::OffsetGammaRamp(INT r, INT g, INT b)
 
 		{
 			int dr = base + r;
-			if (dr < 0) dr = 0;
-			else if (dr > 0xffff) dr = 0xffff;
+
+			if (dr < 0)
+			{
+				dr = 0;
+			}
+			else if (dr > 0xffff)
+			{
+				dr = 0xffff;
+			}
 
 			ramp.red[i] = dr;
 		}
 
 		{
 			int dg = base + g;
-			if (dg < 0) dg = 0;
-			else if (dg > 0xffff) dg = 0xffff;
+
+			if (dg < 0)
+			{
+				dg = 0;
+			}
+			else if (dg > 0xffff)
+			{
+				dg = 0xffff;
+			}
 
 			ramp.green[i] = dg;
 		}
 
 		{
 			int db = base + b;
-			if (db < 0) db = 0;
-			else if (db > 0xffff) db = 0xffff;
+
+			if (db < 0)
+			{
+				db = 0;
+			}
+			else if (db > 0xffff)
+			{
+				db = 0xffff;
+			}
 
 			ramp.blue[i] = db;
 		}
@@ -322,6 +389,7 @@ BOOL CDirectDraw::OffsetGammaRamp(INT r, INT g, INT b)
 BOOL CDirectDraw::Refresh(VOID)
 {
 	CheckSurfaces();
+
 	return (this->*m_pRefresh)();
 }
 
@@ -334,13 +402,17 @@ VOID FAST_CALL CDirectDraw::CheckSurfaces()
 	if (m_lpddsPrime)
 	{
 		if (m_lpddsPrime->IsLost() == DDERR_SURFACELOST)
+		{
 			m_lpddsPrime->Restore();
+		}
 	}
 	// Check the back buffer
 	if (m_lpddsSecond)
 	{
 		if (m_lpddsSecond->IsLost() == DDERR_SURFACELOST)
+		{
 			m_lpddsSecond->Restore();
+		}
 	}
 }
 
@@ -350,13 +422,13 @@ VOID FAST_CALL CDirectDraw::CheckSurfaces()
 BOOL FAST_CALL CDirectDraw::RefreshFullScreen(VOID)
 {
 	// Just flip
-	//while (FAILED(m_lpddsPrime->Flip(NULL, DDFLIP_WAIT)))
 	m_lpddsPrime->Flip(NULL, DDFLIP_WAIT);
 
 	// Clone the contents to our back buffer for contingency with the next cycle of rendering
 	RECT r;
 	SetRect(&r, 0, 0, m_nWidth, m_nHeight);
 	m_lpddsSecond->BltFast(0, 0, m_lpddsPrime, &r, DDBLTFAST_WAIT);
+
 	return TRUE;
 }
 BOOL FAST_CALL CDirectDraw::RefreshWindowed(VOID)
@@ -370,14 +442,8 @@ BOOL FAST_CALL CDirectDraw::RefreshWindowed(VOID)
 	SetRect(&m_destRect, 0, 0, m_nWidth, m_nHeight);
 	OffsetRect(&m_destRect, ptPrimeBlt.x, ptPrimeBlt.y);
 
-	// Emulate the gamma controller.
-	//m_pBackBuffer->EmulateGamma();
-
 	// Blt to the screen
 	return SUCCEEDED(m_lpddsPrime->Blt(&m_destRect, m_lpddsSecond, &m_surfaceRect, DDBLT_WAIT | DDBLT_ROP, &m_bltFx));
-
-	//m_pBackBuffer->BltAdditivePart(m_lpddsPrime, m_destRect.left, m_destRect.top, m_surfaceRect.left, m_surfaceRect.top, m_nWidth, m_nHeight, 50, -1, -1);
-	//return TRUE;
 }
 
 //------------------------------------------------------------------------
@@ -396,6 +462,7 @@ BOOL FAST_CALL CDirectDraw::DrawCanvasTranslucent(
 	{
 		return pCanvas->BltTranslucent(m_lpddsSecond, x, y, dIntensity, crUnaffectedColor, crTransparentColor);
 	}
+
 	return FALSE;
 }
 
@@ -417,6 +484,7 @@ BOOL FAST_CALL CDirectDraw::DrawCanvasPartial(
 	{
 		return pCanvas->BltPart(m_lpddsSecond, destX, destY, srcX, srcY, width, height, lRasterOp);
 	}
+
 	return FALSE;
 }
 
@@ -438,6 +506,7 @@ BOOL FAST_CALL CDirectDraw::DrawCanvasTransparentPartial(
 	{
 		return pCanvas->BltTransparentPart(m_lpddsSecond, destX, destY, srcX, srcY, width, height, crTransparentColor);
 	}
+
 	return FALSE;
 }
 
@@ -461,6 +530,7 @@ BOOL FAST_CALL CDirectDraw::DrawCanvasTranslucentPartial(
 	{
 		return pCanvas->BltTranslucentPart(m_lpddsSecond, x, y, xSrc, ySrc, width, height, dIntensity, crUnaffectedColor, crTransparentColor);
 	}
+
 	return FALSE;
 }
 
@@ -476,7 +546,6 @@ BOOL FAST_CALL CDirectDraw::CopyScreenToCanvas(
 		if (pCanvas->usingDX())
 		{
 			// Use DirectX
-
 			// Get the point of the window outside of the title bar and border
 			POINT pt = {0, 0};
 			ShowCursor(FALSE);
@@ -488,6 +557,7 @@ BOOL FAST_CALL CDirectDraw::CopyScreenToCanvas(
 			OffsetRect(&rect, pt.x, pt.y);
 			BOOL ret = pCanvas->GetDXSurface()->BltFast(0, 0, m_lpddsPrime, &rect, DDBLTFAST_NOCOLORKEY | DDBLTFAST_WAIT);
 			ShowCursor(TRUE);
+
 			return ret;
 		}
 		else
@@ -498,9 +568,11 @@ BOOL FAST_CALL CDirectDraw::CopyScreenToCanvas(
 			CONST BOOL bRet = BitBlt(hdcDest, 0, 0, pCanvas->GetWidth(), pCanvas->GetHeight(), hdcSrc, 0, 0, SRCCOPY);
 			pCanvas->CloseDC(hdcDest);
 			CloseDC(hdcSrc);
+
 			return bRet;
 		}
 	}
+
 	return FALSE;
 }
 
@@ -537,5 +609,4 @@ LPDIRECTDRAWSURFACE7 FAST_CALL CDirectDraw::createSurface(
 
 	// Return the surface
 	return lpddsSurface;
-
 }

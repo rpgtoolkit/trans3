@@ -1,12 +1,16 @@
 /*
  ********************************************************************
  * The RPG Toolkit, Version 3
- * This file copyright (C) 2007  Colin James Fitzpatrick
+ * This file copyright (C) 2007-2014 
+ *				- Colin James Fitzpatrick
+ *
+ * Contributors:
+ *				- Joshua Michael Daly
  ********************************************************************
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
+ * as published by the Free Software Foundation; either version 3
  * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -89,6 +93,7 @@ void CGarbageCollector::collectGarbage()
 		// No objects exist!
 		return;
 	}
+
 	const unsigned int count = (--CProgram::m_objects.end())->first;
 	std::vector<bool> objects;
 
@@ -102,6 +107,7 @@ void CGarbageCollector::collectGarbage()
 	// Loop over all globals.
 	{
 		HEAP_ENUM::ITR i = CProgram::m_heap.begin();
+
 		for (; i != CProgram::m_heap.end(); ++i)
 		{
 			const CPtrData<tagStackFrame> &var = i->second;
@@ -168,9 +174,14 @@ void CGarbageCollector::collectGarbage()
 	{
 		const STRING &name = i->first;
 		int pos = name.find(_T(':'));
-		if (pos == -1) continue;
+
+		if (pos == -1)
+		{
+			continue;
+		}
 
 		const unsigned int obj = atoi(name.substr(0, pos + 1).c_str());
+
 		if (objects[obj])
 		{
 			i = CProgram::m_heap.erase(i);
@@ -187,6 +198,7 @@ CGarbageCollector::CGarbageCollector()
 	m_bRunning = true;
 	InitializeCriticalSection(&m_mutex);
 	DWORD id;
+
 	if (!(m_garbageThread = CreateThread(NULL, 0, threadStub, this, 0, &id)))
 	{
 		MessageBox(NULL, _T("Could not create a thread for the garbage collector."), NULL, 0);

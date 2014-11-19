@@ -1,12 +1,16 @@
 /*
  ********************************************************************
  * The RPG Toolkit, Version 3
- * This file copyright (C) 2006  Colin James Fitzpatrick
+ * This file copyright (C) 2007-2014 
+ *				- Colin James Fitzpatrick
+ *
+ * Contributors:
+ *				- Joshua Michael Daly
  ********************************************************************
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
+ * as published by the Free Software Foundation; either version 3
  * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -79,21 +83,35 @@ int CCursorMap::run()
 				}
 			}
 		}
+
 		BYTE keys[256];
 		extern IDirectInputDevice8A *g_lpdiKeyboard;
 		if (FAILED(g_lpdiKeyboard->GetDeviceState(256, keys)))
 		{
 			continue;
 		}
+
 		if ((keys[DIK_UP] & 0x80) || (keys[DIK_LEFT] & 0x80))
 		{
-			if (toRet) --toRet;
-			else toRet = m_points.size() - 1;
+			if (toRet)
+			{
+				--toRet;
+			}
+			else
+			{
+				toRet = m_points.size() - 1;
+			}
 		}
 		else if ((keys[DIK_DOWN] & 0x80) || (keys[DIK_RIGHT] & 0x80))
 		{
-			if (toRet != (m_points.size() - 1)) ++toRet;
-			else toRet = 0;
+			if (toRet != (m_points.size() - 1))
+			{
+				++toRet;
+			}
+			else
+			{
+				toRet = 0;
+			}
 		}
 		else if ((keys[DIK_RETURN] & 0x80) || (keys[DIK_SPACE] & 0x80))
 		{
@@ -109,5 +127,6 @@ int CCursorMap::run()
 	}
 	g_pDirectDraw->DrawCanvas(&cnv, 0, 0);
 	g_pDirectDraw->Refresh();
+
 	return toRet;
 }

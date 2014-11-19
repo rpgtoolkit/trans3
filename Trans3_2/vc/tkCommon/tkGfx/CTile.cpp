@@ -1,16 +1,18 @@
 /*
  ********************************************************************
  * The RPG Toolkit, Version 3
- * This file copyright (C) 2007  Christopher Matthews & contributors
+ * This file copyright (C) 2007-2014 
+ *				- Christopher Matthews
  *
  * Contributors:
- *    - Colin James Fitzpatrick
- *    - Jonathan D. Hughes
+ *				- Colin James Fitzpatrick
+ *				- Jonathan D. Hughes
+ *				- Joshua Michael Daly
  ********************************************************************
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
+ * as published by the Free Software Foundation; either version 3
  * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -358,18 +360,25 @@ CTile::CTile(CONST INT nCompatibleDC, CONST std::string strFilename, CONST RGBSH
  m_nMaskIdx(-1),
  m_bIsometric(bIsometric),
  m_nShadeType(SHADE_UNIFORM)
-
 {
 
 	if (m_bIsometric)
 	{
-		//isometric 64x32 tiles
+		// Isometric 64x32 tiles.
 		if (!m_pCnvForegroundIso)
+		{
 			m_pCnvForegroundIso = new CCanvasPool(nCompatibleDC, 64, 32, TILE_CACHE_SIZE * 2);
+		}
+
 		if (!m_pCnvAlphaMaskIso)
+		{
 			m_pCnvAlphaMaskIso = new CCanvasPool(nCompatibleDC, 64, 32, TILE_CACHE_SIZE * 2);
+		}
+
 		if (!m_pCnvMaskMaskIso)
+		{
 			m_pCnvMaskMaskIso = new CCanvasPool(nCompatibleDC, 64, 32, TILE_CACHE_SIZE * 2);
+		}
 
 		m_nFgIdxIso = m_pCnvForegroundIso->getFree();
 		m_nAlphaIdxIso = m_pCnvAlphaMaskIso->getFree();
@@ -377,13 +386,21 @@ CTile::CTile(CONST INT nCompatibleDC, CONST std::string strFilename, CONST RGBSH
 	}
 	else
 	{
-		//2d 32x32 tiles
+		// 2D 32x32 tiles.
 		if (!m_pCnvForeground)
+		{
 			m_pCnvForeground = new CCanvasPool(nCompatibleDC, 32, 32, TILE_CACHE_SIZE * 2);
+		}
+
 		if (!m_pCnvAlphaMask)
+		{
 			m_pCnvAlphaMask = new CCanvasPool(nCompatibleDC, 32, 32, TILE_CACHE_SIZE * 2);
+		}
+
 		if (!m_pCnvMaskMask)
+		{
 			m_pCnvMaskMask = new CCanvasPool(nCompatibleDC, 32, 32, TILE_CACHE_SIZE * 2);
+		}
 
 		m_nFgIdx = m_pCnvForeground->getFree();
 		m_nAlphaIdx = m_pCnvAlphaMask->getFree();
@@ -417,17 +434,24 @@ CTile::CTile(CONST INT nCompatibleDC, CONST BOOL bIsometric):
  m_nMaskIdx(-1),
  m_nCompatibleDC(nCompatibleDC),
  m_nShadeType(SHADE_UNIFORM)
-
 {
 
 	if (m_bIsometric)
 	{
 		if (!m_pCnvForegroundIso)
+		{
 			m_pCnvForegroundIso = new CCanvasPool(nCompatibleDC, 64, 32, TILE_CACHE_SIZE * 2);
+		}
+
 		if (!m_pCnvAlphaMaskIso)
+		{
 			m_pCnvAlphaMaskIso = new CCanvasPool(nCompatibleDC, 64, 32, TILE_CACHE_SIZE * 2);
+		}
+
 		if (!m_pCnvMaskMaskIso)
+		{
 			m_pCnvMaskMaskIso = new CCanvasPool(nCompatibleDC, 64, 32, TILE_CACHE_SIZE * 2);
+		}
 
 		m_nFgIdxIso = m_pCnvForegroundIso->getFree();
 		m_nAlphaIdxIso = m_pCnvAlphaMaskIso->getFree();
@@ -437,11 +461,19 @@ CTile::CTile(CONST INT nCompatibleDC, CONST BOOL bIsometric):
 	else
 	{
 		if (!m_pCnvForeground)
+		{
 			m_pCnvForeground = new CCanvasPool(nCompatibleDC, 32, 32, TILE_CACHE_SIZE * 2 );
+		}
+
 		if (!m_pCnvAlphaMask)
+		{
 			m_pCnvAlphaMask = new CCanvasPool(nCompatibleDC, 32, 32, TILE_CACHE_SIZE * 2 );
+		}
+
 		if (!m_pCnvMaskMask)
+		{
 			m_pCnvMaskMask = new CCanvasPool(nCompatibleDC, 32, 32, TILE_CACHE_SIZE * 2 );
+		}
 
 		m_nFgIdx = m_pCnvForeground->getFree();
 		m_nAlphaIdx = m_pCnvAlphaMask->getFree();
@@ -461,17 +493,34 @@ CTile::~CTile(VOID)
 {
 	// Blow away all members
 	if (m_pCnvForeground && m_nFgIdx != -1)
+	{
 		m_pCnvForeground->release(m_nFgIdx);
+	}
+
 	if (m_pCnvAlphaMask && m_nAlphaIdx != -1)
+	{
 		m_pCnvAlphaMask->release(m_nAlphaIdx);
+	}
+
 	if (m_pCnvMaskMask && m_nMaskIdx != -1)
+	{
 		m_pCnvMaskMask->release(m_nMaskIdx);
+	}
+
 	if (m_pCnvForegroundIso && m_nFgIdxIso != -1)
+	{
 		m_pCnvForegroundIso->release(m_nFgIdxIso);
+	}
+
 	if (m_pCnvAlphaMaskIso && m_nAlphaIdxIso != -1)
+	{
 		m_pCnvAlphaMaskIso->release(m_nAlphaIdxIso);
+	}
+
 	if (m_pCnvMaskMaskIso && m_nMaskIdxIso != -1)
+	{
 		m_pCnvMaskMaskIso->release(m_nMaskIdxIso);
+	}
 }
 
 //-------------------------------------------------------------------
@@ -491,7 +540,6 @@ CTile::CTile(CONST CTile &rhs):
  m_nFgIdxIso(rhs.m_nFgIdxIso),
  m_nAlphaIdxIso(rhs.m_nAlphaIdxIso),
  m_nMaskIdxIso(rhs.m_nMaskIdxIso)
-
 {
 
 	// Colin: There has got to be a better way to
@@ -504,7 +552,6 @@ CTile::CTile(CONST CTile &rhs):
 			m_pnAlphaChannel[x][y] = rhs.m_pnAlphaChannel[x][y];
 		}
 	}
-
 }
 
 //-------------------------------------------------------------------
@@ -512,7 +559,6 @@ CTile::CTile(CONST CTile &rhs):
 //-------------------------------------------------------------------
 CTile &FAST_CALL CTile::operator=(CONST CTile &rhs)
 {
-
 	// Colin: There has got to be a better way to
 	//	      implement this loop!
 	for (INT x = 0; x < 32; x++)
@@ -569,7 +615,6 @@ CTile &FAST_CALL CTile::operator=(CONST CTile &rhs)
 
 VOID FAST_CALL CTile::open(CONST std::string strFilename, CONST RGBSHADE rgb, CONST INT nShadeType)
 {
-
 	m_strFilename = strFilename;
 	m_bIsTransparent = FALSE;
 
@@ -577,7 +622,9 @@ VOID FAST_CALL CTile::open(CONST std::string strFilename, CONST RGBSHADE rgb, CO
 	INT nSetType = openTile(strFilename);
 
 	if (m_nDetail == 2 || m_nDetail == 4 || m_nDetail == 6) 
+	{
 		increaseDetail();
+	}
 
 	prepAlpha();
 	createShading(rgb, nShadeType, nSetType);
@@ -621,8 +668,15 @@ VOID FAST_CALL CTile::createShading(
 						INT color = util::rgb(r, g, b);
 
 						// Pure white/black alterations...
-						if (color == RGB(255, 255, 255)) color = RGB(245, 245, 245);
-						if (color == 0) color = RGB(10, 10, 10);
+						if (color == RGB(255, 255, 255))
+						{
+							color = RGB(245, 245, 245);
+						}
+
+						if (color == 0)
+						{
+							color = RGB(10, 10, 10);
+						}
 						
 						// Inverted axes for SetPixels().
 						pnTile[y * 32 + x] = color;
@@ -723,11 +777,13 @@ VOID FAST_CALL CTile::prepAlpha(VOID)
 		LONG alpha[32*32];
 		LONG mask[32*32];
 		INT arrayPos = 0;
-		for (INT yy = 0; yy<32; yy++)
+
+		for (INT yy = 0; yy < 32; yy++)
 		{
-			for (INT xx=0; xx<32; xx++)
+			for (INT xx = 0; xx < 32; xx++)
 			{
-				alpha[arrayPos] = RGB(255-m_pnAlphaChannel[xx][yy], 255-m_pnAlphaChannel[xx][yy], 255-m_pnAlphaChannel[xx][yy]);
+				alpha[arrayPos] = RGB(255-m_pnAlphaChannel[xx][yy], 255-m_pnAlphaChannel[xx][yy], 
+					255-m_pnAlphaChannel[xx][yy]);
 				mask[arrayPos] = 0;
 				arrayPos++;
 			}
@@ -752,8 +808,6 @@ VOID FAST_CALL CTile::gdiDraw(CONST HDC hdc, CONST INT x, CONST INT y)
 {
 	if (m_bIsometric)
 	{
-		//m_pCnvForegroundIso->Blt(hdc, x, y, m_nFgIdxIso, SRCCOPY);
-		
 		//blit the alpha channel down...
 		m_pCnvAlphaMaskIso->Blt(hdc, x, y, m_nAlphaIdxIso, SRCAND);
 		//blit the foreground down...
@@ -959,8 +1013,15 @@ INT FAST_CALL CTile::openTile(CONST std::string strFilename)
 
 		
 		// Added:
-		if (strExt.compare("TST") == 0) nSetType = TSTTYPE;
-		if (strExt.compare("ISO") == 0) nSetType = ISOTYPE;
+		if (strExt.compare("TST") == 0)
+		{
+			nSetType = TSTTYPE;
+		}
+
+		if (strExt.compare("ISO") == 0) 
+		{
+			nSetType = ISOTYPE;
+		}
 
 		return nSetType;
 	}
@@ -969,13 +1030,16 @@ INT FAST_CALL CTile::openTile(CONST std::string strFilename)
 	BOOL bTransparentParts = FALSE;
 
 	FILE* infile=fopen((resolve ? resolve(strFilename) : strFilename).c_str(),"rt");
-	if(!infile) {
+
+	if(!infile) 
+	{
 		return -1;		//Now returns.
 	}
 
 	char dummy[255];
 	fgets(dummy,255,infile);
-	if (strcmpi(dummy,"RPGTLKIT TILE\n")==0) 
+
+	if (strcmpi(dummy, "RPGTLKIT TILE\n") == 0) 
 	{
 		//Version 2
 		fgets(dummy,255,infile);	//majorver
@@ -986,24 +1050,27 @@ INT FAST_CALL CTile::openTile(CONST std::string strFilename)
 
 		fgets(dummy,255,infile);	//compression used? 1-yes, 0-no
 		comp=atoi(dummy);
-		if (comp==0) 
+
+		if (comp == 0) 
 		{
 			//No compression!
 			if (m_nDetail==1 || m_nDetail==3 || m_nDetail==5) 
 			{
-				for (x=0;x<32;x++) 
+				for (x = 0; x < 32;x++) 
 				{
-					for (y=0;y<32;y++) 
+					for (y = 0; y < 32;y++) 
 					{
  						fgets(dummy,255,infile);
 						m_pnTile[x][y]=atol(dummy);
 						m_pnAlphaChannel[x][y] = 255;
+
 						if (m_pnTile[x][y] == -1)
 						{
 							bTransparentParts = TRUE;
 							m_pnTile[x][y] = 0;
 							m_pnAlphaChannel[x][y] = 0;
 						}
+
 						if (m_nDetail == 3 || m_nDetail == 5)
 						{
 							m_pnTile[x][y] = g_pnDosPalette[m_pnTile[x][y]];
@@ -1013,13 +1080,14 @@ INT FAST_CALL CTile::openTile(CONST std::string strFilename)
 			}
 			if (m_nDetail==2 || m_nDetail==4 || m_nDetail==6) 
 			{
-				for (x=0;x<16;x++) 
+				for (x = 0; x < 16; x++) 
 				{
-					for (y=0;y<16;y++) 
+					for (y = 0; y < 16; y++) 
 					{
 						fgets(dummy,255,infile);
 						m_pnTile[x][y]=atol(dummy);
 						m_pnAlphaChannel[x][y] = 255;
+
 						if (m_pnTile[x][y] == -1)
 						{
 							bTransparentParts = TRUE;
@@ -1030,15 +1098,17 @@ INT FAST_CALL CTile::openTile(CONST std::string strFilename)
 				}
 			}
 		}
-		if (comp==1) 
+
+		if (comp == 1) 
 		{
 			//Compression used!!!
 			INT xx,yy,times;
 			LONG clr;
-			if (m_nDetail==1 || m_nDetail==3 || m_nDetail==5) 
+			if (m_nDetail == 1 || m_nDetail == 3 || m_nDetail == 5) 
 			{
-				xx = 0;yy = 0;
-				while(xx<32) 
+				xx = 0; yy = 0;
+
+				while(xx < 32) 
 				{
 					fgets(dummy,255,infile);
 					times=atoi(dummy);
@@ -1046,32 +1116,38 @@ INT FAST_CALL CTile::openTile(CONST std::string strFilename)
 					fgets(dummy,255,infile);
 					clr=atol(dummy);
 
-					for (INT loopit=1;loopit<=times;loopit++) 
+					for (INT loopit = 1; loopit <= times; loopit++) 
 					{
 						m_pnTile[xx][yy] = clr;
 						m_pnAlphaChannel[xx][yy] = 255;
+
 						if (clr == -1)
 						{
 							bTransparentParts = TRUE;
 							m_pnTile[xx][yy] = 0;
 							m_pnAlphaChannel[xx][yy] = 0;
 						}
+
 						if (m_nDetail == 3 || m_nDetail == 5)
 						{
 							m_pnTile[xx][yy] = g_pnDosPalette[m_pnTile[xx][yy]];
 						}
+
 						yy++;
-						if (yy>=32) 
+
+						if (yy >= 32) 
 						{
-							yy=0;
+							yy = 0;
 							xx++;
 						}
 					}
 				}
 			}
-			if (m_nDetail==2 || m_nDetail==4 || m_nDetail==6) {
-				xx = 0;yy = 0;
-				while(xx<16) 
+			if (m_nDetail == 2 || m_nDetail == 4 || m_nDetail == 6) 
+			{
+				xx = 0; yy = 0;
+
+				while(xx < 16) 
 				{
 					fgets(dummy,255,infile);
 					times=atoi(dummy);
@@ -1079,20 +1155,23 @@ INT FAST_CALL CTile::openTile(CONST std::string strFilename)
 					fgets(dummy,255,infile);
 					clr=atol(dummy);
 
-					for (INT loopit=1;loopit<=times;loopit++) 
+					for (INT loopit = 1;loopit <= times; loopit++) 
 					{
 						m_pnTile[xx][yy] = clr;
 						m_pnAlphaChannel[xx][yy] = 255;
+
 						if (clr == -1)
 						{
 							bTransparentParts = TRUE;
 							m_pnTile[xx][yy] = 0;
 							m_pnAlphaChannel[xx][yy] = 0;
 						}
+
 						yy++;
-						if (yy>=16) 
+
+						if (yy >= 16) 
 						{
-							yy=0;
+							yy = 0;
 							xx++;
 						}
 					}
@@ -1104,22 +1183,26 @@ INT FAST_CALL CTile::openTile(CONST std::string strFilename)
 	{
 		//Version 1
 		char part;
-		INT thevalue=0;
+		INT thevalue = 0;
 		
 		fclose(infile);
 		FILE* infile=fopen((resolve ? resolve(strFilename) : strFilename).c_str(),"rt");
 		
-		if(!infile) {
+		if(!infile)
+		{
 			return -1;		//Now returns!
 		}
-		m_nDetail=4;
-		for (INT y=0;y<16;y++) 
+
+		m_nDetail = 4;
+
+		for (INT y = 0; y < 16; y++) 
 		{
 			fgets(dummy,255,infile);
-			for (INT x=0;x<16;x++) 
+
+			for (INT x = 0; x < 16; x++) 
 			{
-				part=dummy[x];
-				thevalue=(INT)part-33;
+				part = dummy[x];
+				thevalue =(INT)part - 33;
 				m_pnTile[x][y] = g_pnDosPalette[thevalue];
 				m_pnAlphaChannel[x][y] = 255;
 			}
@@ -1169,7 +1252,10 @@ INT FAST_CALL CTile::openFromTileSet(CONST std::string strFilename, CONST INT nu
 
 	CONST TS_HEADER tileset = getTilesetInfo(strFilename);
 
-	if (number < 1 || number > tileset.tilesInSet) return detail;
+	if (number < 1 || number > tileset.tilesInSet)
+	{	
+		return detail;
+	}
 	
 	BOOL bTransparentParts = FALSE;
 
@@ -1190,14 +1276,18 @@ INT FAST_CALL CTile::openFromTileSet(CONST std::string strFilename, CONST INT nu
 	{
 
 		FILE *CONST infile = fopen(strFilename.c_str(), "rb");
-		if (!infile) return -1;
+
+		if (!infile)
+		{
+			return -1;
+		}
+
 		CONST LONG np = calcInsertionPoint(tileset.detail,number);
 		fseek(infile, np, 0);
 
 		// Switch on the detail level
 		switch (detail = tileset.detail) 
 		{
-
 			case ISODETAIL:
 				// Isometric case. Fall through! End changes.
 				detail = 1;
@@ -1211,6 +1301,7 @@ INT FAST_CALL CTile::openFromTileSet(CONST std::string strFilename, CONST INT nu
 						fread(&rrr, 1, 1, infile);
 						fread(&ggg, 1, 1, infile);
 						fread(&bbb, 1, 1, infile);
+
 						if (INT(rrr) == 0 && INT(ggg) == 1 && INT(bbb) == 2) 
 						{
 							m_pnTile[xx][yy] = 0;
@@ -1223,17 +1314,18 @@ INT FAST_CALL CTile::openFromTileSet(CONST std::string strFilename, CONST INT nu
 							m_pnAlphaChannel[xx][yy] = 255;
 						}
 					}
-				} break;
-
+				} 
+				break;
 			case 2:
 				//16x16x16.7 million;
 				for (xx = 0; xx < 16; xx++) 
 				{
-					for (yy=0;yy<16;yy++) 
+					for (yy = 0; yy < 16; yy++) 
 					{
 						fread(&rrr, 1, 1, infile);
 						fread(&ggg, 1, 1, infile);
 						fread(&bbb, 1, 1, infile);
+
 						if (INT(rrr) == 0 && INT(ggg) == 1 && INT(bbb) == 2) 
 						{
 							m_pnTile[xx][yy] = 0;
@@ -1248,7 +1340,6 @@ INT FAST_CALL CTile::openFromTileSet(CONST std::string strFilename, CONST INT nu
 					}
 				}
 				break;
-
 			case 3:
 			case 5:
 				//32x32x256 (or 16)
@@ -1257,6 +1348,7 @@ INT FAST_CALL CTile::openFromTileSet(CONST std::string strFilename, CONST INT nu
 					for (yy = 0; yy < 32; yy++) 
 					{
 						fread(&rrr, 1, 1, infile);
+
 						if (INT(rrr) == 255) 
 						{
 							m_pnTile[xx][yy] = 0;
@@ -1269,8 +1361,8 @@ INT FAST_CALL CTile::openFromTileSet(CONST std::string strFilename, CONST INT nu
 							m_pnAlphaChannel[xx][yy] = 255;
 						}
 					}
-				} break;
-
+				} 
+				break;
 			case 4:
 			case 6:
 				//16x16x256 (or 16)
@@ -1294,6 +1386,7 @@ INT FAST_CALL CTile::openFromTileSet(CONST std::string strFilename, CONST INT nu
 				}
 				break;
 		}
+
 		fclose(infile);
 	}
 
@@ -1321,7 +1414,11 @@ TS_HEADER FAST_CALL CTile::getTilesetInfo(CONST std::string strFilename)
 	TS_HEADER header = {0, 0, 0};
 
 	FILE* file = fopen(strFilename.c_str(), "rb");
-	if (!file) return header;
+
+	if (!file)
+	{
+		return header;
+	}
 
 	fread(&header, 6, 1, file);
 	fclose(file);
@@ -1380,6 +1477,7 @@ LONG FAST_CALL CTile::calcInsertionPoint(CONST INT d, CONST INT number)
 			return ((256 * (num - 1)) + 6);
 
 	}
+
 	return 0;
 }
 
@@ -1402,9 +1500,20 @@ VOID FAST_CALL CTile::increaseDetail(VOID) /* Use VOID for paramless functions *
 	LONG atile[17][17];
 	INT x, y;
 
-	if (m_nDetail == 2) m_nDetail = 1;
-	if (m_nDetail == 4) m_nDetail = 3;
-	if (m_nDetail == 6) m_nDetail = 5;
+	if (m_nDetail == 2)
+	{
+		m_nDetail = 1;
+	}
+
+	if (m_nDetail == 4)
+	{
+		m_nDetail = 3;
+	}
+
+	if (m_nDetail == 6)
+	{
+		m_nDetail = 5;
+	}
 
 	//backup old tile
 	for (x = 0; x < 16; x++) 
@@ -1446,7 +1555,9 @@ BOOL FAST_CALL CTile::isShadedAs(CONST RGBSHADE rgb, CONST INT nShadeType)
 {
 
 	if (nShadeType != m_nShadeType)
+	{
 		return FALSE;
+	}
 
 	return (m_rgb.r == rgb.r && m_rgb.g == rgb.g && m_rgb.b == rgb.b);
 
@@ -1465,33 +1576,37 @@ UINT FAST_CALL CTile::getDOSColor(CONST UCHAR cColor)
 //-------------------------------------------------------------------
 VOID FAST_CALL CTile::KillPools(VOID)
 {
-	if ( m_pCnvForeground )
+	if (m_pCnvForeground)
 	{
 		delete m_pCnvForeground;
 		m_pCnvForeground = NULL;
 	}
-	if ( m_pCnvAlphaMask )
+
+	if (m_pCnvAlphaMask)
 	{
 		delete m_pCnvAlphaMask;
 		m_pCnvAlphaMask = NULL;
 	}
-	if ( m_pCnvMaskMask )
+
+	if (m_pCnvMaskMask)
 	{
 		delete m_pCnvMaskMask;
 		m_pCnvMaskMask = NULL;
 	}
 
-	if ( m_pCnvForegroundIso )
+	if (m_pCnvForegroundIso)
 	{
 		delete m_pCnvForegroundIso;
 		m_pCnvForegroundIso = NULL;
 	}
-	if ( m_pCnvAlphaMaskIso )
+
+	if (m_pCnvAlphaMaskIso)
 	{
 		delete m_pCnvAlphaMaskIso;
 		m_pCnvAlphaMaskIso = NULL;
 	}
-	if ( m_pCnvMaskMaskIso )
+
+	if (m_pCnvMaskMaskIso)
 	{
 		delete m_pCnvMaskMaskIso;
 		m_pCnvMaskMask = NULL;
@@ -1574,13 +1689,13 @@ VOID CTile::toIsometric(LONG *dest, CONST LONG *src)
 	}
 
 	// Shrink on y
-	for(x = 0; x != 64; ++x)
+	for (x = 0; x != 64; ++x)
 	{
-		for(y = 0; y != 32; ++y)
+		for (y = 0; y != 32; ++y)
 		{
 			CONST INT c1 = mdTile[x][2 * y], c2 = mdTile[x][2 * y + 1];
 
-			if(c1 != MASK && c2 != MASK)
+			if (c1 != MASK && c2 != MASK)
 			{
 				CONST INT r = (util::red(c1) + util::red(c2)) / 2,
 						  g = (util::green(c1) + util::green(c2)) / 2,
@@ -1630,6 +1745,7 @@ VOID CTile::drawByBoardCoord(
 		x -= 32;
 		y -= 16;
 	}
+
 	x += pxOffsetX;
 	y += pxOffsetY;
 
@@ -1668,12 +1784,14 @@ VOID CTile::drawByBoardCoordHdc(
 	
 	CONST BOOL bIsometric = coordType & (ISO_STACKED | ISO_ROTATED);
 	coords::tileToPixel(x, y, coordType, FALSE, brdSizeX);
+
 	if (bIsometric)
 	{
 		// tileToPixel() reports the centre of the tile.
 		x -= 32;
 		y -= 16;
 	}
+
 	x += pxOffsetX;
 	y += pxOffsetY;
 
@@ -1701,7 +1819,10 @@ VOID CTile::drawByBoardCoordHdc(
 //-------------------------------------------------------------------
 CTile *CTile::getTile(CONST STRING filename, CONST INT eMask, CONST RGBSHADE rgb, CONST BOOL bIsometric, CONST HDC hdcCompat)
 {
-	if (m_tiles.size() > TILE_CACHE_SIZE) clearTileCache();
+	if (m_tiles.size() > TILE_CACHE_SIZE)
+	{
+		clearTileCache();
+	}
 
 	// Check if this tile has already been drawn.
 	std::vector<CTile*>::iterator i = findCacheMatch(filename, eMask, rgb, bIsometric);
@@ -1709,7 +1830,11 @@ CTile *CTile::getTile(CONST STRING filename, CONST INT eMask, CONST RGBSHADE rgb
 	if (i != m_tiles.end())
 	{
 		CTile **itrTile = &*i;
-		if (itrTile) return *itrTile;
+
+		if (itrTile)
+		{
+			return *itrTile;
+		}
 	}
 
 	// Load the tile.
@@ -1741,6 +1866,7 @@ std::vector<CTile *>::iterator CTile::findCacheMatch(CONST STRING filename, CONS
 			}
 		}
 	}
+
 	return m_tiles.end();
 }
 
@@ -1776,6 +1902,7 @@ VOID CTile::clearTileCache(VOID)
 	{
 		delete *i;
 	}
+
 	m_tiles.clear();
 }
 
@@ -1795,12 +1922,14 @@ VOID CTile::drawBlankHdc(
 	
 	CONST BOOL bIsometric = coordType & (ISO_STACKED | ISO_ROTATED);
 	coords::tileToPixel(x, y, coordType, FALSE, brdSizeX);
+
 	if (bIsometric)
 	{
 		// tileToPixel() reports the centre of the tile.
 		x -= 32;
 		y -= 16;
 	}
+
 	x += pxOffsetX;
 	y += pxOffsetY;
 

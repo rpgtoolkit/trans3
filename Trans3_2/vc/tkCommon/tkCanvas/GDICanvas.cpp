@@ -1,16 +1,18 @@
 /*
  ********************************************************************
  * The RPG Toolkit, Version 3
- * This file copyright (C) 2007  Christopher Matthews & contributors
+ * This file copyright (C) 2007-2014 
+ *				- Christopher Matthews
  *
  * Contributors:
- *    - Colin James Fitzpatrick
- *    - Jonathan D. Hughes
+ *				- Colin James Fitzpatrick
+ *				- Jonathan D. Hughes
+ *				- Joshua Michael Daly
  ********************************************************************
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
+ * as published by the Free Software Foundation; either version 3
  * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -74,7 +76,6 @@ CCanvas::CCanvas(
 	m_hOldBitmap(NULL),
 	m_bInRam(FALSE)
 {
-
 	// First, create an equal sized canvas
 	CreateBlank(rhs.m_hdcMem, rhs.m_nWidth, rhs.m_nHeight, rhs.m_bUseDX);
 
@@ -103,7 +104,6 @@ CCanvas::CCanvas(
 
 	// HDC is not locked
 	m_hdcLocked = NULL;
-
 }
 
 //--------------------------------------------------------------------------
@@ -113,9 +113,11 @@ CCanvas &CCanvas::operator=(
 	CONST CCanvas &rhs
 		)
 {
-
 	// Destroy, if in use
-	if (m_hdcMem) Destroy();
+	if (m_hdcMem)
+	{
+		Destroy();
+	}
 
 	// First, create an equal sized canvas
 	CreateBlank(rhs.m_hdcMem, rhs.m_nWidth, rhs.m_nHeight, rhs.m_bUseDX);
@@ -123,7 +125,6 @@ CCanvas &CCanvas::operator=(
 	// Now blt the image over
 	if (rhs.m_bUseDX)
 	{
-
 		// Create rectangles
 		RECT destRect = {0, 0, m_nWidth, m_nHeight};
 		RECT rect = {0, 0, m_nWidth, m_nHeight};
@@ -135,7 +136,6 @@ CCanvas &CCanvas::operator=(
 
 		// Execute the blt
 		m_lpddsSurface->Blt(&destRect, rhs.m_lpddsSurface, &rect, DDBLT_WAIT | DDBLT_ROP, &bltFx);
-
 	}
 	else
 	{
@@ -387,6 +387,7 @@ SIZE FAST_CALL CCanvas::GetTextSize(
 		CONST HGDIOBJ hOld = SelectObject(hdc, hFont);
 
 		len = strlen(strText.c_str());
+
 		if (len)
 		{
 			GetTextExtentPoint32(hdc, strText.c_str(), len, &sz);
@@ -447,6 +448,7 @@ BOOL FAST_CALL CCanvas::DrawRect(
 	CloseDC(hdc);
 	DeleteObject(rgn);
 	DeleteObject(brush);
+
 	return TRUE;
 }
 
@@ -473,6 +475,7 @@ BOOL FAST_CALL CCanvas::DrawFilledRect(
 	DeleteObject(brush);
 	DeleteObject(pen);
 	CloseDC(hdc);
+
 	return TRUE;
 }
 
@@ -494,6 +497,7 @@ BOOL FAST_CALL CCanvas::DrawEllipse(
 	CloseDC(hdc);
 	DeleteObject(rgn);
 	DeleteObject(brush);
+
 	return TRUE;
 }
 
@@ -519,6 +523,7 @@ BOOL FAST_CALL CCanvas::DrawFilledEllipse(
 	DeleteObject(brush);
 	DeleteObject(pen);
 	CloseDC(hdc);
+
 	return TRUE;
 }
 
@@ -544,6 +549,7 @@ BOOL FAST_CALL CCanvas::DrawLine(
 	DeleteObject(brush);
 
 	CloseDC(hdc);
+
 	return TRUE;
 }
 
@@ -552,7 +558,6 @@ BOOL FAST_CALL CCanvas::DrawLine(
 //------------------------------------------------------------------------
 VOID FAST_CALL CCanvas::ClearScreen(CONST LONG crColor)
 {
-
 	// Open the screen's DC
 	CONST HDC hdc = OpenDC();
 
@@ -578,7 +583,6 @@ VOID FAST_CALL CCanvas::ClearScreen(CONST LONG crColor)
 
 	// Close the dc
 	CloseDC(hdc);
-
 }
 
 //--------------------------------------------------------------------------
@@ -586,12 +590,14 @@ VOID FAST_CALL CCanvas::ClearScreen(CONST LONG crColor)
 //--------------------------------------------------------------------------
 COLORREF FAST_CALL CCanvas::matchColor(CONST COLORREF rgb) CONST
 {
-
 	// Map of colours
 	STATIC std::map<COLORREF, COLORREF> colors;
 
 	// Just return colour if in map
-	if (colors.count(rgb)) return colors[rgb];
+	if (colors.count(rgb))
+	{
+		return colors[rgb];
+	}
 
 	// Lay down a pixel
 	HDC hdc = NULL;
@@ -603,7 +609,11 @@ COLORREF FAST_CALL CCanvas::matchColor(CONST COLORREF rgb) CONST
 	// Lock the surface
 	DDSURFACEDESC2 ddsd;
 	DD_INIT_STRUCT(ddsd);
-	while ((m_lpddsSurface->Lock(NULL, &ddsd, 0, NULL)) == DDERR_WASSTILLDRAWING);
+
+	while ((m_lpddsSurface->Lock(NULL, &ddsd, 0, NULL)) == DDERR_WASSTILLDRAWING)
+	{
+
+	}
 
 	// Get the colour that was actually set
 	COLORREF toRet = *reinterpret_cast<LPCOLORREF>(ddsd.lpSurface);
@@ -612,6 +622,7 @@ COLORREF FAST_CALL CCanvas::matchColor(CONST COLORREF rgb) CONST
 		// Reduce if colour is less than 32 bit
 		toRet &= (1 << ddsd.ddpfPixelFormat.dwRGBBitCount) - 1;
 	}
+
 	m_lpddsSurface->Unlock(NULL);
 
 	// Set back old pixel
@@ -634,9 +645,11 @@ VOID FAST_CALL CCanvas::CreateBlank(
 	CONST BOOL bDX
 		)
 {
-
 	// Destroy existing canvas
-	if (m_hdcMem || m_lpddsSurface) Destroy();
+	if (m_hdcMem || m_lpddsSurface)
+	{
+		Destroy();
+	}
 
 	// Record width and height
 	m_nWidth = width;
@@ -646,24 +659,18 @@ VOID FAST_CALL CCanvas::CreateBlank(
 	extern CDirectDraw *g_pDirectDraw;
 	if (g_pDirectDraw)
 	{
-
 		// If using DirectX
 		if (m_bUseDX = bDX)
 		{
-
 			// Create a DirectDraw surface
 			m_lpddsSurface = g_pDirectDraw->createSurface(width, height, &m_bInRam);
 			return;
-
 		}
-
 	}
 	else
 	{
-
 		// Not using DX
 		m_bUseDX = FALSE;
-
 	}
 
 	// Create a new device context
@@ -677,7 +684,6 @@ VOID FAST_CALL CCanvas::CreateBlank(
 
 	// Set StretchBlt mode
 	SetStretchBltMode(m_hdcMem, COLORONCOLOR);
-
 }
 
 //--------------------------------------------------------------------------
@@ -699,11 +705,9 @@ VOID FAST_CALL CCanvas::Resize(
 //--------------------------------------------------------------------------
 INLINE VOID CCanvas::Destroy(VOID)
 {
-
 	// If using GDI
 	if (!(usingDX()))
 	{
-
 		// Select out current bitmap
 		SelectObject(m_hdcMem, m_hOldBitmap);
 
@@ -712,7 +716,6 @@ INLINE VOID CCanvas::Destroy(VOID)
 
 		// Delete the DC
 		DeleteDC(m_hdcMem);
-
 	}
 	else if (m_lpddsSurface)
 	{
@@ -727,7 +730,6 @@ INLINE VOID CCanvas::Destroy(VOID)
 	m_lpddsSurface = NULL;
 	m_nWidth = 0;
 	m_nHeight = 0;
-
 }
 
 //--------------------------------------------------------------------------
@@ -770,6 +772,7 @@ INT FAST_CALL CCanvas::GetPixel(
 	CONST HDC hdc = OpenDC();
 	CONST INT nToRet = ::GetPixel(hdc, x, y);
 	CloseDC(hdc);
+
 	return nToRet;
 }
 
@@ -794,6 +797,7 @@ INT FAST_CALL CCanvas::BltPart(
 	CONST HDC hdc = OpenDC();
 	CONST INT nToRet = BitBlt(hdcTarget, x, y, width, height, hdc, xSrc, ySrc, lRasterOp);
 	CloseDC(hdc);
+
 	return nToRet;
 }
 
@@ -811,7 +815,6 @@ INT FAST_CALL CCanvas::BltPart(
 	CONST LONG lRasterOp
 		) CONST
 {
-
 	if (x < 0)
 	{
 		xSrc -= x;
@@ -847,9 +850,9 @@ INT FAST_CALL CCanvas::BltPart(
 		CONST HDC hdc = pCanvas->OpenDC();
 		CONST INT nToRet = BltPart(hdc, x, y, xSrc, ySrc, width, height, lRasterOp);
 		pCanvas->CloseDC(hdc);
+
 		return nToRet;
 	}
-
 }
 
 //
@@ -880,8 +883,8 @@ INT FAST_CALL CCanvas::BltPart(
 		DDBLTFX bltFx;
 		DD_INIT_STRUCT(bltFx);
 		bltFx.dwROP = lRasterOp;
-		return SUCCEEDED(lpddsSurface->BltFast(x, y, GetDXSurface(), &rect, DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY));
 
+		return SUCCEEDED(lpddsSurface->BltFast(x, y, GetDXSurface(), &rect, DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY));
 	}
 	else if (lpddsSurface)
 	{
@@ -890,12 +893,12 @@ INT FAST_CALL CCanvas::BltPart(
 		lpddsSurface->GetDC(&hdc);
 		CONST INT nToRet = BltPart(hdc, x, y, xSrc, ySrc, width, height, lRasterOp);
 		lpddsSurface->ReleaseDC(hdc);
+
 		return nToRet;
 	}
 
 	// Else, we've failed
 	return FALSE;
-
 }
 
 #if FALSE
@@ -1028,16 +1031,11 @@ INT FAST_CALL CCanvas::BltStretch(
 	CONST BOOL bInRam
 		) CONST
 {
-
 	// If using DirectX
-	if	(
-			lpddsSurface &&
-			usingDX() //&&
-			//g_pDirectDraw->supportsRop(lRasterOp, m_bInRam, bInRam)
-		)
+	if (lpddsSurface && usingDX())
 	{
-
 		SetSrcColorKey(TRANSP_COLOR);
+
 		// Setup the rects
 		RECT destRect = {x, y, x + newWidth, y + newHeight};
 		RECT rect = {xSrc, ySrc, xSrc + width, ySrc + height};
@@ -1047,24 +1045,23 @@ INT FAST_CALL CCanvas::BltStretch(
 		DD_INIT_STRUCT(bltFx);
 		bltFx.dwROP = lRasterOp;
 		CheckSurfaces();
-		CONST HRESULT hr = lpddsSurface->Blt(&destRect, GetDXSurface(), &rect, DDBLT_WAIT | DDBLT_ROP | DDBLT_KEYSRCOVERRIDE, &bltFx);
+		CONST HRESULT hr = lpddsSurface->Blt(&destRect, GetDXSurface(), 
+			&rect, DDBLT_WAIT | DDBLT_ROP | DDBLT_KEYSRCOVERRIDE, &bltFx);
 
 		// If there was an error
 		if (FAILED(hr))
 		{
-
 			// Fall back to GDI
 			HDC hdc = NULL;
 			lpddsSurface->GetDC(&hdc);
 			CONST INT nToRet = BltStretch(hdc, x, y, xSrc, ySrc, width, height, newWidth, newHeight, lRasterOp);
 			lpddsSurface->ReleaseDC(hdc);
-			return nToRet;
 
+			return nToRet;
 		}
 
 		// All's good
 		return TRUE;
-
 	}
 	else if (lpddsSurface)
 	{
@@ -1073,12 +1070,12 @@ INT FAST_CALL CCanvas::BltStretch(
 		lpddsSurface->GetDC(&hdc);
 		CONST INT nToRet = BltStretch(hdc, x, y, xSrc, ySrc, width, height, newWidth, newHeight, lRasterOp);
 		lpddsSurface->ReleaseDC(hdc);
+
 		return nToRet;
 	}
 
 	// Else, we've failed
 	return FALSE;
-
 }
 
 //
@@ -1097,12 +1094,11 @@ INT FAST_CALL CCanvas::BltStretch(
 	CONST LONG lRasterOp
 		) CONST
 {
-
 	CONST HDC srcHdc = OpenDC();
 	CONST INT toRet = StretchBlt(hdc, x, y, newWidth, newHeight, srcHdc, xSrc, ySrc, width, height, lRasterOp);
 	CloseDC(srcHdc);
-	return toRet;
 
+	return toRet;
 }
 
 //
@@ -1121,25 +1117,21 @@ INT FAST_CALL CCanvas::BltStretch(
 	CONST LONG lRasterOp
 		) CONST
 {
-
 	if (cnv->usingDX())
 	{
-
 		// Use DirectX
-		return BltStretch(cnv->GetDXSurface(), x, y, xSrc, ySrc, width, height, newWidth, newHeight, lRasterOp, cnv->m_bInRam);
-
+		return BltStretch(cnv->GetDXSurface(), x, y, xSrc, ySrc, width, height, 
+			newWidth, newHeight, lRasterOp, cnv->m_bInRam);
 	}
 	else
 	{
-
 		// Use GDI
 		CONST HDC hdc = cnv->OpenDC();
 		CONST INT toRet = BltStretch(hdc, x, y, xSrc, ySrc, width, height, newWidth, newHeight, lRasterOp);
 		cnv->CloseDC(hdc);
+
 		return toRet;
-
 	}
-
 }
 
 //
@@ -1203,6 +1195,7 @@ BOOL FAST_CALL CCanvas::BltStretchMask(
 		cnvMask->BltStretch(cnvTarget, x, y, xSrc, ySrc, width, height, newWidth, newHeight, SRCAND);
 		this->BltStretch(cnvTarget, x, y, xSrc, ySrc, width, height, newWidth, newHeight, SRCPAINT);
 	}
+
 	return TRUE;
 }
 
@@ -1305,6 +1298,7 @@ INT FAST_CALL CCanvas::BltTransparentPart(
 	CONST HDC hdc = OpenDC();
 	CONST INT nToRet = TransparentBlt(hdcTarget, x, y, width, height, hdc, xSrc, ySrc, width, height, crTransparentColor);
 	CloseDC(hdc);
+
 	return nToRet;
 }
 
@@ -1322,7 +1316,6 @@ INT FAST_CALL CCanvas::BltTransparentPart(
 	LONG crTransparentColor
 		) CONST
 {
-
 	if (x < 0)
 	{
 		xSrc -= x;
@@ -1360,7 +1353,6 @@ INT FAST_CALL CCanvas::BltTransparentPart(
 		pCanvas->CloseDC(hdc);
 		return nToRet;
 	}
-
 }
 
 //
@@ -1377,11 +1369,9 @@ INT FAST_CALL CCanvas::BltTransparentPart(
 	CONST LONG crTransparentColor
 		) CONST
 {
-
 	// If using DirectX
 	if (lpddsSurface &&usingDX())
 	{
-
 		// Obtain RGB color
 		CONST LONG rgb = matchColor(crTransparentColor);
 
@@ -1395,8 +1385,8 @@ INT FAST_CALL CCanvas::BltTransparentPart(
 
 		// Execute the blt
 		CheckSurfaces();
-		return SUCCEEDED(lpddsSurface->BltFast(x, y, this->GetDXSurface(), &rect, DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY));
 
+		return SUCCEEDED(lpddsSurface->BltFast(x, y, this->GetDXSurface(), &rect, DDBLTFAST_WAIT | DDBLTFAST_SRCCOLORKEY));
 	}
 	else if (lpddsSurface)
 	{
@@ -1405,12 +1395,12 @@ INT FAST_CALL CCanvas::BltTransparentPart(
 		lpddsSurface->GetDC(&hdc);
 		CONST INT nToRet = BltTransparentPart(hdc, x, y, xSrc, ySrc, width, height, crTransparentColor);
 		lpddsSurface->ReleaseDC(hdc);
+
 		return nToRet;
 	}
 
 	// If here, we've failed
 	return FALSE;
-
 }
 
 //--------------------------------------------------------------------------
@@ -1429,7 +1419,6 @@ INT FAST_CALL CCanvas::BltTranslucent(
 	CONST LONG crTransparentColor
 		) CONST
 {
-
 	// GDI translucent blts are way too slow - don't do it
 	if (crTransparentColor == -1)
 	{
@@ -1441,7 +1430,6 @@ INT FAST_CALL CCanvas::BltTranslucent(
 		// Blt transp
 		return BltTransparent(hdcTarget, x, y, crTransparentColor);
 	}
-
 }
 
 //
@@ -1456,7 +1444,6 @@ INT FAST_CALL CCanvas::BltTranslucent(
 	CONST LONG crTransparentColor
 		) CONST
 {
-
 	// If using DirectX
 	if (pCanvas->usingDX() && usingDX())
 	{
@@ -1469,9 +1456,9 @@ INT FAST_CALL CCanvas::BltTranslucent(
 		CONST HDC hdc = pCanvas->OpenDC();
 		CONST INT nToRet = BltTranslucent(hdc, x, y, dIntensity, crUnaffectedColor, crTransparentColor);
 		pCanvas->CloseDC(hdc);
+
 		return nToRet;
 	}
-
 }
 
 //
@@ -1486,7 +1473,6 @@ INT CCanvas::BltTranslucent(
 	CONST LONG crTransparentColor
 		) CONST
 {
-
 	// Use the partial blitter
 	return BltTranslucentPart(
 		lpddsSurface,
@@ -1494,7 +1480,6 @@ INT CCanvas::BltTranslucent(
 		m_nWidth, m_nHeight,
 		dIntensity, crUnaffectedColor, crTransparentColor
 	);
-
 }
 
 //
@@ -1513,7 +1498,6 @@ INT FAST_CALL CCanvas::BltTranslucentPart(
 	CONST LONG crTransparentColor
 		) CONST
 {
-
 	// GDI translucent blts are way too slow - don't do it
 	if (crTransparentColor == -1)
 	{
@@ -1525,7 +1509,6 @@ INT FAST_CALL CCanvas::BltTranslucentPart(
 		// Blt transp
 		return BltTransparent(hdcTarget, x, y, crTransparentColor);
 	}
-
 }
 
 //
@@ -1544,7 +1527,6 @@ INT FAST_CALL CCanvas::BltTranslucentPart(
 	CONST LONG crTransparentColor
 		) CONST
 {
-
 	if (pCanvas->usingDX() && usingDX())
 	{
 		// Blt using DirectX
@@ -1566,9 +1548,9 @@ INT FAST_CALL CCanvas::BltTranslucentPart(
 			dIntensity, crUnaffectedColor, crTransparentColor
 		);
 		pCanvas->CloseDC(hdc);
+
 		return toRet;
 	}
-
 }
 
 //
@@ -1587,7 +1569,6 @@ INT FAST_CALL CCanvas::BltTranslucentPart(
 	CONST LONG crTransparentColor
 		) CONST
 {
-
 	// If we have a valid surface ptr and we're using DirectX
 	if (lpddsSurface && usingDX())
 	{
@@ -1611,13 +1592,11 @@ INT FAST_CALL CCanvas::BltTranslucentPart(
 
 		if (FAILED(hr))
 		{
-
 			// Unlock destination surface
 			lpddsSurface->Unlock(NULL);
 
 			// Failed
 			return FALSE;
-
 		}
 
 		// Obtain the pixel format
@@ -1630,11 +1609,9 @@ INT FAST_CALL CCanvas::BltTranslucentPart(
 		// Switch on pixel format
 		switch (ddpfDest.dwRGBBitCount)
 		{
-
 			// 32-bit color depth
 			case 32:
 			{
-
 				// Calculate pixels per row
 				CONST INT nDestPixelsPerRow = destSurface.lPitch / (ddpfDest.dwRGBBitCount / 8);
 				CONST INT nSrcPixelsPerRow = srcSurface.lPitch / (ddpfDest.dwRGBBitCount / 8);
@@ -1654,7 +1631,6 @@ INT FAST_CALL CCanvas::BltTranslucentPart(
 					// For the x axis
 					for (INT xx = 0; xx < width; xx++)
 					{
-
 						// Obtain a pixel in RGB format
 						CONST LONG srcRGB = ConvertDDColor(pSurfSrc[idx], &ddpfDest);
 
@@ -1668,7 +1644,6 @@ INT FAST_CALL CCanvas::BltTranslucentPart(
 						// Check for opaque color
 						else if (srcRGB != crTransparentColor)
 						{
-
 							// Obtain destination RGB
 							CONST LONG destRGB = ConvertDDColor(pSurfDest[idxd], &ddpfDest);
 
@@ -1679,47 +1654,45 @@ INT FAST_CALL CCanvas::BltTranslucentPart(
 
 							// Lay down translucently
 							pSurfDest[idxd] = ConvertColorRef(RGB(r, g, b), &ddpfDest);
-
 						}
 
 						// Increment position on surfaces
 						idx++;
 						idxd++;
-
 					} // x axis
 				} // y axis
-			} break; // 32 bit blt
-
+			} 
+			break; // 32 bit blt
 			// 24 bit color depth
 			case 24:
 			{
-
 				// Modify RGB params by setting and getting a pixel
 				CONST LONG crTemp = GetRGBPixel(&srcSurface, &ddpfDest, 1, 1);
 				LONG rgbUnaffectedColor = -1, rgbTransparentColor = -1;
+
 				if (crUnaffectedColor != -1)
 				{
 					// Modify unaffected color
 					SetRGBPixel(&srcSurface, &ddpfDest, 1, 1, crUnaffectedColor);
 					rgbUnaffectedColor = GetRGBPixel(&srcSurface, &ddpfDest, 1, 1);
 				}
+
 				if (crTransparentColor != -1)
 				{
 					// Modify transparent color
 					SetRGBPixel(&srcSurface, &ddpfDest, 1, 1, crTransparentColor);
 					rgbTransparentColor = GetRGBPixel(&srcSurface, &ddpfDest, 1, 1);
 				}
+
 				// Set back down pixel
 				SetRGBPixel(&srcSurface, &ddpfDest, 1, 1, crTemp);
 
 				// For the y axis
 				for (INT yy = 0; yy < height; yy++)
 				{
-
 					// For the x axis
 					for (INT xx = 0; xx < width; xx++)
 					{
-
 						// Get pixel on source surface
 						CONST LONG srcRGB = GetRGBPixel(&srcSurface, &ddpfDest, xSrc + xx, ySrc + yy);
 
@@ -1733,7 +1706,6 @@ INT FAST_CALL CCanvas::BltTranslucentPart(
 						// If color is not transparent
 						else if (srcRGB != rgbTransparentColor)
 						{
-
 							// Obtain destination pixel
 							CONST LONG destRGB = GetRGBPixel(&destSurface, &ddpfDest, xx + x, yy + y);
 
@@ -1744,17 +1716,15 @@ INT FAST_CALL CCanvas::BltTranslucentPart(
 
 							// Set the pixel
 							SetRGBPixel(&destSurface, &ddpfDest, x + xx, y + yy, RGB(r, g, b));
-
 						}
 
 					} // x axis
 				} // y axis
-			} break; // 24 bit blt
-
+			} 
+			break; // 24 bit blt
 			// 16 bit color depth
 			case 16:
 			{
-
 				// Calculate pixels per row
 				CONST INT nDestPixelsPerRow = destSurface.lPitch / (ddpfDest.dwRGBBitCount / 8);
 				CONST INT nSrcPixelsPerRow = srcSurface.lPitch / (ddpfDest.dwRGBBitCount / 8);
@@ -1766,7 +1736,6 @@ INT FAST_CALL CCanvas::BltTranslucentPart(
 				// For the y axis
 				for (INT yy = 0; yy < height; yy++)
 				{
-
 					// Calculate index into destination and source, respectively
 					INT idxd = (yy + y) * nDestPixelsPerRow + x;
 					INT idx = (yy + ySrc) * nSrcPixelsPerRow + xSrc;
@@ -1774,7 +1743,6 @@ INT FAST_CALL CCanvas::BltTranslucentPart(
 					// For the x axis
 					for (INT xx = 0; xx < width; xx++)
 					{
-
 						// Obtain a pixel in RGB format
 						CONST LONG srcRGB = ConvertDDColor(pSurfSrc[idx], &ddpfDest);
 
@@ -1788,7 +1756,6 @@ INT FAST_CALL CCanvas::BltTranslucentPart(
 						// Check for opaque color
 						else if (srcRGB != crTransparentColor)
 						{
-
 							// Obtain destination RGB
 							CONST LONG destRGB = ConvertDDColor(pSurfDest[idxd], &ddpfDest);
 
@@ -1799,7 +1766,6 @@ INT FAST_CALL CCanvas::BltTranslucentPart(
 
 							// Lay down translucently
 							pSurfDest[idxd] = ConvertColorRef(RGB(r, g, b), &ddpfDest);
-
 						}
 
 						// Increment position on surfaces
@@ -1808,12 +1774,11 @@ INT FAST_CALL CCanvas::BltTranslucentPart(
 
 					} // x axis
 				} // y axis
-			} break; // 16 bit blt
-
+			} 
+			break; // 16 bit blt
 			// Unsupported color depth
 			default:
 			{
-
 				// Unlock surfaces
 				GetDXSurface()->Unlock(NULL);
 				lpddsSurface->Unlock(NULL);
@@ -1829,9 +1794,8 @@ INT FAST_CALL CCanvas::BltTranslucentPart(
 					// Else, do transp blt
 					return BltTransparent(lpddsSurface, x, y, crTransparentColor);
 				}
-
-			} break;
-
+			} 
+			break;
 		} // Color depth switch
 
 		// Unlock the surfaces
@@ -1840,12 +1804,9 @@ INT FAST_CALL CCanvas::BltTranslucentPart(
 
 		// All's good
 		return TRUE;
-
 	} // Can use DirectX
-
 	else if (lpddsSurface)
 	{
-
 		// Not using DirectX, but we have a surface
 		HDC hdc = 0;
 		lpddsSurface->GetDC(&hdc);
@@ -1856,12 +1817,10 @@ INT FAST_CALL CCanvas::BltTranslucentPart(
 
 		// Return the result
 		return nToRet;
-
 	}
 
 	// If we made it here, we failed
 	return FALSE;
-
 }
 
 //------------------------------------------------------------------------
@@ -1873,6 +1832,7 @@ BOOL FAST_CALL CCanvas::CheckSurfaces(
 {
 	// Check the primary surface
 	BOOL ret = false;
+
 	if (m_lpddsSurface)
 	{
 		if (m_lpddsSurface->IsLost() == DDERR_SURFACELOST)
@@ -1881,6 +1841,7 @@ BOOL FAST_CALL CCanvas::CheckSurfaces(
 			ret = true;
 		}
 	}
+
 	return ret;
 }
 
@@ -1891,7 +1852,6 @@ INT FAST_CALL CCanvas::ShiftLeft(
 	CONST INT nPixels
 		)
 {
-
 	// If using DirectX
 	if (usingDX())
 	{
@@ -1910,7 +1870,6 @@ INT FAST_CALL CCanvas::ShiftLeft(
 
 		// Execute the blt
 		return SUCCEEDED(GetDXSurface()->Blt(&destRect, temp.GetDXSurface(), &rect, DDBLT_WAIT | DDBLT_ROP, &bltFx));
-
 	}
 	else
 	{
@@ -1918,12 +1877,12 @@ INT FAST_CALL CCanvas::ShiftLeft(
 		CONST HDC hdcMe = OpenDC();
 		CONST INT nToRet = BitBlt(hdcMe, -nPixels, 0, GetWidth(), GetHeight(), hdcMe, 0, 0, SRCCOPY);
 		CloseDC(hdcMe);
+
 		return nToRet;
 	}
 
 	// If here, we've failed
 	return FALSE;
-
 }
 
 //--------------------------------------------------------------------------
@@ -1933,7 +1892,6 @@ INT FAST_CALL CCanvas::ShiftRight(
 	CONST INT nPixels
 		)
 {
-
 	// If using DirectX
 	if (usingDX())
 	{
@@ -1965,7 +1923,6 @@ INT FAST_CALL CCanvas::ShiftRight(
 
 	// If here, we've failed
 	return FALSE;
-
 }
 
 //--------------------------------------------------------------------------
@@ -1975,11 +1932,9 @@ INT FAST_CALL CCanvas::ShiftUp(
 	CONST INT nPixels
 		)
 {
-
 	// If using DirectX
 	if (usingDX())
 	{
-
 		// Create a copy of this canvas
 		CONST CCanvas temp = *this;
 
@@ -1994,7 +1949,6 @@ INT FAST_CALL CCanvas::ShiftUp(
 
 		// Execute the blt
 		return SUCCEEDED(GetDXSurface()->Blt(&destRect, temp.GetDXSurface(), &rect, DDBLT_WAIT | DDBLT_ROP, &bltFx));
-
 	}
 	else
 	{
@@ -2007,7 +1961,6 @@ INT FAST_CALL CCanvas::ShiftUp(
 
 	// If here, we've failed
 	return FALSE;
-
 }
 
 //--------------------------------------------------------------------------
@@ -2017,11 +1970,9 @@ INT FAST_CALL CCanvas::ShiftDown(
 	CONST INT nPixels
 		)
 {
-
 	// If using DirectX
 	if (usingDX())
 	{
-
 		// Create a copy of this canvas
 		CONST CCanvas temp = *this;
 
@@ -2036,7 +1987,6 @@ INT FAST_CALL CCanvas::ShiftDown(
 
 		// Execute the blt
 		return SUCCEEDED(GetDXSurface()->Blt(&destRect, temp.GetDXSurface(), &rect, DDBLT_WAIT | DDBLT_ROP, &bltFx));
-
 	}
 	else
 	{
@@ -2049,7 +1999,6 @@ INT FAST_CALL CCanvas::ShiftDown(
 
 	// If here, we've failed
 	return FALSE;
-
 }
 
 //
@@ -2095,13 +2044,11 @@ INT FAST_CALL CCanvas::BltAdditivePart(
 
 	if (FAILED(hr))
 	{
-
 		// Unlock destination surface
 		lpddsSurface->Unlock(NULL);
 
 		// Failed
 		return FALSE;
-
 	}
 
 	// Obtain the pixel format
@@ -2114,11 +2061,9 @@ INT FAST_CALL CCanvas::BltAdditivePart(
 	// Switch on pixel format
 	switch (ddpfDest.dwRGBBitCount)
 	{
-
 		// 32-bit color depth
 		case 32:
 		{
-
 			// Calculate pixels per row
 			CONST INT nDestPixelsPerRow = destSurface.lPitch / (ddpfDest.dwRGBBitCount / 8);
 			CONST INT nSrcPixelsPerRow = srcSurface.lPitch / (ddpfDest.dwRGBBitCount / 8);
@@ -2130,7 +2075,6 @@ INT FAST_CALL CCanvas::BltAdditivePart(
 			// For the y axis
 			for (INT yy = 0; yy < height; ++yy)
 			{
-
 				// Calculate index into destination and source, respectively
 				INT idxd = (yy + y) * nDestPixelsPerRow + x;
 				INT idx = (yy + ySrc) * nSrcPixelsPerRow + xSrc;
@@ -2138,7 +2082,6 @@ INT FAST_CALL CCanvas::BltAdditivePart(
 				// For the x axis
 				for (INT xx = 0; xx < width; ++xx)
 				{
-
 					// Obtain a pixel in RGB format
 					CONST LONG srcRGB = ConvertDDColor(pSurfSrc[idx], &ddpfDest);
 
@@ -2151,7 +2094,6 @@ INT FAST_CALL CCanvas::BltAdditivePart(
 						// Directly copy
 						pSurfDest[idxd] = ConvertColorRef(srcRGB, &ddpfDest);
 					}
-
 					// Check for opaque color
 					else if (destRGB != crTransparentColor)
 					{
@@ -2170,41 +2112,40 @@ INT FAST_CALL CCanvas::BltAdditivePart(
 					// Increment position on surfaces
 					++idx;
 					++idxd;
-
 				} // x axis
 			} // y axis
-		} break; // 32 bit blt
-
+		} 
+		break; // 32 bit blt
 		// 24 bit color depth
 		case 24:
 		{
-
 			// Modify RGB params by setting and getting a pixel
 			CONST LONG crTemp = GetRGBPixel(&srcSurface, &ddpfDest, 1, 1);
 			LONG rgbUnaffectedColor = -1, rgbTransparentColor = -1;
+
 			if (crUnaffectedColor != -1)
 			{
 				// Modify unaffected color
 				SetRGBPixel(&srcSurface, &ddpfDest, 1, 1, crUnaffectedColor);
 				rgbUnaffectedColor = GetRGBPixel(&srcSurface, &ddpfDest, 1, 1);
 			}
+
 			if (crTransparentColor != -1)
 			{
 				// Modify transparent color
 				SetRGBPixel(&srcSurface, &ddpfDest, 1, 1, crTransparentColor);
 				rgbTransparentColor = GetRGBPixel(&srcSurface, &ddpfDest, 1, 1);
 			}
+
 			// Set back down pixel
 			SetRGBPixel(&srcSurface, &ddpfDest, 1, 1, crTemp);
 
 			// For the y axis
 			for (INT yy = 0; yy < height; ++yy)
 			{
-
 				// For the x axis
 				for (INT xx = 0; xx < width; ++xx)
 				{
-
 					// Get pixel on source surface
 					CONST LONG srcRGB = GetRGBPixel(&srcSurface, &ddpfDest, xSrc + xx, ySrc + yy);
 
@@ -2217,11 +2158,9 @@ INT FAST_CALL CCanvas::BltAdditivePart(
 						// Just copy over
 						SetRGBPixel(&destSurface, &ddpfDest, x + xx, y + yy, srcRGB);
 					}
-
 					// If color is not transparent
 					else if (destRGB != rgbTransparentColor)
 					{
-
 						// Calculate new rgb color
 						CONST LONG r = GetRValue(srcRGB) * percent + GetRValue(destRGB);
 						CONST LONG g = GetGValue(srcRGB) * percent + GetGValue(destRGB);
@@ -2230,17 +2169,14 @@ INT FAST_CALL CCanvas::BltAdditivePart(
 						// Set the pixel
 						CONST LONG res = RGB(BOUND(r), BOUND(g), BOUND(b));
 						SetRGBPixel(&destSurface, &ddpfDest, x + xx, y + yy, res);
-
 					}
-
 				} // x axis
 			} // y axis
-		} break; // 24 bit blt
-
+		} 
+		break; // 24 bit blt
 		// 16 bit color depth
 		case 16:
 		{
-
 			// Calculate pixels per row
 			CONST INT nDestPixelsPerRow = destSurface.lPitch / (ddpfDest.dwRGBBitCount / 8);
 			CONST INT nSrcPixelsPerRow = srcSurface.lPitch / (ddpfDest.dwRGBBitCount / 8);
@@ -2252,7 +2188,6 @@ INT FAST_CALL CCanvas::BltAdditivePart(
 			// For the y axis
 			for (INT yy = 0; yy < height; ++yy)
 			{
-
 				// Calculate index into destination and source, respectively
 				INT idxd = (yy + y) * nDestPixelsPerRow + x;
 				INT idx = (yy + ySrc) * nSrcPixelsPerRow + xSrc;
@@ -2260,12 +2195,11 @@ INT FAST_CALL CCanvas::BltAdditivePart(
 				// For the x axis
 				for (INT xx = 0; xx < width; ++xx)
 				{
-
 					// Obtain a pixel in RGB format
 					CONST LONG srcRGB = ConvertDDColor(pSurfSrc[idx], &ddpfDest);
 
-						// Obtain destination RGB
-						CONST LONG destRGB = ConvertDDColor(pSurfDest[idxd], &ddpfDest);
+					// Obtain destination RGB
+					CONST LONG destRGB = ConvertDDColor(pSurfDest[idxd], &ddpfDest);
 
 					// Check for unaffected color
 					if (srcRGB == crUnaffectedColor)
@@ -2273,11 +2207,9 @@ INT FAST_CALL CCanvas::BltAdditivePart(
 						// Directly copy
 						pSurfDest[idxd] = ConvertColorRef(srcRGB, &ddpfDest);
 					}
-
 					// Check for opaque color
 					else if (destRGB != crTransparentColor)
 					{
-
 						// Calculate translucent rgb value
 						CONST LONG r = GetRValue(srcRGB) * percent + GetRValue(destRGB);
 						CONST LONG g = GetGValue(srcRGB) * percent + GetGValue(destRGB);
@@ -2285,21 +2217,18 @@ INT FAST_CALL CCanvas::BltAdditivePart(
 
 						CONST LONG res = RGB(BOUND(r), BOUND(g), BOUND(b));
 						pSurfDest[idxd] = ConvertColorRef(res, &ddpfDest);
-
 					}
 
 					// Increment position on surfaces
 					++idx;
 					++idxd;
-
 				} // x axis
 			} // y axis
-		} break; // 16 bit blt
-
+		} 
+		break; // 16 bit blt
 		// Unsupported color depth
 		default:
 		{
-
 			// Unlock surfaces
 			GetDXSurface()->Unlock(NULL);
 			lpddsSurface->Unlock(NULL);
@@ -2315,9 +2244,8 @@ INT FAST_CALL CCanvas::BltAdditivePart(
 				// Else, do transp blt
 				return BltTransparent(lpddsSurface, x, y, crTransparentColor);
 			}
-
-		} break;
-
+		} 
+		break;
 	} // Color depth switch
 
 	// Unlock the surfaces
@@ -2326,7 +2254,6 @@ INT FAST_CALL CCanvas::BltAdditivePart(
 
 	// All's good
 	return TRUE;
-
 }
 
 //--------------------------------------------------------------------------
@@ -2336,12 +2263,12 @@ INLINE LONG CCanvas::GetSurfaceColor(
 	CONST LONG dxColor
 		) CONST
 {
-
 	if (usingDX())
 	{
 		DDPIXELFORMAT ddpf;
 		DD_INIT_STRUCT(ddpf);
 		GetDXSurface()->GetPixelFormat(&ddpf);
+
 		return ConvertDDColor(dxColor, &ddpf);
 	}
 	else
@@ -2349,7 +2276,6 @@ INLINE LONG CCanvas::GetSurfaceColor(
 		// GDI already uses RGB
 		return dxColor;
 	}
-
 }
 
 //--------------------------------------------------------------------------
@@ -2369,6 +2295,7 @@ HDC CCanvas::OpenDC(VOID) CONST
 		m_lpddsSurface->GetDC(&toRet);
 		// Lock is implicit -- DC will not be consistent
 		SetStretchBltMode(toRet, COLORONCOLOR);
+
 		return toRet;
 	}
 	else
@@ -2414,7 +2341,6 @@ INLINE COLORREF CCanvas::ConvertDDColor(
 	dwBlue /= pddpf->dwBBitMask;
 
 	return RGB(dwRed, dwGreen, dwBlue);
-
 }
 
 //--------------------------------------------------------------------------
@@ -2425,7 +2351,6 @@ INLINE DWORD CCanvas::ConvertColorRef(
 	CONST LPDDPIXELFORMAT pddpf
 		)
 {
-
 	DWORD dwRed = GetRValue(crColor);
 	DWORD dwGreen = GetGValue(crColor);
 	DWORD dwBlue = GetBValue(crColor);
@@ -2442,7 +2367,6 @@ INLINE DWORD CCanvas::ConvertColorRef(
 	dwBlue &= pddpf->dwBBitMask;
 
 	return (dwRed | dwGreen | dwBlue);
-
 }
 
 //--------------------------------------------------------------------------
@@ -2453,11 +2377,13 @@ INLINE WORD CCanvas::GetNumberOfBits(
 		)
 {
     WORD wBits = 0;
+
     while (dwMask)
     {
         dwMask &= (dwMask - 1);
         wBits++;
     }
+
     return wBits;
 }
 
@@ -2469,7 +2395,11 @@ INLINE WORD CCanvas::GetMaskPos(
 		)
 {
     WORD wPos = 0;
-    while (!(dwMask & (1 << wPos))) wPos++;
+    while (!(dwMask & (1 << wPos)))
+	{
+		wPos++;
+	}
+
     return wPos;
 }
 
@@ -2511,14 +2441,12 @@ INLINE LONG CCanvas::GetRGBPixel(
 	CONST WORD wRBits = GetNumberOfBits(pddpf->dwRBitMask);
 	CONST WORD wGBits = GetNumberOfBits(pddpf->dwGBitMask);
 	CONST WORD wBBits = GetNumberOfBits(pddpf->dwBBitMask);
-	//CONST WORD wRPos = GetMaskPos(pddpf->dwRBitMask);
-	//CONST WORD wGPos = GetMaskPos(pddpf->dwGBitMask);
-	//CONST WORD wBPos = GetMaskPos(pddpf->dwBBitMask);
 	CONST DWORD offset = y * destSurface->lPitch + x * (pddpf->dwRGBBitCount >> 3);
 	CONST DWORD pixel = *((LPDWORD)((DWORD)destSurface->lpSurface + offset));
 	CONST BYTE r = (pixel & pddpf->dwRBitMask) << (8 - wRBits);
 	CONST BYTE g = (pixel & pddpf->dwGBitMask) << (8 - wGBits);
 	CONST BYTE b = (pixel & pddpf->dwBBitMask) << (8 - wBBits);
+
 	return RGB(r, g, b);
 }
 
@@ -2532,8 +2460,11 @@ VOID CCanvas::EmulateGamma()
 	DDSURFACEDESC2 ddsd;
 	DD_INIT_STRUCT(ddsd);
 	HRESULT hr = m_lpddsSurface->Lock(NULL, &ddsd, DDLOCK_SURFACEMEMORYPTR | DDLOCK_NOSYSLOCK | DDLOCK_WAIT, NULL);
+
 	if (FAILED(hr))
+	{
 		return;
+	}
 
 	DDPIXELFORMAT ddpf;
 	DD_INIT_STRUCT(ddpf);
@@ -2592,7 +2523,6 @@ VOID FAST_CALL CCanvas::SetPixelsDX(
 	CONST INT height
 		)
 {
-
 	// Get this DX surface
 	LPDIRECTDRAWSURFACE7 lpddsSurface = GetDXSurface();
 
@@ -2608,7 +2538,6 @@ VOID FAST_CALL CCanvas::SetPixelsDX(
 		// If it locked
 		if (!FAILED(hr))
 		{
-
 			// Obtain pixel format
 			DDPIXELFORMAT ddpfDest;
 			DD_INIT_STRUCT(ddpfDest);
@@ -2617,11 +2546,9 @@ VOID FAST_CALL CCanvas::SetPixelsDX(
 			// Switch on the pixel format
 			switch (ddpfDest.dwRGBBitCount)
 			{
-
 				// 32 bit
 				case 32:
 				{
-
 					CONST INT nPixelsPerRow = destSurface.lPitch / (ddpfDest.dwRGBBitCount / 8);
 					LPDWORD CONST pSurfDest = reinterpret_cast<LPDWORD>(destSurface.lpSurface);
 
@@ -2632,7 +2559,6 @@ VOID FAST_CALL CCanvas::SetPixelsDX(
 						INT idxd = (yy + y) * nPixelsPerRow + x;
 						for (INT xx = 0; xx < width; xx++)
 						{
-
 							// Convert to RGB
 							CONST LONG srcRGB = p_crPixelArray[idx];
 
@@ -2642,15 +2568,13 @@ VOID FAST_CALL CCanvas::SetPixelsDX(
 
 							idx++;
 							idxd++;
-
 						}
 					}
-				} break;
-
+				}
+				break;
 				// 16 bit
 				case 16:
 				{
-
 					CONST INT nPixelsPerRow = destSurface.lPitch / (ddpfDest.dwRGBBitCount / 8);
 					LPWORD CONST pSurfDest = reinterpret_cast<LPWORD>(destSurface.lpSurface);
 
@@ -2661,7 +2585,6 @@ VOID FAST_CALL CCanvas::SetPixelsDX(
 						INT idxd = (yy + y) * nPixelsPerRow + x;
 						for (INT xx = 0; xx < width; xx++)
 						{
-
 							// Convert to RGB
 							CONST LONG srcRGB = p_crPixelArray[idx];
 
@@ -2673,8 +2596,8 @@ VOID FAST_CALL CCanvas::SetPixelsDX(
 							idxd++;
 						}
 					}
-				} break;
-
+				} 
+				break;
 				default:
 				{
 					// Just use GDI
@@ -2684,7 +2607,6 @@ VOID FAST_CALL CCanvas::SetPixelsDX(
 
 			// Unlock
 			lpddsSurface->Unlock(NULL);
-
 		}
 		else
 		{
@@ -2697,7 +2619,6 @@ VOID FAST_CALL CCanvas::SetPixelsDX(
 		// Set using GDI
 		SetPixelsGDI(p_crPixelArray, x, y, width, height);
 	}
-
 }
 
 //--------------------------------------------------------------------------
@@ -2711,7 +2632,6 @@ INLINE VOID CCanvas::SetPixelsGDI(
 	CONST INT height
 		)
 {
-
 	// Lock the canvas
 	Lock();
 
@@ -2729,7 +2649,6 @@ INLINE VOID CCanvas::SetPixelsGDI(
 
 	// Unlock the canvas
 	Unlock();
-
 }
 
 //--------------------------------------------------------------------------

@@ -1,12 +1,17 @@
 /*
  ********************************************************************
  * The RPG Toolkit, Version 3
- * This file copyright (C) 2006  Colin Fitzpatrick & Jonathan Hughes
+ * This file copyright (C) 2006-2014 
+ *				- Colin James Fitzpatrick
+ *				- Jonathan D. Hughes
+ *
+ * Contributors:
+ *				- Joshua Michael Daly
  ********************************************************************
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
+ * as published by the Free Software Foundation; either version 3
  * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -164,7 +169,11 @@ void programInit()
 
 	// Don't reset the message the window if we're here
 	// from another program (e.g. by run() or rpgcode()).
-	if (CProgram::getRunningProgramCount() > 1) return;
+	if (CProgram::getRunningProgramCount() > 1)
+	{
+		return;
+
+	}
 
 	g_pDirectDraw->CopyScreenToCanvas(g_cnvRpgCode);
 	g_mwin.hide();
@@ -176,8 +185,13 @@ void programInit()
 void programFinish()
 {
 	extern MESSAGE_WINDOW g_mwin;
+
 	// Refer to programInit().
-	if (CProgram::getRunningProgramCount() > 1) return;
+	if (CProgram::getRunningProgramCount() > 1)
+	{
+		return;
+	}
+
 	g_mwin.visible = false;
 }
 
@@ -191,12 +205,18 @@ STRING formatDirectionString(STRING str)
 
 	// If the string contains any delimiters,
 	// assume it's been properly formatted.
-	if (str.find(delimiter, 0) != STRING::npos) return str;
+	if (str.find(delimiter, 0) != STRING::npos)
+	{
+		return str;
+	}
 	
 	STRING s;
 	for (STRING::iterator i = str.begin(); i != str.end(); ++i)
 	{
-		if (i[0] == _T(' ')) continue;
+		if (i[0] == _T(' '))
+		{
+			continue;
+		}
 
 		if (i[0] == _T('N') || i[0] == _T('W'))
 		{
@@ -232,8 +252,8 @@ STRING formatDirectionString(STRING str)
 				}
 			}
 		}
-		s += *i;
 
+		s += *i;
 	} // for (i)
 
 	return s;
@@ -278,6 +298,7 @@ IFighter *getFighter(const STRING name)
 			return *i;
 		}
 	}
+
 	// Doesn't exist.
 	return NULL;
 }
@@ -301,6 +322,7 @@ CPlayer *getPlayerPointer(STACK_FRAME &param)
 	{
 		return g_players.at(i);
 	}
+
 	return NULL;
 }
 
@@ -381,6 +403,7 @@ STRING spliceArrays(CProgram *prg, STRING str)
 			}
 		}
 	}
+
 	return str;
 }
 
@@ -394,12 +417,24 @@ STRING spliceVariables(CProgram *prg, STRING str)
 	while (true)
 	{
 		pos = str.find_first_of(_T('<'), pos + 1);
-		if (pos == STRING::npos) break;
+
+		if (pos == STRING::npos)
+		{
+			break;
+		}
 
 		STRING::size_type	l = str.find_first_of(_T('<'), pos + 1),
 							r = str.find_first_of(_T('>'), pos + 1);
-		if ((l < r) && (l != STRING::npos)) continue;
-		if (r == STRING::npos) break;
+
+		if ((l < r) && (l != STRING::npos))
+		{
+			continue;
+		}
+
+		if (r == STRING::npos)
+		{
+			break;
+		}
 
 		STRING var = str.substr(pos + 1, r - pos - 1);
 
@@ -420,6 +455,7 @@ STRING spliceVariables(CProgram *prg, STRING str)
 
 		pos = STRING::npos;
 	}
+
 	return str;
 }
 
@@ -453,10 +489,13 @@ void mwin(CALL_DATA &params)
 	if (g_mwin.nextLine == 0) 
 	{
 		g_mwin.cnvText->ClearScreen(g_mwin.color);
-		if(params.prg->isThread()){
+
+		if(params.prg->isThread())
+		{
 			g_mwin.threadVisible = true;
 		}
-		else{
+		else
+		{
 			g_mwin.visible = true;
 		}
 	}
@@ -478,12 +517,14 @@ void mwin(CALL_DATA &params)
 				// so don't bother drawing yet.
 				return;
 			}
+
 			break;
 		}
 	}
 
 	// Draw the window.
-	if(!params.prg->isThread()){
+	if(!params.prg->isThread())
+	{
 		renderRpgCodeScreen();
 	}
 }
@@ -497,6 +538,7 @@ void wait(CALL_DATA &params)
 {
 	params.ret().udt = UDT_LIT;
 	params.ret().lit = waitForKey(false);
+
 	if (params.params == 1)
 	{
 		*params.prg->getVar(params[0].lit) = params.ret();
@@ -533,6 +575,7 @@ void send(CALL_DATA &params)
 		{
 			throw CError(_T("Send() requires three or four parameters."));
 		}
+
 		layer = unsigned int(params[3].getNum());
 	}
 
@@ -576,7 +619,8 @@ void text(CALL_DATA &params)
 	{
 		STRING lit = params[2].getLit();
 		STRING temp = spliceVariables(params.prg, lit);
-		cnv->DrawText(int(params[0].getNum()) * g_fontSize - g_fontSize, int(params[1].getNum() * g_fontSize - g_fontSize), temp, g_fontFace, g_fontSize, g_color, g_bold, g_italic, g_underline);
+		cnv->DrawText(int(params[0].getNum()) * g_fontSize - g_fontSize, int(params[1].getNum() *
+			g_fontSize - g_fontSize), temp, g_fontFace, g_fontSize, g_color, g_bold, g_italic, g_underline);
 	}
 
 	if (count == 3)
@@ -599,11 +643,14 @@ void pixelText(CALL_DATA &params)
 	{
 		throw CError(_T("PixelText() requires 3 or 4 parameters!"));
 	}
+
 	CCanvas *cnv = (count == 3) ? g_cnvRpgCode : g_canvases.cast(int(params[3].getNum()));
 	if (cnv)
 	{
-		cnv->DrawText(int(params[0].getNum()), int(params[1].getNum()), spliceVariables(params.prg, params[2].getLit()), g_fontFace, g_fontSize, g_color, g_bold, g_italic, g_underline);
+		cnv->DrawText(int(params[0].getNum()), int(params[1].getNum()), spliceVariables(params.prg, 
+			params[2].getLit()), g_fontFace, g_fontSize, g_color, g_bold, g_italic, g_underline);
 	}
+
 	if (count == 3)
 	{
 		renderRpgCodeScreen();
@@ -621,7 +668,9 @@ void branch(CALL_DATA &params)
 	{
 		throw CError(_T("Branch() requires one parameter."));
 	}
+
 	const STRING label = (params[0].udt & UDT_LABEL) ? params[0].lit : params[0].getLit();
+
 	if (!params.prg->jump(label))
 	{
 		throw CError(_T("Branch(): could not find label \"") + label + _T("\"."));
@@ -641,6 +690,7 @@ void setErrorHandler(CALL_DATA &params)
 	{
 		throw CError(_T("SetErrorHandler() requires one parameter."));
 	}
+
 	const STRING label = (params[0].udt & UDT_LABEL) ? params[0].lit : params[0].getLit();
 	params.prg->setErrorHandler(label);
 }
@@ -657,6 +707,7 @@ void setResumeNextHandler(CALL_DATA &params)
 	{
 		throw CError("SetResumeNextHandler() requires zero parameters.");
 	}
+
 	params.prg->setErrorHandler(" "); // Refer to CProgram::handleError().
 }
 
@@ -676,7 +727,9 @@ void change(CALL_DATA &params)
 	{
 		throw CError(_T("Change() requires one parameter."));
 	}
+
 	LPBRD_PROGRAM p = params.prg->getBoardLocation();
+
 	if (g_pBoard->hasProgram(p))
 	{
 		p->fileName = params[0].getLit();
@@ -694,6 +747,7 @@ void clear(CALL_DATA &params)
 	if (params.params != 0)
 	{
 		CCanvas *cnv = g_canvases.cast((int)params[0].getNum());
+
 		if (cnv)
 		{
 			cnv->ClearScreen(0);
@@ -757,6 +811,7 @@ void font(CALL_DATA &params)
 	{
 		throw CError(_T("Font() requires one parameter."));
 	}
+
 	g_fontFace = params[0].getLit();
 }
 
@@ -771,6 +826,7 @@ void fontSize(CALL_DATA &params)
 	{
 		throw CError(_T("FontSize() requires one parameter."));
 	}
+
 	g_fontSize = int(params[0].getNum());
 }
 
@@ -785,6 +841,7 @@ void fight(CALL_DATA &params)
 	{
 		throw CError(_T("Fight() requires two parameters."));
 	}
+
 	skillFight(int(params[0].getNum()), params[1].getLit());
 }
 
@@ -798,22 +855,26 @@ void get(CALL_DATA &params)
 	params.ret().udt = UDT_LIT;
 	extern std::vector<char> g_keys;
 	extern std::vector<char> g_vkeys;
+
 	if (g_keys.size() == 0)
 	{
 		params.ret().lit = _T("");
 		return;
 	}
+
 	const char chr = g_keys.front();
 	const char isVirtual = g_vkeys.front();
 	g_keys.erase(g_keys.begin());
 	g_vkeys.erase(g_vkeys.begin());
 	const STRING toRet = getName(chr, isVirtual, true);
+
 	if (params.params == 1)
 	{
 		LPSTACK_FRAME var = params.prg->getVar(params[0].lit);
 		var->udt = UDT_LIT;
 		var->lit = toRet;
 	}
+
 	params.ret().lit = toRet;
 }
 
@@ -834,6 +895,7 @@ void gone(CALL_DATA &params)
 
 	LPBRD_PROGRAM p = params.prg->getBoardLocation();
 	std::vector<LPBRD_PROGRAM>::iterator i = g_pBoard->programs.begin();
+
 	for (; i != g_pBoard->programs.end(); ++i)
 	{
 		if ((*i) == p)
@@ -861,7 +923,11 @@ void viewbrd(CALL_DATA &params)
 	{
 		pCnv = g_canvases.cast(int(params[3].getNum()));
 	}
-	if (!pCnv) throw CError(_T("ViewBrd(): canvas not found."));
+
+	if (!pCnv)
+	{
+		throw CError(_T("ViewBrd(): canvas not found."));
+	}
 
 	LPBOARD pBoard = NULL;
 	if (params.params > 0)
@@ -873,7 +939,10 @@ void viewbrd(CALL_DATA &params)
 			throw CError(_T("ViewBrd(): unable to open board."));
 		}
 	}
-	else throw CError(_T("ViewBrd(): requires at least one parameter."));
+	else
+	{
+		throw CError(_T("ViewBrd(): requires at least one parameter."));
+	}
 
 	int x = 0, y = 0;
 	if (params.params > 2)
@@ -881,6 +950,7 @@ void viewbrd(CALL_DATA &params)
 		x = int(params[1].getNum());
 		y = int(params[2].getNum());
 		coords::tileToPixel(x, y, pBoard->coordType, false, pBoard->sizeX);
+
 		if (pBoard->coordType == TILE_NORMAL)
 		{
 			// coords::tileToPixel(...false.) returns at top-left for 2D.
@@ -900,7 +970,10 @@ void viewbrd(CALL_DATA &params)
 	); 
 	g_boards.free(pBoard);
 
-	if (params.params != 4) renderRpgCodeScreen();
+	if (params.params != 4)
+	{
+		renderRpgCodeScreen();
+	}
 }
 
 /*
@@ -914,6 +987,7 @@ void bold(CALL_DATA &params)
 	{
 		throw CError(_T("Bold() requires one parameter."));
 	}
+
 	g_bold = params[0].getBool();
 }
 
@@ -928,6 +1002,7 @@ void italics(CALL_DATA &params)
 	{
 		throw CError(_T("Italics() requires one parameter."));
 	}
+
 	g_italic = params[0].getBool();
 }
 
@@ -942,6 +1017,7 @@ void underline(CALL_DATA &params)
 	{
 		throw CError(_T("Underline() requires one parameter."));
 	}
+
 	g_underline = params[0].getBool();
 }
 
@@ -978,8 +1054,16 @@ void winColor(CALL_DATA &params)
 	}
 
 	int color = int(params[0].getNum());
-	if (color < 0) color = 0;
-	else if (color > 255) color = 255;
+
+	if (color < 0)
+	{
+		color = 0;
+	}
+	else if (color > 255)
+	{
+		color = 255;
+	}
+
 	color = CTile::getDOSColor(color);
 
 	g_mwin.render(_T(""), color);
@@ -1013,9 +1097,18 @@ void color(CALL_DATA &params)
 	{
 		throw CError(_T("Color() requires one parameter."));
 	}
+
 	int color = int(params[0].getNum());
-	if (color < 0) color = 0;
-	else if (color > 255) color = 255;
+
+	if (color < 0)
+	{
+		color = 0;
+	}
+	else if (color > 255)
+	{
+		color = 255;
+	}
+
 	g_color = CTile::getDOSColor(color);
 }
 
@@ -1030,6 +1123,7 @@ void colorRgb(CALL_DATA &params)
 	{
 		throw CError(_T("ColorRGB() requires three parameters."));
 	}
+
 	g_color = RGB(int(params[0].getNum()), int(params[1].getNum()), int(params[2].getNum()));
 }
 
@@ -1044,6 +1138,7 @@ void move(CALL_DATA &params)
 	extern LPBOARD g_pBoard;
 
 	int z = 1;
+
 	if (params.params == 3)
 	{
 		z = int(params[2].getNum());
@@ -1055,6 +1150,7 @@ void move(CALL_DATA &params)
 	
 	int x = int(params[0].getNum()), y = int(params[1].getNum());
 	coords::tileToPixel(x, y, g_pBoard->coordType, false, g_pBoard->sizeX);
+
 	if (g_pBoard->isIsometric() && !(g_pBoard->coordType & PX_ABSOLUTE))
 	{
 		// coords::tileToPixel() returns the centrepoint of isometric tiles.
@@ -1092,8 +1188,10 @@ void prg(CALL_DATA &params)
 	{
 		throw CError(_T("Prg() requires three or four parameters."));
 	}
+
 	int x = int(params[1].getNum()), y = int(params[2].getNum());
 	coords::tileToPixel(x, y, g_pBoard->coordType, false, g_pBoard->sizeX);
+
 	if (g_pBoard->isIsometric() && !(g_pBoard->coordType & PX_ABSOLUTE))
 	{
 		// coords::tileToPixel() returns the centrepoint of isometric tiles.
@@ -1126,8 +1224,10 @@ void prompt(CALL_DATA &params)
 	{
 		throw CError(_T("Prompt() requires one or two parameters."));
 	}
+
 	params.ret().udt = UDT_LIT;
 	params.ret().lit = prompt(params[0].getLit());
+
 	if (params.params == 2)
 	{
 		*params.prg->getVar(params[1].lit) = params.ret();
@@ -1217,6 +1317,7 @@ void run(CALL_DATA &params)
 	{
 		throw CError(_T("Run() requires one data element."));
 	}
+
 	params.prg->end();
 	CProgram(g_projectPath + PRG_PATH + params[0].getLit()).run();
 }
@@ -1252,7 +1353,9 @@ void hp(CALL_DATA &params)
 	{
 		throw CError(_T("HP() requires two parameters."));
 	}
+
 	IFighter *p = getFighter(params[0].getLit());
+
 	if (p)
 	{
 		const int max = p->maxHealth();
@@ -1274,13 +1377,16 @@ void giveHp(CALL_DATA &params)
 	{
 		throw CError(_T("GiveHP() requires two parameters."));
 	}
+
 	IFighter *p = getFighter(params[0].getLit());
+
 	if (p)
 	{
 		const int given = int(params[1].getNum());
 		const int hp = p->health() + given;
 		const int max = p->maxHealth();
 		p->health((hp <= max) ? ((hp > 0) ? hp : 0) : max);
+
 		if (isFighting())
 		{
 			// Get the fighter's indices.
@@ -1339,7 +1445,9 @@ void maxHp(CALL_DATA &params)
 	{
 		throw CError(_T("MaxHP() requires two parameters."));
 	}
+
 	IFighter *p = getFighter(params[0].getLit());
+
 	if (p)
 	{
 		p->maxHealth(int(params[1].getNum()));
@@ -1389,7 +1497,9 @@ void smp(CALL_DATA &params)
 	{
 		throw CError(_T("SMP() requires two parameters."));
 	}
+
 	IFighter *p = getFighter(params[0].getLit());
+
 	if (p)
 	{
 		const int max = int(p->maxSmp());
@@ -1411,13 +1521,16 @@ void giveSmp(CALL_DATA &params)
 	{
 		throw CError(_T("GiveSMP() requires two parameters."));
 	}
+
 	IFighter *p = getFighter(params[0].getLit());
+
 	if (p)
 	{
 		const int given = int(params[1].getNum());
 		const int smp = p->smp() + given;
 		const int max = p->maxSmp();
 		p->smp((smp <= max) ? ((smp > 0) ? smp : 0) : max);
+
 		if (isFighting())
 		{
 			// Get the fighter's indices.
@@ -1476,7 +1589,9 @@ void maxSmp(CALL_DATA &params)
 	{
 		throw CError(_T("MaxSMP() requires two parameters."));
 	}
+
 	IFighter *p = getFighter(params[0].getLit());
+
 	if (p)
 	{
 		p->maxSmp(int(params[1].getNum()));
@@ -1536,6 +1651,7 @@ void start(CALL_DATA &params)
 	{
 		throw CError(_T("Start() requires one parameter."));
 	}
+
 	ShellExecute(NULL, _T("open"), params[0].getLit().c_str(), NULL, NULL, 0);
 }
 
@@ -1550,6 +1666,7 @@ void giveItem(CALL_DATA &params)
 	{
 		throw CError(_T("GiveItem() requires one parameter."));
 	}
+
 	extern STRING g_projectPath;
 	g_inv.give(g_projectPath + ITM_PATH + params[0].getLit());
 }
@@ -1565,6 +1682,7 @@ void takeItem(CALL_DATA &params)
 	{
 		throw CError(_T("TakeItem() requires one parameter."));
 	}
+
 	extern STRING g_projectPath;
 	g_inv.take(g_projectPath + ITM_PATH + params[0].getLit());
 }
@@ -1580,6 +1698,7 @@ void wav(CALL_DATA &params)
 	{
 		throw CError(_T("Wav() requires one parameter."));
 	}
+
 	// Do not pass \Media path.
 	CAudioSegment::playSoundEffect(params[0].getLit(), false);
 }
@@ -1605,6 +1724,7 @@ void mp3pause(CALL_DATA &params)
 	{
 		throw CError(_T("Mp3Pause() requires one parameter."));
 	}
+
 	// Do not pass \Media path.
 	CAudioSegment::playSoundEffect(params[0].getLit(), true);
 }
@@ -1620,6 +1740,7 @@ void delay(CALL_DATA &params)
 	{
 		throw CError(_T("Delay() requires one data element."));
 	}
+
 	Sleep(DWORD(params[0].getNum() * 1000.0));
 }
 
@@ -1634,9 +1755,11 @@ void random(CALL_DATA &params)
 	{
 		throw CError(_T("Random() requires one or two parameters."));
 	}
+
 	const int max = int(params[0].getNum());
 	params.ret().udt = UDT_NUM;
 	params.ret().num = (max ? (rand() % max) + 1 : 1);
+
 	if (params.params == 2)
 	{
 		*params.prg->getVar(params[1].lit) = params.ret();
@@ -1670,14 +1793,26 @@ void tileType(CALL_DATA &params)
 	int tile = NORMAL;
 
 	// "tile" to be recognised in tagBoard::vectorize()
-	if (_ftcsicmp(type.c_str(), _T("SOLID")) == 0) tile = SOLID;
-	else if (_ftcsicmp(type.c_str(), _T("UNDER")) == 0) tile = UNDER;
+	if (_ftcsicmp(type.c_str(), _T("SOLID")) == 0)
+	{
+		tile = SOLID;
+	}
+	else if (_ftcsicmp(type.c_str(), _T("UNDER")) == 0)
+	{
+		tile = UNDER;
+	}
 	else if (_ftcsicmp(type.substr(0, 6).c_str(), _T("STAIRS")) == 0)
 	{
 		tile = 10 + atoi(type.substr(6).c_str());
 	}
-	else if (_ftcsicmp(type.c_str(), _T("NS")) == 0) tile = NORTH_SOUTH;
-	else if (_ftcsicmp(type.c_str(), _T("EW")) == 0) tile = EAST_WEST;
+	else if (_ftcsicmp(type.c_str(), _T("NS")) == 0)
+	{
+		tile = NORTH_SOUTH;
+	}
+	else if (_ftcsicmp(type.c_str(), _T("EW")) == 0)
+	{
+		tile = EAST_WEST;
+	}
 
 	// Enter the tiletype into the table.
 	try
@@ -1707,6 +1842,7 @@ void mediaPlay(CALL_DATA &params)
 	{
 		throw CError(_T("MediaPlay() requires one parameter."));
 	}
+
 	g_bkgMusic->open(params[0].getLit());
 	g_bkgMusic->play(true);
 }
@@ -1767,7 +1903,8 @@ void drawLine(CALL_DATA &params)
 {
 	if (params.params == 4)
 	{
-		g_cnvRpgCode->DrawLine(int(params[0].getNum()), int(params[1].getNum()), int(params[2].getNum()), int(params[3].getNum()), g_color);
+		g_cnvRpgCode->DrawLine(int(params[0].getNum()), int(params[1].getNum()), 
+			int(params[2].getNum()), int(params[3].getNum()), g_color);
 		renderRpgCodeScreen();
 	}
 	else if (params.params == 5)
@@ -1775,7 +1912,8 @@ void drawLine(CALL_DATA &params)
 		CCanvas *cnv = g_canvases.cast((int)params[4].getNum());
 		if (cnv)
 		{
-			cnv->DrawLine(int(params[0].getNum()), int(params[1].getNum()), int(params[2].getNum()), int(params[3].getNum()), g_color);
+			cnv->DrawLine(int(params[0].getNum()), int(params[1].getNum()), 
+				int(params[2].getNum()), int(params[3].getNum()), g_color);
 		}
 	}
 	else
@@ -1793,7 +1931,8 @@ void drawRect(CALL_DATA &params)
 {
 	if (params.params == 4)
 	{
-		g_cnvRpgCode->DrawRect(int(params[0].getNum()), int(params[1].getNum()), int(params[2].getNum()), int(params[3].getNum()), g_color);
+		g_cnvRpgCode->DrawRect(int(params[0].getNum()), int(params[1].getNum()), 
+			int(params[2].getNum()), int(params[3].getNum()), g_color);
 		renderRpgCodeScreen();
 	}
 	else if (params.params == 5)
@@ -1801,7 +1940,8 @@ void drawRect(CALL_DATA &params)
 		CCanvas *cnv = g_canvases.cast((int)params[4].getNum());
 		if (cnv)
 		{
-			cnv->DrawRect(int(params[0].getNum()), int(params[1].getNum()), int(params[2].getNum()), int(params[3].getNum()), g_color);
+			cnv->DrawRect(int(params[0].getNum()), int(params[1].getNum()), 
+				int(params[2].getNum()), int(params[3].getNum()), g_color);
 		}
 	}
 	else
@@ -1819,7 +1959,8 @@ void fillRect(CALL_DATA &params)
 {
 	if (params.params == 4)
 	{
-		g_cnvRpgCode->DrawFilledRect(int(params[0].getNum()), int(params[1].getNum()), int(params[2].getNum()), int(params[3].getNum()), g_color);
+		g_cnvRpgCode->DrawFilledRect(int(params[0].getNum()), int(params[1].getNum()), 
+			int(params[2].getNum()), int(params[3].getNum()), g_color);
 		renderRpgCodeScreen();
 	}
 	else if (params.params == 5)
@@ -1827,7 +1968,8 @@ void fillRect(CALL_DATA &params)
 		CCanvas *cnv = g_canvases.cast((int)params[4].getNum());
 		if (cnv)
 		{
-			cnv->DrawFilledRect(int(params[0].getNum()), int(params[1].getNum()), int(params[2].getNum()), int(params[3].getNum()), g_color);
+			cnv->DrawFilledRect(int(params[0].getNum()), int(params[1].getNum()), 
+				int(params[2].getNum()), int(params[3].getNum()), g_color);
 		}
 	}
 	else
@@ -1847,6 +1989,7 @@ void debug(CALL_DATA &params)
 	{
 		throw CError("Debug() requires one parameter.");
 	}
+
 	CProgram::setDebugLevel(params[0].getBool() ? E_WARNING : E_DISABLED);
 }
 
@@ -2009,16 +2152,51 @@ void pathfind(CALL_DATA &params)
 	{
 		switch (*i)
 		{
-			case MV_N: { s += _T("N"); } break;
-			case MV_S: { s += _T("S"); } break;
-			case MV_E: { s += _T("E"); } break;
-			case MV_W: { s += _T("W"); } break;
-			case MV_NE: { s += _T("NE"); } break;
-			case MV_NW: { s += _T("NW"); } break;
-			case MV_SE: { s += _T("SE"); } break;
-			case MV_SW: { s += _T("SW"); }
+			case MV_N:
+				{ 
+					s += _T("N"); 
+				} 
+				break;
+			case MV_S: 
+				{ 
+					s += _T("S");
+				} 
+				break;
+			case MV_E: 
+				{ 
+					s += _T("E"); 
+				} 
+				break;
+			case MV_W: 
+				{
+					s += _T("W"); 
+				} 
+				break;
+			case MV_NE: 
+				{ 
+					s += _T("NE"); 
+				} 
+				break;
+			case MV_NW: 
+				{ 
+					s += _T("NW"); 
+				} 
+				break;
+			case MV_SE: 
+				{ 
+					s += _T("SE"); 
+				} 
+				break;
+			case MV_SW: 
+				{
+					s += _T("SW"); 
+				}
 		}
-		if (i != p.rend() - 1) s += _T(",");
+
+		if (i != p.rend() - 1)
+		{
+			s += _T(",");
+		}
 	}
 	
 	params.ret().udt = UDT_LIT;
@@ -2050,7 +2228,11 @@ void playerstep(CALL_DATA &params)
 	}
 
 	CSprite *p = getPlayerPointer(params[0]);
-	if (!p) throw CError(_T("PlayerStep(): player not found"));
+
+	if (!p) 
+	{
+		throw CError(_T("PlayerStep(): player not found"));
+	}
 
 	int x = int(params[1].getNum()), y = int(params[2].getNum());
 	const unsigned int flags = (params.params > 3 ? (unsigned int)params[3].getNum() : 0);
@@ -2089,7 +2271,11 @@ void itemstep(CALL_DATA &params)
 	}
 
 	CItem *p = getItemPointer(params[0]);
-	if (!p) throw CError(_T("ItemStep(): item not found"));
+
+	if (!p)
+	{
+		throw CError(_T("ItemStep(): item not found"));
+	}
 
 	int x = int(params[1].getNum()), y = int(params[2].getNum());
 	const unsigned int flags = (params.params > 3 ? (unsigned int)params[3].getNum() : 0);
@@ -2135,7 +2321,11 @@ void push(CALL_DATA &params)
 	}
 
 	CSprite *p = (params.params > 1 ? getPlayerPointer(params[1]) : g_pSelectedPlayer);
-	if (!p) throw CError(_T("Push(): player not found"));
+
+	if (!p)
+	{
+		throw CError(_T("Push(): player not found"));
+	}
 
 	// Backwards compatibility.
 	STRING str = formatDirectionString(params[0].getLit());
@@ -2169,7 +2359,11 @@ void pushItem(CALL_DATA &params)
 	}
 
 	CItem *p = getItemPointer(params[0]);
-	if (!p) throw CError(_T("PushItem(): item not found"));
+
+	if (!p)
+	{
+		throw CError(_T("PushItem(): item not found"));
+	}
 
 	// Backwards compatibility.
 	STRING str = formatDirectionString(params[1].getLit());
@@ -2207,10 +2401,17 @@ void wander(CALL_DATA &params)
 	}
 
 	CItem *p = getItemPointer(params[0]);
-	if (!p) throw CError(_T("Wander(): item not found"));
+
+	if (!p)
+	{
+		throw CError(_T("Wander(): item not found"));
+	}
 	
 	// Break early if the item is already moving.
-	if (!p->getPosition().path.empty()) return;
+	if (!p->getPosition().path.empty())
+	{
+		return;
+	}
 
 	const int isIso = int(g_pBoard->isIsometric());
 
@@ -2218,8 +2419,15 @@ void wander(CALL_DATA &params)
 	if (params.params == 2)
 	{
 		restrict = int(params[1].getNum());
-		if (restrict < 0) restrict = 0;
-		else if (restrict > 3) restrict = 3;
+
+		if (restrict < 0)
+		{
+			restrict = 0;
+		}
+		else if (restrict > 3)
+		{
+			restrict = 3;
+		}
 	}
 
 	if (restrict-- == 0)
@@ -2245,7 +2453,8 @@ void wander(CALL_DATA &params)
 		
 	DB_POINT d;
 	p->getDestination(d);
-	const DB_POINT pt = {d.x + g_directions[isIso][direction][0] * 32, d.y + g_directions[isIso][direction][1] * 32};
+	const DB_POINT pt = {d.x + g_directions[isIso][direction][0] * 32, 
+		d.y + g_directions[isIso][direction][1] * 32};
 	
 	if (pt.x > 0 && pt.x <= g_pBoard->pxWidth() && pt.y > 0 && pt.y < g_pBoard->pxHeight())
 	{
@@ -2284,7 +2493,10 @@ void addPlayer(CALL_DATA &params)
 		g_players.push_back(p);
 
 		// Allow the initial character to be loaded via the start progam.
-		if (!g_pSelectedPlayer) g_pSelectedPlayer = p;
+		if (!g_pSelectedPlayer)
+		{
+			g_pSelectedPlayer = p;
+		}
 	}
 }
 
@@ -2306,7 +2518,11 @@ void putplayer(CALL_DATA &params)
 	}
 
 	CPlayer *p = getPlayerPointer(params[0]);
-	if (!p) throw CError(_T("PutPlayer(): player not found"));
+
+	if (!p)
+	{
+		throw CError(_T("PutPlayer(): player not found"));
+	}
 
 	p->setActive(true);
     p->setPosition(int(params[1].getNum()), 
@@ -2317,7 +2533,11 @@ void putplayer(CALL_DATA &params)
 	// Insert the pointer into the z-ordered vector.
 	g_sprites.zOrder();
     
-	if (p == g_pSelectedPlayer) p->alignBoard(g_screen, true);
+	if (p == g_pSelectedPlayer)
+	{
+		p->alignBoard(g_screen, true);
+	}
+
 	renderNow(g_cnvRpgCode, true);
 	renderRpgCodeScreen();
 }
@@ -2337,7 +2557,11 @@ void eraseplayer(CALL_DATA &params)
 	}
 
 	CSprite *p = getPlayerPointer(params[0]);
-	if (!p) throw CError(_T("ErasePlayer(): player not found"));
+
+	if (!p)
+	{
+		throw CError(_T("ErasePlayer(): player not found"));
+	}
 
 	// Remove the player from the z-ordered vector.
 	g_sprites.remove(p);
@@ -2364,9 +2588,16 @@ void destroyplayer(CALL_DATA &params)
 	}
 
 	CPlayer *p = getPlayerPointer(params[0]);
-	if (!p) throw CError(_T("DestroyPlayer(): player not found"));
 
-	if (p == g_pSelectedPlayer) throw CError(_T("DestroyPlayer(): cannot destroy the active player"));
+	if (!p)
+	{
+		throw CError(_T("DestroyPlayer(): player not found"));
+	}
+
+	if (p == g_pSelectedPlayer)
+	{
+		throw CError(_T("DestroyPlayer(): cannot destroy the active player"));
+	}
 
 	// Remove the player from the z-ordered vector.
 	g_sprites.remove(p);
@@ -2383,6 +2614,7 @@ void destroyplayer(CALL_DATA &params)
 			break;
 		}
 	}
+
 	delete p;
 
 	renderNow(g_cnvRpgCode, true);
@@ -2402,7 +2634,11 @@ void removePlayer(CALL_DATA &params)
 	}
 
 	CSprite *p = getPlayerPointer(params[0]);
-	if (!p) throw CError(_T("RemovePlayer(): player not found"));
+
+	if (!p)
+	{
+		throw CError(_T("RemovePlayer(): player not found"));
+	}
 
 	// Player was placed in "other players" list.
 	// List was saved to game state, so the players could be restored.
@@ -2460,12 +2696,14 @@ void newPlayer(CALL_DATA &params)
 	{
 		throw CError(_T("newPlayer() requires one parameter."));
 	}
+
 	STRING ext = getExtension(params[0].getLit());
 
 	if (_ftcsicmp(ext.c_str(), _T("TEM")) != 0)
 	{
 		throw CError(_T("newPlayer() requires a tem file."));
 	}
+
 	// Load new sprite graphics from this character.
 	g_pSelectedPlayer->swapGraphics(params[0].getLit());
 }
@@ -2483,7 +2721,11 @@ void onboard(CALL_DATA &params)
 	}
 	
 	CSprite *p = getPlayerPointer(params[0]);
-	if (!p) throw CError(_T("OnBoard(): player not found"));
+
+	if (!p)
+	{
+		throw CError(_T("OnBoard(): player not found"));
+	}
 
 	params.ret().udt = UDT_NUM;
 	params.ret().num = p->isActive() ? 1 : 0;
@@ -2550,11 +2792,15 @@ void createitem(CALL_DATA &params)
 	}
 
 	CItem *p = NULL;
+
 	try
 	{
 		p = new CItem(g_projectPath + ITM_PATH + params[0].getLit(), false);
 	}
-	catch (CInvalidItem) { return; }
+	catch (CInvalidItem) 
+	{ 
+		return; 
+	}
 
 	// If two parameters were provided and the second parameter is
 	// a constant, load the item into that position.
@@ -2620,7 +2866,11 @@ void putitem(CALL_DATA &params)
 	}
 
 	CItem *p = getItemPointer(params[0]);
-	if (!p) throw CError(_T("PutItem(): item not found"));
+
+	if (!p)
+	{
+		throw CError(_T("PutItem(): item not found"));
+	}
 
 	int x = int(params[1].getNum()), y = int(params[2].getNum());
 	const int l = int(params[3].getNum());
@@ -2654,7 +2904,11 @@ void eraseitem(CALL_DATA &params)
 	}
 
 	CItem *p = getItemPointer(params[0]);
-	if (!p) throw CError(_T("EraseItem(): item not found"));
+
+	if (!p)
+	{
+		throw CError(_T("EraseItem(): item not found"));
+	}
 
 	// Remove the item from the z-ordered vector.
 	g_sprites.remove(p);
@@ -2681,7 +2935,11 @@ void destroyitem(CALL_DATA &params)
 	}
 
 	CItem *p = getItemPointer(params[0]);
-	if (!p) throw CError(_T("DestroyItem(): item not found"));
+
+	if (!p)
+	{
+		throw CError(_T("DestroyItem(): item not found"));
+	}
 	
 	std::vector<CItem *>::iterator i = g_pBoard->items.begin();
 	for (; i != g_pBoard->items.end(); ++i)
@@ -2709,6 +2967,7 @@ void gamespeed(CALL_DATA &params)
 	{
 		throw CError(_T("GameSpeed() requires one parameter."));
 	}
+
 	CSprite::setLoopOffset(int(params[0].getNum()));
 }
 
@@ -2723,8 +2982,13 @@ void playerspeed(CALL_DATA &params)
 	{
 		throw CError(_T("PlayerSpeed() requires two parameters."));
 	}
+
 	CSprite *p = getPlayerPointer(params[0]);
-	if (!p) throw CError(_T("PlayerSpeed(): player not found"));
+
+	if (!p)
+	{
+		throw CError(_T("PlayerSpeed(): player not found"));
+	}
 
 	p->setSpeed(params[1].getNum());
 }
@@ -2740,8 +3004,13 @@ void itemspeed(CALL_DATA &params)
 	{
 		throw CError(_T("ItemSpeed() requires two parameters."));
 	}
+
 	CItem *p = getItemPointer(params[0]);
-	if (!p) throw CError(_T("ItemSpeed(): item not found"));
+
+	if (!p)
+	{
+		throw CError(_T("ItemSpeed(): item not found"));
+	}
 
 	p->setSpeed(params[1].getNum());
 }
@@ -2799,7 +3068,11 @@ void itemlocation(CALL_DATA &params)
 	l->udt = UDT_NUM;
 
 	const CItem *p = getItemPointer(params[0]);
-	if (!p) throw CError(_T("ItemLocation(): item not found"));
+
+	if (!p)
+	{
+		throw CError(_T("ItemLocation(): item not found"));
+	}
 
 	const SPRITE_POSITION s = p->getPosition();
 
@@ -2834,7 +3107,11 @@ void playerlocation(CALL_DATA &params)
 	l->udt = UDT_NUM;
 
 	const CSprite *p = getPlayerPointer(params[0]);
-	if (!p) throw CError(_T("PlayerLocation(): player not found"));
+
+	if (!p)
+	{
+		throw CError(_T("PlayerLocation(): player not found"));
+	}
 
 	const SPRITE_POSITION s = p->getPosition();
 
@@ -2874,6 +3151,7 @@ void sourcelocation(CALL_DATA &params)
 		IFighter *pFighter = (IFighter *)g_source.p;
 		int party = -1, idx = -1;
 		getFighterIndices(pFighter, party, idx);
+
 		if (!g_pFightPlugin->getFighterLocation(party, idx, dx, dy))
 		{
 			// This call is only supported in the 3.1.0 version of the default
@@ -2893,6 +3171,7 @@ void sourcelocation(CALL_DATA &params)
 		// Transform from pixel to board type (e.g. tile).
 		coords::pixelToTile(dx, dy, g_pBoard->coordType, false, g_pBoard->sizeX);
 	}
+
 	x->num = dx;
 	y->num = dy;
 }
@@ -2924,6 +3203,7 @@ void targetlocation(CALL_DATA &params)
 		IFighter *pFighter = (IFighter *)g_target.p;
 		int party = -1, idx = -1;
 		getFighterIndices(pFighter, party, idx);
+
 		if (!g_pFightPlugin->getFighterLocation(party, idx, dx, dy))
 		{
 			// This call is only supported in the 3.1.0 version of the default
@@ -2970,10 +3250,15 @@ void sourcehandle(CALL_DATA &params)
 		str = _T("ITEM");
 		CItem *p = (CItem *)g_source.p;
 		std::vector<CItem *>::iterator j = g_pBoard->items.begin();
+
 		for (; j != g_pBoard->items.end(); ++j)
 		{
-			if (p == *j) i = j - g_pBoard->items.begin();
+			if (p == *j)
+			{
+				i = j - g_pBoard->items.begin();
+			}
 		}
+
 		char c[8];
 		str += itoa(i, c, 10);
 	}
@@ -2991,6 +3276,7 @@ void sourcehandle(CALL_DATA &params)
 
 	params.ret().udt = UDT_LIT;
 	params.ret().lit = str;
+
 	if (params.params == 1)
 	{
 		*params.prg->getVar(params[0].lit) = params.ret();
@@ -3023,10 +3309,15 @@ void targethandle(CALL_DATA &params)
 		str = _T("ITEM");
 		CItem *p = (CItem *)g_target.p;
 		std::vector<CItem *>::iterator j = g_pBoard->items.begin();
+
 		for (; j != g_pBoard->items.end(); ++j)
 		{
-			if (p == *j) i = j - g_pBoard->items.begin();
+			if (p == *j)
+			{
+				i = j - g_pBoard->items.begin();
+			}
 		}
+
 		char c[8];
 		str += itoa(i, c, 10);
 	}
@@ -3044,6 +3335,7 @@ void targethandle(CALL_DATA &params)
 
 	params.ret().udt = UDT_LIT;
 	params.ret().lit = str;
+
 	if (params.params == 1)
 	{
 		*params.prg->getVar(params[0].lit) = params.ret();
@@ -3074,11 +3366,13 @@ void bitmap(CALL_DATA &params)
 	{
 		throw CError(_T("Bitmap() requires one or two parameters."));
 	}
+
 	if (cnv)
 	{
 		extern STRING g_projectPath;
 		extern int g_resX, g_resY;
 		drawImage(g_projectPath + BMP_PATH + params[0].getLit(), cnv, 0, 0, g_resX, g_resY);
+
 		if (cnv == g_cnvRpgCode)
 		{
 			renderRpgCodeScreen();
@@ -3100,6 +3394,7 @@ void mainFile(CALL_DATA &params)
 	{
 		throw CError(_T("MainFile() requires one parameter."));
 	}
+
 	if (g_mainFile.open(GAM_PATH + params[0].getLit()))
 	{
 		reset();
@@ -3115,7 +3410,6 @@ void mainFile(CALL_DATA &params)
  */
 void dirSav(CALL_DATA &params)
 {
-
 	extern STRING g_savePath;
 
 	STRING file;
@@ -3161,10 +3455,12 @@ void dirSav(CALL_DATA &params)
 void save(CALL_DATA &params)
 {
 	extern STRING g_savePath;
+
 	if (params.params != 1)
 	{
 		throw CError(_T("Save() requires one parameter."));
 	}
+
 	saveSaveState(g_savePath + addExtension(params[0].getLit(), _T("sav")));
 }
 
@@ -3177,10 +3473,12 @@ void load(CALL_DATA &params)
 {
 	extern STRING g_savePath;
 	extern bool g_loadFromStartPrg;
+
 	if (params.params != 1)
 	{
 		throw CError(_T("Load() requires one parameter."));
 	}
+
 	loadSaveState(g_savePath + addExtension(params[0].getLit(), _T("sav")));
 	g_loadFromStartPrg = true;
 }
@@ -3217,6 +3515,7 @@ void scan(CALL_DATA &params)
 		g_cnvRpgScans[i] = new CCanvas();
 		g_cnvRpgScans[i]->CreateBlank(NULL, 32, 32, TRUE);
 	}
+
 	g_cnvRpgScans[i]->ClearScreen(TRANSP_COLOR);
 
 	g_cnvRpgCode->BltPart(
@@ -3257,7 +3556,10 @@ void mem(CALL_DATA &params)
 			32, 32,
 			SRCCOPY);
 	}
-	else throw CError(_T("Mem(): canvas not found."));
+	else
+	{
+		throw CError(_T("Mem(): canvas not found."));
+	}
 
 	renderRpgCodeScreen();
 }
@@ -3274,6 +3576,7 @@ void print(CALL_DATA &params)
 	{
 		throw CError(_T("Print() requires one parameter."));
 	}
+
 	g_textY += 1.0;
 	g_cnvRpgCode->DrawText(int(g_textX) * g_fontSize - g_fontSize, int(g_textY) * g_fontSize - g_fontSize, params[0].getLit(), g_fontFace, g_fontSize, g_color, g_bold, g_italic, g_underline);
 	renderRpgCodeScreen();
@@ -3290,13 +3593,14 @@ void rpgCode(CALL_DATA &params)
 	{
 		throw CError(_T("RPGCode() requires one parameter."));
 	}
+
 	CProgramChild prg(*params.prg);
 
-	if(!prg.loadFromString(params[0].getLit())){
-
+	if(!prg.loadFromString(params[0].getLit()))
+	{
 		throw CError(_T("RPGCode(): CProgram::LoadFromString() failed."));
-
 	}
+
 	prg.run();
 }
 
@@ -3313,8 +3617,10 @@ void charAt(CALL_DATA &params)
 	{
 		throw CError(_T("CharAt() requires two or three parameters."));
 	}
+
 	params.ret().udt = UDT_LIT;
 	params.ret().lit = params[0].getLit().substr(int(params[1].getNum()) - 1, 1);
+
 	if (params.params == 3)
 	{
 		*params.prg->getVar(params[2].lit) = params.ret();
@@ -3346,33 +3652,45 @@ void equip(CALL_DATA &params)
 
 	CPlayer *p = getPlayerPointer(params[0]);
 	
-	if (!p) throw CError(_T("Equip(): player not found."));
+	if (!p)
+	{
+		throw CError(_T("Equip(): player not found."));
+	}
 
 	const unsigned int i = int(abs(params[1].getNum()));
 	
 
-	if(!CFile::fileExists(g_projectPath + ITM_PATH + params[2].getLit())){
+	if(!CFile::fileExists(g_projectPath + ITM_PATH + params[2].getLit()))
+	{
 		const STRING str = g_projectPath + ITM_PATH + g_inv.fileByHandle(params[2].getLit());
+
 		if (g_inv.take(str))
 		{
 			// Remove any item that may be equipped.
 			p->removeEquipment(i);
 			p->addEquipment(i, str); 
 		}
-		else throw CError(_T("Equip(): item not in inventory."));
+		else
+		{
+			throw CError(_T("Equip(): item not in inventory."));
+		}
 	}
-	else{
+	else
+	{
 		const STRING str = g_projectPath + ITM_PATH + params[2].getLit();
+
 		if (g_inv.take(str))
 		{
 			// Remove any item that may be equipped.
 			p->removeEquipment(i);
 			p->addEquipment(i, str); 
 		}
-		else throw CError(_T("Equip(): item not in inventory."));
+		else
+		{
+			throw CError(_T("Equip(): item not in inventory."));
+		}
 	}
 	// Try to take the item.
-
 }
 
 /*
@@ -3388,7 +3706,11 @@ void remove(CALL_DATA &params)
 	}
 
 	CPlayer *p = getPlayerPointer(params[0]);
-	if (!p) throw CError(_T("Remove(): player not found."));
+
+	if (!p)
+	{
+		throw CError(_T("Remove(): player not found."));
+	}
 
 	unsigned int i = int(abs(params[1].getNum()));
 
@@ -3419,6 +3741,7 @@ void giveGp(CALL_DATA &params)
 	{
 		throw CError(_T("GiveGP() requires one parameter."));
 	}
+
 	g_gp += unsigned long(params[0].getNum());
 }
 
@@ -3433,6 +3756,7 @@ void takeGp(CALL_DATA &params)
 	{
 		throw CError(_T("TakeGP() requires one parameter."));
 	}
+
 	g_gp -= unsigned long(params[0].getNum());
 }
 
@@ -3445,6 +3769,7 @@ void getGp(CALL_DATA &params)
 {
 	params.ret().udt = UDT_NUM;
 	params.ret().num = double(g_gp);
+
 	if (params.params == 1)
 	{
 		*params.prg->getVar(params[0].lit) = params.ret();
@@ -3472,11 +3797,14 @@ void fightEnemy(CALL_DATA &params)
 	{
 		throw CError(_T("FightEnemy() requires at least two parameters."));
 	}
+
 	std::vector<STRING> enemies;
+
 	for (unsigned int i = 0; i < (params.params - 1); ++i)
 	{
 		enemies.push_back(params[i].getLit());
 	}
+
 	runFight(enemies, params[params.params - 1].getLit());
 }
 
@@ -3500,6 +3828,7 @@ void callshop(CALL_DATA &params)
 	for (unsigned int i = 0; i != params.params; ++i)
 	{
 		const STRING item = addExtension(params[i].getLit(), _T("itm"));
+
 		if (CFile::fileExists(g_projectPath + ITM_PATH + item))
 		{
 			shopInv.give(g_projectPath + ITM_PATH + item);
@@ -3548,8 +3877,14 @@ void attackall(CALL_DATA &params)
 
 	// Get the target party.
 	int party = -1;
-	if (g_target.type == ET_ENEMY) party = ENEMY_PARTY;
-	else if (g_target.type == ET_PLAYER) party = PLAYER_PARTY;
+	if (g_target.type == ET_ENEMY)
+	{
+		party = ENEMY_PARTY;
+	}
+	else if (g_target.type == ET_PLAYER)
+	{
+		party = PLAYER_PARTY;
+	}
 	else
 	{
 		throw CError(_T("AttackAll(): inappropriate target."));
@@ -3563,7 +3898,12 @@ void attackall(CALL_DATA &params)
 	{
 		// Deal the damage to this fighter.
 		int hp = pFighter->pFighter->health() - damage;
-		if (hp < 0) hp = 0;
+
+		if (hp < 0)
+		{
+			hp = 0;
+		}
+
 		pFighter->pFighter->health(hp);
 
 		// Inform the plugin.
@@ -3593,8 +3933,15 @@ void drainall(CALL_DATA &params)
 
 	// Get the target party.
 	int party = -1;
-	if (g_target.type == ET_ENEMY) party = ENEMY_PARTY;
-	else if (g_target.type == ET_PLAYER) party = PLAYER_PARTY;
+
+	if (g_target.type == ET_ENEMY)
+	{
+		party = ENEMY_PARTY;
+	}
+	else if (g_target.type == ET_PLAYER)
+	{
+		party = PLAYER_PARTY;
+	}
 	else
 	{
 		throw CError(_T("DrainAll(): inappropriate target."));
@@ -3608,7 +3955,12 @@ void drainall(CALL_DATA &params)
 	{
 		// Deal the damage to this fighter.
 		int smp = pFighter->pFighter->smp() - damage;
-		if (smp < 0) smp = 0;
+
+		if (smp < 0)
+		{
+			smp = 0;
+		}
+
 		pFighter->pFighter->smp(smp);
 
 		// Inform the plugin.
@@ -3678,6 +4030,7 @@ void checkbutton(CALL_DATA &params)
 	{
 		throw CError(_T("CheckButton() requires two parameters."));
 	}
+
 	const int x = int(params[0].getNum()), y = int(params[1].getNum()); 
 
 	params.ret().udt = UDT_NUM;
@@ -3708,10 +4061,16 @@ void clearbuttons(CALL_DATA &params)
 		for (unsigned int i = 0; i != params.params; ++i)
 		{
 			std::map<int, RPG_BUTTON>::iterator j = g_buttons.find(int(params[i].getNum()));
-			if (j != g_buttons.end()) g_buttons.erase(j);
+
+			if (j != g_buttons.end())
+			{
+				g_buttons.erase(j);
+			}
 		}
+
 		return;
 	}
+
 	g_buttons.clear();
 }
 
@@ -3727,6 +4086,7 @@ void mouseclick(CALL_DATA &params)
 	{
 		throw CError(_T("MouseClick() requires two or three parameters."));
 	}
+
 	CONST POINT p = getMouseClick(params.params == 3 ? !(params[2].getBool()) : true);
 	{
 		LPSTACK_FRAME var = params.prg->getVar(params[0].lit);
@@ -3795,6 +4155,7 @@ void fade(CALL_DATA &params)
 			// Box grows from centre to fill screen.
 			const int pxStep = 5;
 			unsigned int i;
+
 			for (i = 0; i != width / 2; i += pxStep)
 			{
 				int y1 = height / 2 - i, y2 = height / 2 + i;
@@ -3805,6 +4166,7 @@ void fade(CALL_DATA &params)
 					g_color);
 				renderRpgCodeScreen();
 			}
+
 			// Shrink box back to centre on a black background.
 			for (; i != 0; i -= pxStep)
 			{
@@ -3818,7 +4180,8 @@ void fade(CALL_DATA &params)
 				processEvent();
 				renderRpgCodeScreen();
 			}
-		} break;
+		} 
+		break;
 	case 1:
 		{
 			// Vertical lines sweep across screen.
@@ -3828,14 +4191,16 @@ void fade(CALL_DATA &params)
 			for (int j = 0; j != 2; ++j)
 			{
 				unsigned int i;
+
 				// First sweep.
-				for (i= 0; i != width / 2; i += pxStep * 2)
+				for (i = 0; i != width / 2; i += pxStep * 2)
 				{
 					g_cnvRpgCode->DrawFilledRect(i, 0, i + pxStep, height, color);
 					g_cnvRpgCode->DrawFilledRect(width / 2 + i, 0, width / 2 + i + pxStep, height, color);
 					processEvent();
 					renderRpgCodeScreen();
 				}
+
 				// Fill in gaps.
 				for (i = pxStep; i < width / 2; i += pxStep * 2)
 				{
@@ -3844,13 +4209,16 @@ void fade(CALL_DATA &params)
 					processEvent();
 					renderRpgCodeScreen();
 				}
+
 				// Repeat once with black.
 				color = 0;
 			}
+
 			g_cnvRpgCode->ClearScreen(g_color);
 			processEvent();
 			renderRpgCodeScreen();
-		} break;
+		} 
+		break;
 	case 2:
 		{
 			// "Fade" from solid grey to solid black.
@@ -3860,7 +4228,8 @@ void fade(CALL_DATA &params)
 				processEvent();
 				renderRpgCodeScreen();
 			}
-		} break;
+		} 
+		break;
 	case 3:
 		{
 			// Swipe left to right.
@@ -3870,11 +4239,13 @@ void fade(CALL_DATA &params)
 			CCanvas cnv;
 			cnv.CreateBlank(NULL, 128, height, TRUE);
 			cnv.ClearScreen(0);
+
 			int i;
 			for (i = 0; i != 128; i += pxStep)
 			{
 				cnv.DrawFilledRect(i, 0, i + pxStep, height, RGB(i,i,i));
 			}
+
 			// Copy over the gradient, shifting it right.
 			for (i = -128; i != width; i += pxStep)
 			{
@@ -3883,7 +4254,8 @@ void fade(CALL_DATA &params)
 				processEvent();
 				renderRpgCodeScreen();
 			}
-		} break;
+		} 
+		break;
 	case 4:
 		{
 			// Circle in on player.
@@ -3902,7 +4274,8 @@ void fade(CALL_DATA &params)
 				processEvent();
                 renderRpgCodeScreen();
 			}
-		} break;
+		} 
+		break;
 	case 5:
 		{
 			// Image fade.
@@ -3919,8 +4292,8 @@ void fade(CALL_DATA &params)
 				processEvent();
                 renderRpgCodeScreen();
 			}
-		} break;
-
+		} 
+		break;
 	}
 }
 
@@ -3941,6 +4314,7 @@ void zoom(CALL_DATA &params)
 	{
 		throw CError(_T("Zoom() requires one parameter."));
 	}
+
 	CCanvas cnv(*g_cnvRpgCode);
 	const double percent = 1.0 - params[0].getNum() / 100;
 	const double speed = g_fpms * 0.05;
@@ -3980,6 +4354,7 @@ void earthquake(CALL_DATA &params)
 	{
 		throw CError(_T("Earthquake() requires one parameter."));
 	}
+
 	const CCanvas cnv(*g_cnvRpgCode);
 	const int intensity = int(params[0].getNum());
 
@@ -4007,6 +4382,7 @@ void earthquake(CALL_DATA &params)
 
 		processEvent();
 	}
+
 	cnv.Blt(g_cnvRpgCode, 0, 0, SRCCOPY);
 	renderRpgCodeScreen();
 }
@@ -4044,6 +4420,7 @@ void wipe(CALL_DATA &params)
 	{
 		throw CError(_T("Wipe() requires two or three parameters."));
 	}
+
 	CCanvas cnv, cnvScr(*g_cnvRpgCode);
 	cnv.CreateBlank(NULL, width, height, TRUE);
 	drawImage(g_projectPath + BMP_PATH + params[0].getLit(), &cnv, 0, 0, width, height);
@@ -4067,7 +4444,8 @@ void wipe(CALL_DATA &params)
 			cnvScr.BltPart(g_cnvRpgCode, x, 0, 0, 0, width - x, height, SRCCOPY);
 			renderRpgCodeScreen();
 			processEvent();
-		} break;
+		} 
+		break;
 	case 2:	// Left
 		for (x = width; x > 0; x -= speed)
 		{
@@ -4075,7 +4453,8 @@ void wipe(CALL_DATA &params)
 			cnvScr.BltPart(g_cnvRpgCode, 0, 0, width - x, 0, x, height, SRCCOPY);
 			renderRpgCodeScreen();
 			processEvent();
-		} break;
+		} 
+		break;
 	case 3:	// Down
 		for (y = 0; y < height; y += speed)
 		{
@@ -4083,7 +4462,8 @@ void wipe(CALL_DATA &params)
 			cnvScr.BltPart(g_cnvRpgCode, 0, y, 0, 0, width, height - y, SRCCOPY);
 			renderRpgCodeScreen();
 			processEvent();
-		} break;
+		} 
+		break;
 	case 4:	// Up
 		for (y = height; y > 0; y -= speed)
 		{
@@ -4091,7 +4471,8 @@ void wipe(CALL_DATA &params)
 			cnvScr.BltPart(g_cnvRpgCode, 0, 0, 0,  height - y, width, y, SRCCOPY);
 			renderRpgCodeScreen();
 			processEvent();
-		} break;
+		} 
+		break;
 	case 5:	// Down-right
 		for (; x < width; x += speed, dy += dspeed)
 		{
@@ -4099,7 +4480,8 @@ void wipe(CALL_DATA &params)
 			cnvScr.BltPart(g_cnvRpgCode, x, round(dy), 0, 0, width - x, height - round(dy), SRCCOPY);
 			renderRpgCodeScreen();
 			processEvent();
-		} break;
+		} 
+		break;
 	case 6:	// Down-left
 		for (x = width; x > 0; x -= speed, dy += dspeed)
 		{
@@ -4107,7 +4489,8 @@ void wipe(CALL_DATA &params)
 			cnvScr.BltPart(g_cnvRpgCode, 0, round(dy), width - x, 0, x, height - round(dy), SRCCOPY);
 			renderRpgCodeScreen();
 			processEvent();
-		} break;
+		} 
+		break;
 	case 7:	// Up-right
 		for (dy = double(height); x < width; x += speed, dy -= dspeed)
 		{
@@ -4115,7 +4498,8 @@ void wipe(CALL_DATA &params)
 			cnvScr.BltPart(g_cnvRpgCode, x, 0, 0, height - round(dy), width - x, round(dy), SRCCOPY);
 			renderRpgCodeScreen();
 			processEvent();
-		} break;
+		} 
+		break;
 	case 8:	// Up-left
 		for (dy = double(height), x = width; x > 0; x -= speed, dy -= dspeed)
 		{
@@ -4123,7 +4507,8 @@ void wipe(CALL_DATA &params)
 			cnvScr.BltPart(g_cnvRpgCode, 0, 0, width - x, height - round(dy), x, round(dy), SRCCOPY);
 			renderRpgCodeScreen();
 			processEvent();
-		} break;
+		} 
+		break;
 	case 9:	// Right / Zelda
 		for (x = 0; x < width; x += speed)
 		{
@@ -4131,7 +4516,8 @@ void wipe(CALL_DATA &params)
 			cnvScr.BltPart(g_cnvRpgCode, x, 0, 0, 0, width - x, height, SRCCOPY);
 			renderRpgCodeScreen();
 			processEvent();
-		} break;
+		} 
+		break;
 	case 10:// Left / Zelda
 		for (x = width; x > 0; x -= speed)
 		{
@@ -4139,7 +4525,8 @@ void wipe(CALL_DATA &params)
 			cnvScr.BltPart(g_cnvRpgCode, 0, 0, width - x, 0, x, height, SRCCOPY);
 			renderRpgCodeScreen();
 			processEvent();
-		} break;
+		} 
+		break;
 	case 11:// Down / Zelda
 		for (y = 0; y < height; y += speed)
 		{
@@ -4147,7 +4534,8 @@ void wipe(CALL_DATA &params)
 			cnvScr.BltPart(g_cnvRpgCode, 0, y, 0, 0, width, height - y, SRCCOPY);
 			renderRpgCodeScreen();
 			processEvent();
-		} break;
+		} 
+		break;
 	case 12:// Up / Zelda
 		for (y = height; y > 0; y -= speed)
 		{
@@ -4155,8 +4543,8 @@ void wipe(CALL_DATA &params)
 			cnvScr.BltPart(g_cnvRpgCode, 0, 0, 0,  height - y, width, y, SRCCOPY);
 			renderRpgCodeScreen();
 			processEvent();
-		} break;
-
+		} 
+		break;
 	}
 }
 
@@ -4175,7 +4563,11 @@ void itemcount(CALL_DATA &params)
 	}
 
 	const STRING file = g_projectPath + ITM_PATH + params[0].getLit();
-	if (!CFile::fileExists(file)) return;
+
+	if (!CFile::fileExists(file))
+	{
+		return;
+	}
 
 	params.ret().udt = UDT_NUM;
 	params.ret().num = g_inv.getQuantity(file);
@@ -4215,6 +4607,7 @@ void playavi(CALL_DATA &params)
 	}
 
 	const STRING file = g_projectPath + MEDIA_PATH + params[0].getLit();
+
 	if (!CFile::fileExists(file))
 	{
 		throw CError(_T("PlayAvi(): could not find ") + params[0].getLit() + _T("."));
@@ -4255,6 +4648,7 @@ void playavismall(CALL_DATA &params)
 	}
 
 	const STRING file = g_projectPath + MEDIA_PATH + params[0].getLit();
+
 	if (!CFile::fileExists(file))
 	{
 		throw CError(_T("PlayAviSmall(): could not find ") + params[0].getLit() + _T("."));
@@ -4270,6 +4664,7 @@ void playavismall(CALL_DATA &params)
 	vid.renderFile(file);
 	vid.setWindow(long(g_hHostWnd));
 	const int width = vid.getWidth(), height = vid.getHeight();
+
 	if ((g_resX >= width) && (g_resY >= height))
 	{
 		// Centre the video.
@@ -4334,6 +4729,7 @@ void getlevel(CALL_DATA &params)
 	}
 
 	CPlayer *pPlayer = (CPlayer *)(getFighter(params[0].getLit()));
+
 	if (!pPlayer)
 	{
 		throw CError(_T("GetLevel(): player not found."));
@@ -4371,6 +4767,7 @@ void ai(CALL_DATA &params)
 	}
 
 	const int level = int(params[0].getNum());
+
 	if ((level < 0) || (level > 3))
 	{
 		throw CError(_T("AI(): level must be from zero to three."));
@@ -4379,6 +4776,7 @@ void ai(CALL_DATA &params)
 	LPENEMY pEnemy = LPENEMY(g_source.p);
 	int party = -1, idx = -1;
 	getFighterIndices(pEnemy, party, idx);
+
 	if ((party != -1) && (idx != -1))
 	{
 		// Use the AI.
@@ -4399,7 +4797,9 @@ void menufont(CALL_DATA &params)
 	{
 		throw CError(_T("MenuFont() requires at least three parameters."));
 	}
+
 	int g = (int)params[1].getNum();
+
 	switch(g)
 	{
 	case tkMNUFNT_PROP_DEFCOLOR:
@@ -4457,6 +4857,7 @@ void menuButtonGraphic(CALL_DATA &params)
 	{
 		throw CError(_T("MenuButtonGraphic() requires one parameter."));
 	}
+
 	g_menuButtonGraphic = params[0].getLit();
 }
 
@@ -4473,6 +4874,7 @@ void menucolor(CALL_DATA &params)
 	{
 		throw CError(_T("MenuColor() requires three parameters."));
 	}
+
 	g_menuBackgroundColor = RGB(params[0].getNum(),params[1].getNum(), params[2].getNum());
 }
 
@@ -4489,6 +4891,7 @@ void menugraphic(CALL_DATA &params)
 	{
 		throw CError(_T("MenuGraphic() requires one parameter."));
 	}
+
 	g_menuGraphic = params[0].getLit();
 }
 
@@ -4505,6 +4908,7 @@ void fightMenuGraphic(CALL_DATA &params)
 	{
 		throw CError(_T("FightMenuGraphic() requires one parameter."));
 	}
+
 	g_fightMenuGraphic = params[0].getLit();
 }
 
@@ -4629,16 +5033,30 @@ void internalmenu(CALL_DATA &params)
 	}
 
 	extern IPlugin *g_pMenuPlugin;
+
 	if (!g_pMenuPlugin)
 	{
 		throw CError(_T("InternalMenu(): no menu plugin set."));
 	}
 
 	int menu = int(params[0].getNum());
-	if (menu == 0) menu = MNU_MAIN;
-	else if (menu == 1) menu = MNU_INVENTORY;
-	else if (menu == 2) menu = MNU_EQUIP;
-	else if (menu == 4) menu = MNU_ABILITIES;
+
+	if (menu == 0)
+	{
+		menu = MNU_MAIN;
+	}
+	else if (menu == 1)
+	{ 
+		menu = MNU_INVENTORY;
+	}
+	else if (menu == 2)
+	{
+		menu = MNU_EQUIP;
+	}
+	else if (menu == 4)
+	{
+		menu = MNU_ABILITIES;
+	}
 	else
 	{
 		throw CError(_T("InternalMenu(): invalid menu specified."));
@@ -4661,7 +5079,10 @@ void applystatus(CALL_DATA &params)
 		throw CError(_T("ApplyStatus() requires two parameters."));
 	}
 
-	if (!isFighting()) return;
+	if (!isFighting())
+	{
+		return;
+	}
 
 	IFighter *pInnerFighter = getFighter(params[0].getLit());
 
@@ -4693,7 +5114,10 @@ void removestatus(CALL_DATA &params)
 		throw CError(_T("RemoveStatus() requires two parameters."));
 	}
 
-	if (!isFighting()) return;
+	if (!isFighting())
+	{
+		return;
+	}
 
 	IFighter *pInnerFighter = getFighter(params[0].getLit());
 
@@ -4740,10 +5164,12 @@ void setImage(CALL_DATA &params)
 	{
 		throw CError(_T("SetImage() requires five or six parameters."));
 	}
+
 	if (cnv)
 	{
 		extern STRING g_projectPath;
 		drawImage(g_projectPath + BMP_PATH + params[0].getLit(), cnv, int(params[1].getNum()), int(params[2].getNum()), int(params[3].getNum()), int(params[4].getNum()));
+		
 		if (cnv == g_cnvRpgCode)
 		{
 			renderRpgCodeScreen();
@@ -4765,7 +5191,11 @@ void drawcircle(CALL_DATA &params)
 	if (params.params == 4)
 	{
 		cnv = g_canvases.cast(int(params[3].getNum()));
-		if (!cnv) return;
+
+		if (!cnv)
+		{
+			return;
+		}
 	}
 	else if (params.params != 3)
 	{
@@ -4777,6 +5207,7 @@ void drawcircle(CALL_DATA &params)
 			  r = int(params[2].getNum());
 
 	cnv->DrawEllipse(x - r, y - r, x + r, y + r, g_color);
+
 	if (params.params == 3)
 	{
 		renderRpgCodeScreen();
@@ -4794,7 +5225,11 @@ void fillcircle(CALL_DATA &params)
 	if (params.params == 4)
 	{
 		cnv = g_canvases.cast(int(params[3].getNum()));
-		if (!cnv) return;
+
+		if (!cnv)
+		{
+			return;
+		}
 	}
 	else if (params.params != 3)
 	{
@@ -4806,6 +5241,7 @@ void fillcircle(CALL_DATA &params)
 			  r = int(params[2].getNum());
 
 	cnv->DrawFilledEllipse(x - r, y - r, x + r, y + r, g_color);
+
 	if (params.params == 3)
 	{
 		renderRpgCodeScreen();
@@ -4896,7 +5332,10 @@ void restorescreen(CALL_DATA &params)
 			width, height,
 			SRCCOPY);
 	}
-	else throw CError(_T("RestoreScreen(): canvas not found."));
+	else
+	{
+		throw CError(_T("RestoreScreen(): canvas not found."));
+	}
 
 	renderRpgCodeScreen();
 }
@@ -4933,7 +5372,10 @@ void restorescreenarray(CALL_DATA &params)
 
 		g_cnvRpgScreens[0] = pCnv;
 	}
-	else throw CError(_T("RestoreScreenArray(): canvas not found."));
+	else
+	{
+		throw CError(_T("RestoreScreenArray(): canvas not found."));
+	}
 }
 
 /*
@@ -5027,8 +5469,10 @@ void log(CALL_DATA &params)
 	{
 		throw CError(_T("Log() requires one or two parameters."));
 	}
+
 	params.ret().udt = UDT_NUM;
 	params.ret().num = log(params[0].getNum());
+
 	if (params.params == 2)
 	{
 		*params.prg->getVar(params[1].lit) = params.ret();
@@ -5043,6 +5487,7 @@ void log(CALL_DATA &params)
 void getPixel(CALL_DATA &params)
 {
 	COLORREF color = 0;
+
 	if (params.params == 5)
 	{
 		color = g_cnvRpgCode->GetPixel(int(params[0].getNum()), int(params[1].getNum()));
@@ -5116,6 +5561,7 @@ void getFontSize(CALL_DATA &params)
 {
 	params.ret().udt = UDT_NUM;
 	params.ret().num = double(g_fontSize);
+
 	if (params.params == 1)
 	{
 		*params.prg->getVar(params[0].lit) = params.ret();
@@ -5142,6 +5588,7 @@ void setImageTransparent(CALL_DATA &params)
 	{
 		throw CError(_T("SetImageTransparent() requires eight or nine parameters."));
 	}
+
 	if (cnv)
 	{
 		extern STRING g_projectPath;
@@ -5149,6 +5596,7 @@ void setImageTransparent(CALL_DATA &params)
 		intermediate.CreateBlank(NULL, int(params[3].getNum()), int(params[4].getNum()), TRUE);
 		drawImage(g_projectPath + BMP_PATH + params[0].getLit(), &intermediate, 0, 0, int(params[3].getNum()), int(params[4].getNum()));
 		intermediate.BltTransparent(cnv, int(params[1].getNum()), int(params[2].getNum()), RGB(params[5].getNum(), params[6].getNum(), params[7].getNum()));
+		
 		if (cnv == g_cnvRpgCode)
 		{
 			renderRpgCodeScreen();
@@ -5176,6 +5624,7 @@ void setImageTranslucent(CALL_DATA &params)
 	{
 		throw CError(_T("SetImageTransparent() requires five or six parameters."));
 	}
+
 	if (cnv)
 	{
 		extern STRING g_projectPath;
@@ -5183,6 +5632,7 @@ void setImageTranslucent(CALL_DATA &params)
 		intermediate.CreateBlank(NULL, int(params[3].getNum()), int(params[4].getNum()), TRUE);
 		drawImage(g_projectPath + BMP_PATH + params[0].getLit(), &intermediate, 0, 0, int(params[3].getNum()), int(params[4].getNum()));
 		intermediate.BltTranslucent(cnv, int(params[1].getNum()), int(params[2].getNum()), 0.5, -1, -1);
+		
 		if (cnv == g_cnvRpgCode)
 		{
 			renderRpgCodeScreen();
@@ -5220,7 +5670,12 @@ void drawEnemy(CALL_DATA &params)
 	{
 		CAnimation anm(enemy.gfx[EN_REST]);
 		CCanvas *p = anm.getFrame(0);
-		if (p) p->BltTransparent(cnv, int(params[1].getNum()), int(params[2].getNum()), TRANSP_COLOR);
+
+		if (p) 
+		{
+			p->BltTransparent(cnv, int(params[1].getNum()), int(params[2].getNum()), TRANSP_COLOR);
+		}
+
 		if (cnv == g_cnvRpgCode)
 		{
 			renderRpgCodeScreen();
@@ -5367,7 +5822,9 @@ void setimageadditive(CALL_DATA &params)
 	{
 		throw CError(_T("SetImageAdditive() requires six or seven parameters."));
 	}
+
 	CCanvas *pTarget = g_cnvRpgCode;
+
 	if (params.params == 7)
 	{
 		if (!(pTarget = g_canvases.cast(int(params[6].getNum()))))
@@ -5385,9 +5842,13 @@ void setimageadditive(CALL_DATA &params)
 
 	drawImage(strFile, &cnv, 0, 0, w, h);
 
-	cnv.BltAdditivePart(pTarget->GetDXSurface(), int(params[1].getNum()), int(params[2].getNum()), 0, 0, w, h, params[5].getNum() / 100.0, -1, -1);
+	cnv.BltAdditivePart(pTarget->GetDXSurface(), int(params[1].getNum()), 
+		int(params[2].getNum()), 0, 0, w, h, params[5].getNum() / 100.0, -1, -1);
 
-	if (pTarget == g_cnvRpgCode) renderRpgCodeScreen();
+	if (pTarget == g_cnvRpgCode)
+	{
+		renderRpgCodeScreen();
+	}
 }
 
 /*
@@ -5500,7 +5961,11 @@ void itemstance(CALL_DATA &params)
 	}
 
 	CItem *p = getItemPointer(params[0]);
-	if (!p) throw CError(_T("ItemStance(): item not found"));
+
+	if (!p)
+	{
+		throw CError(_T("ItemStance(): item not found"));
+	}
 
 	const unsigned int flags = (params.params > 2 ? (unsigned int)params[2].getNum() : 0);
 
@@ -5523,7 +5988,11 @@ void playerstance(CALL_DATA &params)
 	}
 
 	CPlayer *p = getPlayerPointer(params[0]);
-	if (!p) throw CError(_T("PlayerStance(): player not found"));
+
+	if (!p)
+	{
+		throw CError(_T("PlayerStance(): player not found"));
+	}
 
 	const unsigned int flags = (params.params > 2 ? (unsigned int)params[2].getNum() : 0);
 
@@ -5546,7 +6015,11 @@ void posture(CALL_DATA &params)
 	}
 
 	CSprite *p = (params.params == 2 ? getPlayerPointer(params[1]) : g_pSelectedPlayer);
-	if (!p) throw CError(_T("Posture(): player not found"));
+
+	if (!p)
+	{
+		throw CError(_T("Posture(): player not found"));
+	}
 
 	STRING str = _T("Custom");
 	char ch[255]; itoa(int(params[0].getNum()), ch, 10);
@@ -5573,6 +6046,7 @@ void forceRedraw(CALL_DATA &params)
 {
 	extern SCROLL_CACHE g_scrollCache;
 	extern LPBOARD g_pBoard;
+
 	if (g_pBoard->bLayerOccupied.size())
 	{
 		setAmbientLevel();
@@ -5583,6 +6057,7 @@ void forceRedraw(CALL_DATA &params)
 	{
 		g_cnvRpgCode->ClearScreen(0);
 	}
+
 	renderRpgCodeScreen();
 }
 
@@ -5643,6 +6118,7 @@ void giveexp(CALL_DATA &params)
 	}
 
 	CPlayer *p = getPlayerPointer(params[0]);
+
 	if (p)
 	{
 		p->giveExperience(int(params[1].getNum()));
@@ -5680,14 +6156,18 @@ void thread(CALL_DATA &params)
 	{
 		throw CError(_T("Thread() requires two or three parameters."));
 	}
+
 	CThread *p = CThread::create(params[0].getLit());
+
 	if (!params[1].getBool())
 	{
 		extern LPBOARD g_pBoard;
 		g_pBoard->threads.push_back(p);
 	}
+
 	params.ret().udt = UDT_NUM;
 	params.ret().num = double(int(p));
+
 	if (params.params == 3)
 	{
 		*params.prg->getVar(params[2].lit) = params.ret();
@@ -5705,11 +6185,14 @@ void killThread(CALL_DATA &params)
 	{
 		throw CError(_T("KillThread() requires one parameter."));
 	}
+
 	CThread *p = (CThread *)int(params[0].getNum());
+
 	if (!CThread::isThread(p))
 	{
 		throw CError(_T("Invalid thread ID for KillThread()."));
 	}
+
 	CThread::destroy(p); // Innocuous.
 }
 
@@ -5724,8 +6207,10 @@ void getThreadId(CALL_DATA &params)
 	{
 		throw CError(_T("GetThreadID() is invalid outside of threads."));
 	}
+
 	params.ret().udt = UDT_NUM;
 	params.ret().num = double(int(params.prg));
+
 	if (params.params == 1)
 	{
 		*params.prg->getVar(params[0].lit) = params.ret();
@@ -5747,11 +6232,14 @@ void threadSleep(CALL_DATA &params)
 	{
 		throw CError(_T("ThreadSleep() requires one parameter."));
 	}
+
 	CThread *p = (CThread *)int(params[0].getNum());
+
 	if (!CThread::isThread(p))
 	{
 		throw CError(_T("Invalid thread ID for ThreadSleep()."));
 	}
+
 	p->sleep((unsigned long)(params[1].getNum() * 1000.0));
 }
 
@@ -5768,7 +6256,9 @@ void tellThread(CALL_DATA &params)
 	{
 		throw CError(_T("TellThread() requires two parameters."));
 	}
+
 	CThread *p = (CThread *)int(params[0].getNum());
+
 	if (!CThread::isThread(p))
 	{
 		throw CError(_T("Invalid thread ID for TellThread()."));
@@ -5790,11 +6280,14 @@ void threadWake(CALL_DATA &params)
 	{
 		throw CError(_T("ThreadWake() requires one parameter."));
 	}
+
 	CThread *p = (CThread *)int(params[0].getNum());
+
 	if (!CThread::isThread(p))
 	{
 		throw CError(_T("Invalid thread ID for ThreadWake()."));
 	}
+
 	p->wakeUp();
 }
 
@@ -5809,13 +6302,17 @@ void threadSleepRemaining(CALL_DATA &params)
 	{
 		throw CError(_T("ThreadSleepRemaining() requires one or two parameters."));
 	}
+
 	CThread *p = (CThread *)int(params[0].getNum());
+
 	if (!CThread::isThread(p))
 	{
 		throw CError(_T("Invalid thread ID for ThreadSleepRemaining()."));
 	}
+
 	params.ret().udt = UDT_NUM;
 	params.ret().num = p->sleepRemaining() / 1000.0;
+
 	if (params.params == 2)
 	{
 		*params.prg->getVar(params[1].lit) = params.ret();
@@ -5833,9 +6330,11 @@ void local(CALL_DATA &params)
 	{
 		throw CError(_T("Local() requires one or two parameters."));
 	}
+
 	params.prg->getLocal(params[0].lit); // Allocates a var if it does not exist.
 	params.ret().udt = UDT_ID;
 	params.ret().lit = params[0].lit;
+
 	if (params.params == 2)
 	{
 		*params.prg->getVar(params[1].lit) = params.ret();
@@ -5867,9 +6366,11 @@ void global(CALL_DATA &params)
 	{
 		throw CError(_T("Global() requires one or two parameters."));
 	}
+
 	CProgram::getGlobal(params[0].lit); // Allocates a var if it does not exist.
 	params.ret().udt = UDT_ID;
 	params.ret().lit = _T(":") + params[0].lit;
+
 	if (params.params == 2)
 	{
 		*params.prg->getVar(params[1].lit) = params.ret();
@@ -5921,6 +6422,7 @@ void killCursorMap(CALL_DATA &params)
 	{
 		throw CError(_T("KillCursorMap() requires one parameter."));
 	}
+
 	g_cursorMaps.free((CCursorMap *)(int)params[0].getNum());
 }
 
@@ -5935,7 +6437,9 @@ void cursorMapAdd(CALL_DATA &params)
 	{
 		throw CError(_T("CursorMapAdd() requires three parameters."));
 	}
+
 	CCursorMap *p = g_cursorMaps.cast((int)params[2].getNum());
+
 	if (p)
 	{
 		p->add(int(params[0].getNum()), int(params[1].getNum()));
@@ -5952,6 +6456,7 @@ void cursorMapRun(CALL_DATA &params)
 	if (params.params == 1)
 	{
 		CCursorMap *p = g_cursorMaps.cast((int)params[0].getNum());
+
 		if (p)
 		{
 			params.ret().udt = UDT_NUM;
@@ -5961,6 +6466,7 @@ void cursorMapRun(CALL_DATA &params)
 	else if (params.params == 2)
 	{
 		CCursorMap *p = g_cursorMaps.cast((int)params[0].getNum());
+
 		if (p)
 		{
 			LPSTACK_FRAME var = params.prg->getVar(params[1].lit);
@@ -5985,11 +6491,13 @@ void createCanvas(CALL_DATA &params)
 	{
 		throw CError(_T("CreateCanvas() requires two or three parameters."));
 	}
+
 	CCanvas *p = g_canvases.allocate();
 	p->CreateBlank(NULL, int(params[0].getNum()), int(params[1].getNum()), TRUE);
 	p->ClearScreen(0);
 	params.ret().udt = UDT_NUM;
 	params.ret().num = double(int(p));
+
 	if (params.params == 3)
 	{
 		*params.prg->getVar(params[2].lit) = params.ret();
@@ -6007,6 +6515,7 @@ void killCanvas(CALL_DATA &params)
 	{
 		throw CError(_T("KillCanvas() requires one parameter."));
 	}
+
 	CCanvas *p = (CCanvas *)(int)params[0].getNum();
 	g_canvases.free(p);
 }
@@ -6021,6 +6530,7 @@ void drawCanvas(CALL_DATA &params)
 	if (params.params == 3)
 	{
 		CCanvas *p = g_canvases.cast((int)params[0].getNum());
+
 		if (p)
 		{
 			p->Blt(g_cnvRpgCode, int(params[1].getNum()), int(params[2].getNum()));
@@ -6030,23 +6540,30 @@ void drawCanvas(CALL_DATA &params)
 	else if (params.params == 5)
 	{
 		CCanvas *p = g_canvases.cast((int)params[0].getNum());
+
 		if (p)
 		{
-		const int width = int(params[3].getNum());
-		const int height = int(params[4].getNum());
+			const int width = int(params[3].getNum());
+			const int height = int(params[4].getNum());
 
-			if(width == p->GetWidth() && height == p->GetHeight()){
+			if(width == p->GetWidth() && height == p->GetHeight())
+			{
 				p->Blt(g_cnvRpgCode, int(params[1].getNum()), int(params[2].getNum()));
 			}
-			else{
-				p->BltStretch(g_cnvRpgCode, int(params[1].getNum()), int(params[2].getNum()), 0, 0, p->GetWidth(), p->GetHeight(), int(params[3].getNum()), int(params[4].getNum()), SRCCOPY);
+			else
+			{
+				p->BltStretch(g_cnvRpgCode, int(params[1].getNum()), int(params[2].getNum()),
+					0, 0, p->GetWidth(), p->GetHeight(), int(params[3].getNum()), 
+					int(params[4].getNum()), SRCCOPY);
 			}
+
 			renderRpgCodeScreen();
 		}
 	}
 	else if (params.params == 6)
 	{
 		CCanvas *p = g_canvases.cast((int)params[0].getNum());
+
 		if (p)
 		{
 			CCanvas *pDest = g_canvases.cast((int)params[5].getNum());
@@ -6054,11 +6571,16 @@ void drawCanvas(CALL_DATA &params)
 			{
 				const int width = int(params[3].getNum());
 				const int height = int(params[4].getNum());
-				if(width == p->GetWidth() && height == p->GetHeight()){
+
+				if(width == p->GetWidth() && height == p->GetHeight())
+				{
 					p->Blt(pDest,int(params[1].getNum()),int(params[2].getNum()));
 				}
-				else{
-					p->BltStretch(pDest, int(params[1].getNum()), int(params[2].getNum()), 0, 0, p->GetWidth(), p->GetHeight(), int(params[3].getNum()), int(params[4].getNum()), SRCCOPY);
+				else
+				{
+					p->BltStretch(pDest, int(params[1].getNum()), int(params[2].getNum()), 
+						0, 0, p->GetWidth(), p->GetHeight(), int(params[3].getNum()), 
+						int(params[4].getNum()), SRCCOPY);
 				}
 			}
 		}
@@ -6185,8 +6707,10 @@ void fileInput(CALL_DATA &params)
 
 	std::map<STRING, CFile>::iterator i = g_files.find(parser::uppercase(params[0].getLit()));
 
-	if (!((i != g_files.end()) && i->second.isOpen())) 
+	if (!((i != g_files.end()) && i->second.isOpen()))
+	{
 		return;
+	}
 
 	params.ret().udt = UDT_LIT;
 	params.ret().lit = i->second.line();
@@ -6212,8 +6736,10 @@ void filePrint(CALL_DATA &params)
 
 	std::map<STRING, CFile>::iterator i = g_files.find(parser::uppercase(params[0].getLit()));
 
-	if (!((i != g_files.end()) && i->second.isOpen())) 
+	if (!((i != g_files.end()) && i->second.isOpen()))
+	{
 		return;
+	}
 
 	const STRING str = params[1].getLit();
 
@@ -6236,12 +6762,19 @@ void fileGet(CALL_DATA &params)
 	{
 		throw CError(_T("FileGet() requires one or two parameters."));
 	}
+
 	std::map<STRING, CFile>::iterator i = g_files.find(parser::uppercase(params[0].getLit()));
-	if (!((i != g_files.end()) && i->second.isOpen())) return;
+
+	if (!((i != g_files.end()) && i->second.isOpen()))
+	{
+		return;
+	}
+
 	params.ret().udt = UDT_LIT;
 	char c;
 	i->second >> c;
 	params.ret().lit = c;
+
 	if (params.params == 2)
 	{
 		*params.prg->getVar(params[1].lit) = params.ret();
@@ -6262,8 +6795,10 @@ void filePut(CALL_DATA &params)
 
 	std::map<STRING, CFile>::iterator i = g_files.find(parser::uppercase(params[0].getLit()));
 
-	if (!((i != g_files.end()) && i->second.isOpen())) 
+	if (!((i != g_files.end()) && i->second.isOpen()))
+	{
 		return;
+	}
 
 	i->second << params[1].getLit()[0];
 }
@@ -6279,10 +6814,17 @@ void fileEof(CALL_DATA &params)
 	{
 		throw CError(_T("FileEOF() requires one or two parameters."));
 	}
+
 	std::map<STRING, CFile>::iterator i = g_files.find(parser::uppercase(params[0].getLit()));
-	if (!((i != g_files.end()) && i->second.isOpen())) return;
+
+	if (!((i != g_files.end()) && i->second.isOpen()))
+	{
+		return;
+	}
+
 	params.ret().udt = UDT_NUM;
 	params.ret().num = double(i->second.isEof());
+
 	if (params.params == 2)
 	{
 		*params.prg->getVar(params[1].lit) = params.ret();
@@ -6300,8 +6842,10 @@ void len(CALL_DATA &params)
 	{
 		throw CError(_T("Len() requires one or two parameters."));
 	}
+
 	params.ret().udt = UDT_NUM;
 	params.ret().num = params[0].getLit().length();
+
 	if (params.params == 2)
 	{
 		*params.prg->getVar(params[1].lit) = params.ret();
@@ -6324,7 +6868,11 @@ void instr(CALL_DATA &params)
 
 	const STRING haystack = params[0].getLit();
 	unsigned int offset = (params.params == 3) ? (int(params[2].getNum()) - 1) : 0;
-	if (offset < 0) offset = 0;
+
+	if (offset < 0)
+	{
+		offset = 0;
+	}
 
 	const unsigned int pos = haystack.find(params[1].getLit(), offset) + 1;
 
@@ -6347,7 +6895,11 @@ void getitemname(CALL_DATA &params)
 	}
 
 	const STRING file = g_projectPath + ITM_PATH + params[0].getLit();
-	if (!CFile::fileExists(file)) return;
+
+	if (!CFile::fileExists(file))
+	{
+		return;
+	}
 
 	ITEM itm;
 	itm.open(file, NULL);
@@ -6376,7 +6928,11 @@ void getitemdesc(CALL_DATA &params)
 	}
 
 	const STRING file = g_projectPath + ITM_PATH + params[0].getLit();
-	if (!CFile::fileExists(file)) return;
+
+	if (!CFile::fileExists(file))
+	{
+		return;
+	}
 
 	ITEM itm;
 	itm.open(file, NULL);
@@ -6405,7 +6961,11 @@ void getitemcost(CALL_DATA &params)
 	}
 
 	const STRING file = g_projectPath + ITM_PATH + params[0].getLit();
-	if (!CFile::fileExists(file)) return;
+
+	if (!CFile::fileExists(file))
+	{
+		return;
+	}
 
 	ITEM itm;
 	itm.open(file, NULL);
@@ -6434,7 +6994,11 @@ void getitemsellprice(CALL_DATA &params)
 	}
 
 	const STRING file = g_projectPath + ITM_PATH + params[0].getLit();
-	if (!CFile::fileExists(file)) return;
+
+	if (!CFile::fileExists(file))
+	{
+		return;
+	}
 
 	ITEM itm;
 	itm.open(file, NULL);
@@ -6462,6 +7026,7 @@ void splicevariables(CALL_DATA &params)
 	{
 		throw CError("SpliceVariables() requires one parameter.");
 	}
+
 	params.ret().udt = UDT_LIT;
 	params.ret().lit = spliceVariables(params.prg, params[0].getLit());
 }
@@ -6492,6 +7057,7 @@ void split(CALL_DATA &params)
 		// The array name was passed in quotes, so a $ or !
 		// may have eluded the parser's stripping of them.
 		char &c = array[array.length() - 1];
+
 		if ((c == _T('$')) || (c == _T('!')))
 		{
 			array = array.substr(0, array.length() - 1);
@@ -6522,21 +7088,52 @@ void asc(CALL_DATA &params)
 	{
 		throw CError(_T("Asc() requires one or two parameters."));
 	}
+
 	params.ret().udt = UDT_NUM;
 
 	STRING literalValue = params[0].getLit();
 	double asciiValue = 0;
 
-	if (literalValue == _T("BACKSPACE")) asciiValue = 8;
-	else if (literalValue == _T("TAB")) asciiValue = 9;
-	else if (literalValue == _T("ENTER")) asciiValue = 13;
-	else if (literalValue == _T("CAPSLOCK")) asciiValue = 20;
-	else if (literalValue == _T("ESC")) asciiValue = 27;
-	else if (literalValue == _T("LEFT")) asciiValue = 37;
-	else if (literalValue == _T("UP")) asciiValue = 38;
-	else if (literalValue == _T("RIGHT")) asciiValue = 39;
-	else if (literalValue == _T("DOWN")) asciiValue = 40;
-	else asciiValue = (double)params[0].getLit()[0];
+	if (literalValue == _T("BACKSPACE"))
+	{
+		asciiValue = 8;
+	}
+	else if (literalValue == _T("TAB"))
+	{
+		asciiValue = 9;
+	}
+	else if (literalValue == _T("ENTER"))
+	{
+		asciiValue = 13;
+	}
+	else if (literalValue == _T("CAPSLOCK"))
+	{
+		asciiValue = 20;
+	}
+	else if (literalValue == _T("ESC"))
+	{
+		asciiValue = 27;
+	}
+	else if (literalValue == _T("LEFT"))
+	{
+		asciiValue = 37;
+	}
+	else if (literalValue == _T("UP"))
+	{
+		asciiValue = 38;
+	}
+	else if (literalValue == _T("RIGHT"))
+	{
+		asciiValue = 39;
+	}
+	else if (literalValue == _T("DOWN"))
+	{
+		asciiValue = 40;
+	}
+	else
+	{
+		asciiValue = (double)params[0].getLit()[0];
+	}
 
 	params.ret().num = asciiValue;
 
@@ -6557,8 +7154,10 @@ void chr(CALL_DATA &params)
 	{
 		throw CError(_T("Chr() requires one or two parameters."));
 	}
+
 	params.ret().udt = UDT_LIT;
 	params.ret().lit = (char)params[0].getNum();
+
 	if (params.params == 2)
 	{
 		*params.prg->getVar(params[1].lit) = params.ret();
@@ -6576,8 +7175,10 @@ void trim(CALL_DATA &params)
 	{
 		throw CError(_T("Trim() requires one or two parameters."));
 	}
+
 	params.ret().udt = UDT_LIT;
 	params.ret().lit = parser::trim(params[0].getLit());
+
 	if (params.params == 2)
 	{
 		*params.prg->getVar(params[1].lit) = params.ret();
@@ -6595,12 +7196,19 @@ void right(CALL_DATA &params)
 	{
 		throw CError(_T("Right() requires two or three parameters."));
 	}
+
 	params.ret().udt = UDT_LIT;
+
 	try
 	{
-		params.ret().lit = params[0].getLit().substr(params[0].getLit().length() - int(params[1].getNum()), int(params[1].getNum()));
+		params.ret().lit = params[0].getLit().substr(params[0].getLit().length() 
+			- int(params[1].getNum()), int(params[1].getNum()));
 	}
-	catch (...) { }
+	catch (...) 
+	{ 
+
+	}
+
 	if (params.params == 3)
 	{
 		*params.prg->getVar(params[2].lit) = params.ret();
@@ -6618,12 +7226,18 @@ void left(CALL_DATA &params)
 	{
 		throw CError(_T("Left() requires two or three parameters."));
 	}
+
 	params.ret().udt = UDT_LIT;
+
 	try
 	{
 		params.ret().lit = params[0].getLit().substr(0, int(params[1].getNum()));
 	}
-	catch (...) { }
+	catch (...) 
+	{
+
+	}
+
 	if (params.params == 3)
 	{
 		*params.prg->getVar(params[2].lit) = params.ret();
@@ -6710,6 +7324,7 @@ void debugger(CALL_DATA &params)
 	{
 		throw CError(_T("Debugger() requires one parameter."));
 	}
+
 	CProgram::debugger(params[0].getLit());
 }
 
@@ -6751,7 +7366,11 @@ void msgbox(CALL_DATA &params)
 	if (params.params > 1)
 	{
 		const STRING title = params[1].getLit();
-		if (!title.empty()) text = title + _T('\n') + text;
+
+		if (!title.empty())
+		{
+			text = title + _T('\n') + text;
+		}
 	}
 	int buttons = params.params > 2 ? (params[2].getBool() ? 2 : 1) : 1;
 	const long textColor = params.params > 3 ? long(params[3].getNum()) : RGB(255, 255, 255);
@@ -6790,6 +7409,7 @@ void autolocal(CALL_DATA &params)
 	{
 		throw CError(_T("AutoLocal() requires one parameter."));
 	}
+
 	params.prg->setDefaultScope(params[0].getBool() ? VS_LOCAL : VS_GLOBAL);
 }
 
@@ -6803,6 +7423,7 @@ void getBoardName(CALL_DATA &params)
 	extern LPBOARD g_pBoard;
 	params.ret().udt = UDT_LIT;
 	params.ret().lit = g_pBoard->filename;
+
 	if (params.params == 1)
 	{
 		*params.prg->getVar(params[0].lit) = params.ret();
@@ -6820,10 +7441,12 @@ void lcase(CALL_DATA &params)
 	{
 		throw CError(_T("LCase() requires one or two parameters."));
 	}
+
 	char *const str = _strlwr(_strdup(params[0].getLit().c_str()));
 	params.ret().udt = UDT_LIT;
 	params.ret().lit = str;
 	free(str);
+
 	if (params.params == 2)
 	{
 		*params.prg->getVar(params[1].lit) = params.ret();
@@ -6841,10 +7464,12 @@ void ucase(CALL_DATA &params)
 	{
 		throw CError(_T("UCase() requires one or two parameters."));
 	}
+
 	char *const str = _strupr(_strdup(params[0].getLit().c_str()));
 	params.ret().udt = UDT_LIT;
 	params.ret().lit = str;
 	free(str);
+
 	if (params.params == 2)
 	{
 		*params.prg->getVar(params[1].lit) = params.ret();
@@ -6981,6 +7606,7 @@ void multiRunEnd(CProgram *prg)
 	{
 		// Run all sprite movements until all sprites have finished moving. 
 		bool moving = true;
+
 		while (moving)
 		{
 			moving = false;
@@ -7025,6 +7651,7 @@ void mousecursor(CALL_DATA &params)
 	{
 		throw CError(_T("MouseCursor() requires six parameters."));
 	}
+
 	g_mainFile.hotSpotX = int(params[1].getNum());
 	g_mainFile.hotSpotY = int(params[2].getNum());
 	g_mainFile.transpColor = RGB(
@@ -7032,10 +7659,16 @@ void mousecursor(CALL_DATA &params)
 		int(params[4].getNum()),
 		int(params[5].getNum())
 	);
+
 	const STRING ext = parser::uppercase(getExtension(params[0].getLit()).substr(0, 3));
 	STRING tempFile;
 	STRING file = params[0].getLit();
-	if (file.empty()) file = _T("TK DEFAULT");
+
+	if (file.empty())
+	{
+		file = _T("TK DEFAULT");
+	}
+
 	if ((ext == _T("TST")) || (ext == _T("GPH")))
 	{
 		TILE_BITMAP tbm;
@@ -7045,8 +7678,13 @@ void mousecursor(CALL_DATA &params)
 		tbm.save(g_projectPath + BMP_PATH + tempFile);
 		file = tempFile;
 	}
+
 	changeCursor(file);
-	if (!tempFile.empty()) unlink(tempFile.c_str());
+
+	if (!tempFile.empty())
+	{
+		unlink(tempFile.c_str());
+	}
 }
 
 /*
@@ -7120,12 +7758,21 @@ void drawcanvastransparent(CALL_DATA &params)
 	{
 		throw CError(_T("DrawCanvasTransparent() requires six, eight, or nine parameters."));
 	}
+
 	CCanvas *pCanvas = g_canvases.cast(int(params[0].getNum()));
-	if (!pCanvas) return;
+
+	if (!pCanvas)
+	{
+		return;
+	}
 
 	COLORREF colour = RGB(int(params[3].getNum()), int(params[4].getNum()), int(params[5].getNum()));
 	CCanvas *pDest = (params.params == 9) ? g_canvases.cast(int(params[8].getNum())) : g_cnvRpgCode;
-	if (!pDest) return;
+	
+	if (!pDest)
+	{
+		return;
+	}
 
 	const int x = int(params[1].getNum());
 	const int y = int(params[2].getNum());
@@ -7134,10 +7781,13 @@ void drawcanvastransparent(CALL_DATA &params)
 	{
 		const int width = int(params[6].getNum());
 		const int height = int(params[7].getNum());
-		if(width == pCanvas->GetWidth() && height == pCanvas->GetHeight()){
+
+		if(width == pCanvas->GetWidth() && height == pCanvas->GetHeight())
+		{
 			pCanvas->BltTransparent(pDest, x, y, colour);
 		}
-		else{
+		else
+		{
 			CCanvas temp;
 			temp.CreateBlank(NULL, width, height, TRUE);
 			pCanvas->BltStretch(
@@ -7184,6 +7834,7 @@ void setvolume(CALL_DATA &params)
 	{
 		throw CError(_T("SetVolume() requires one parameter."));
 	}	
+
 	CAudioSegment::setMasterVolume(int(params[0].getNum()));
 }
 
@@ -7200,16 +7851,25 @@ void canvasDrawPart(CALL_DATA &params)
 	}
 
 	CCanvas *pDest = g_cnvRpgCode;
+
 	if (params.params == 8)
 	{
 		pDest = g_canvases.cast(int(params[7].getNum()));
-		if (!pDest) pDest = g_cnvRpgCode;
+		if (!pDest)
+		{
+			pDest = g_cnvRpgCode;
+		}
 	}
 
 	CCanvas *pSrc = g_canvases.cast(int(params[0].getNum()));
-	if (!pSrc) return;
+
+	if (!pSrc)
+	{
+		return;
+	}
 
 	pSrc->BltPart(pDest, int(params[1].getNum()), int(params[2].getNum()), int(params[3].getNum()), int(params[4].getNum()), int(params[5].getNum()), int(params[6].getNum()));
+	
 	if (pDest == g_cnvRpgCode)
 	{
 		renderRpgCodeScreen();
@@ -7231,7 +7891,11 @@ void canvasGetScreen(CALL_DATA &params)
 	}
 
 	CCanvas *pDest = g_canvases.cast(int(params[0].getNum()));
-	if (!pDest) return;
+
+	if (!pDest)
+	{
+		return;
+	}
 
 	g_pDirectDraw->CopyScreenToCanvas(pDest);
 }
@@ -7250,6 +7914,7 @@ void setmwintranslucency(CALL_DATA &params)
 	{
 		throw CError(_T("SetMwinTranslucency() requires one parameter."));
 	}
+
 	g_mwin.translucency = params[0].getNum() / 100.0;
 }
 
@@ -7267,7 +7932,8 @@ void regExpReplace(CALL_DATA &params)
 
 	// Create a RegExp object.
 	IDispatch *pRegExp = NULL;
-	HRESULT res = CoCreateInstance(CLSID_REGEXP, NULL, CLSCTX_INPROC_SERVER, IID_IDispatch, (void **)&pRegExp);
+	HRESULT res = CoCreateInstance(CLSID_REGEXP, NULL, CLSCTX_INPROC_SERVER, IID_IDispatch, 
+		(void **)&pRegExp);
 
 	if (FAILED(res))
 	{
@@ -7305,7 +7971,10 @@ void spritepath(CALL_DATA &params, CSprite *p)
 
 	const unsigned int flags = (unsigned int)params[1].getNum();
 
-	if (flags & tkMV_CLEAR_QUEUE) p->clearQueue();
+	if (flags & tkMV_CLEAR_QUEUE)
+	{
+		p->clearQueue();
+	}
 
 	if (flags & tkMV_PATHFIND)
 	{
@@ -7313,6 +7982,7 @@ void spritepath(CALL_DATA &params, CSprite *p)
 		coords::tileToPixel(x, y, g_pBoard->coordType, true, g_pBoard->sizeX);
 
 		PF_PATH path = p->pathFind(x, y, PF_PREVIOUS, 0);
+
 		if (!path.empty())
 		{
 			// Initiate movement by program type.
@@ -7333,12 +8003,14 @@ void spritepath(CALL_DATA &params, CSprite *p)
 		{
 			// Pathfind to start of vector.
 			PF_PATH path = p->pathFind(int((*brd->pV)[0].x), int((*brd->pV)[0].y), PF_PREVIOUS, 0);
+
 			if (!path.empty())
 			{
 				// The last point is the same as the first of the waypoint vector.
 				path.pop_back();
 				p->setQueuedPath(path, flags & tkMV_CLEAR_QUEUE);
 			}
+
 			p->setBoardPath(brd->pV, cycles, flags);
 			p->doMovement(params.prg, flags & tkMV_PAUSE_THREAD);
 		}
@@ -7352,6 +8024,7 @@ void spritepath(CALL_DATA &params, CSprite *p)
 			const DB_POINT pt = {double(x), double(y)};
 			p->setQueuedPoint(pt, false);
 		}
+
 		p->doMovement(params.prg, flags & tkMV_PAUSE_THREAD);
 	}
 }
@@ -7387,12 +8060,21 @@ void spritepath(CALL_DATA &params, CSprite *p)
 void itempath(CALL_DATA &params)
 {
 	if (params.params < 4)
+	{
 		throw CError(_T("ItemPath() requires at least four parameters."));
+	}
 	else if (params.params % 2)
+	{
 		throw CError(_T("ItemPath() requires an even number of parameters."));
+	}
 
 	CItem *p = getItemPointer(params[0]);
-	if (!p) throw CError(_T("ItemPath(): item not found"));
+
+	if (!p)
+	{
+		throw CError(_T("ItemPath(): item not found"));
+	}
+
 	spritepath(params, p);
 }
 
@@ -7426,12 +8108,21 @@ void itempath(CALL_DATA &params)
 void playerpath(CALL_DATA &params)
 {
 	if (params.params < 4)
+	{
 		throw CError(_T("PlayerPath() requires at least four parameters."));
+	}
 	else if (params.params % 2)
+	{
 		throw CError(_T("PlayerPath() requires an even number of parameters."));
+	}
 
 	CPlayer *p = getPlayerPointer(params[0]);
-	if (!p) throw CError(_T("PlayerPath(): player not found"));
+
+	if (!p)
+	{
+		throw CError(_T("PlayerPath(): player not found"));
+	}
+
 	spritepath(params, p);
 }
 
@@ -7513,14 +8204,18 @@ void boardsetvector(CALL_DATA &params)
 		// Create a new vector.
 		g_pBoard->vectors.push_back(BRD_VECTOR());
 		g_pBoard->vectors.back().pV = new CVector(0.0, 0.0);
+
 		if (params[0].getType() & UDT_LIT)
+		{
 			g_pBoard->vectors.back().handle = params[0].getLit();
+		}
 		else
 		{
 			// Try to set the first parameter to the index.
 			(*params.prg->getVar(params[0].lit)).udt = UDT_NUM;
 			(*params.prg->getVar(params[0].lit)).num = g_pBoard->vectors.size() - 1;
 		}
+
 		brd = g_pBoard->getVector(&params[0]);
 	}
 
@@ -7533,12 +8228,14 @@ void boardsetvector(CALL_DATA &params)
 
 		// Redraw the 'under' canvas.
 		TILE_TYPE tt = TILE_TYPE(int(params[1].getNum()));
+
 		if (~tt & TT_UNDER)
 		{
 			delete brd->pCnv;
 			brd->pCnv = NULL;
 		}
 		brd->type = tt;
+
 		if (tt & TT_UNDER) 
 		{
 			brd->createCanvas(*g_pBoard);
@@ -7571,6 +8268,7 @@ void boardgetvectorpoint(CALL_DATA &params)
 	}
 	
 	const LPBRD_VECTOR brd = g_pBoard->getVector(&params[0]);
+
 	if (brd)
 	{
 		const DB_POINT pt = (*brd->pV)[(unsigned int)params[1].getNum()];
@@ -7609,7 +8307,10 @@ void boardsetvectorpoint(CALL_DATA &params)
 		if (params[4].getBool())
 		{
 			// Redraw the 'under' canvas.
-			if (brd->type & TT_UNDER) brd->createCanvas(*g_pBoard);
+			if (brd->type & TT_UNDER)
+			{
+				brd->createCanvas(*g_pBoard);
+			}
 
 			// Reset pathfinding as the collision landscape has changed.
 			CPathFind::freeAllData();
@@ -7648,6 +8349,7 @@ void boardgetprogram(CALL_DATA &params)
 	}
 	
 	const LPBRD_PROGRAM prg = g_pBoard->getProgram((unsigned int)params[0].getNum());
+
 	if (prg)
 	{
 		LPSTACK_FRAME pSf = NULL;
@@ -7701,6 +8403,7 @@ void boardsetprogram(CALL_DATA &params)
 
 	// If one-past-end index is given, create a new program.
 	const unsigned int id = (unsigned int)params[0].getNum();
+
 	if (id == g_pBoard->programs.size())
 	{
 		g_pBoard->programs.push_back(new BRD_PROGRAM());
@@ -7708,6 +8411,7 @@ void boardsetprogram(CALL_DATA &params)
 	}
 
 	LPBRD_PROGRAM prg = g_pBoard->getProgram(id);
+
 	if (prg)
 	{
 		prg->fileName = params[1].getLit();
@@ -7741,6 +8445,7 @@ void boardgetprogrampoint(CALL_DATA &params)
 	}
 	
 	const LPBRD_PROGRAM prg = g_pBoard->getProgram((unsigned int)params[0].getNum());
+
 	if (prg)
 	{
 		const DB_POINT pt = prg->vBase[(unsigned int)params[1].getNum()];
@@ -7771,6 +8476,7 @@ void boardsetprogrampoint(CALL_DATA &params)
 	}
 	
 	LPBRD_PROGRAM prg = g_pBoard->getProgram((unsigned int)params[0].getNum());
+
 	if (prg)
 	{
 		prg->vBase.setPoint((unsigned int)params[1].getNum(), params[2].getNum(), params[3].getNum());
@@ -7835,7 +8541,12 @@ void playerdirection(CALL_DATA &params)
 	}
 	
 	CPlayer *p = getPlayerPointer(params[0]);
-	if (!p) throw CError(_T("PlayerDirection(): player not found."));
+
+	if (!p)
+	{
+		throw CError(_T("PlayerDirection(): player not found."));
+	}
+
 	CSprite::CFacing *face = p->getFacing();
 
 	if (params.params == 2)
@@ -7845,6 +8556,7 @@ void playerdirection(CALL_DATA &params)
 		renderNow(g_cnvRpgCode, true);
 		renderRpgCodeScreen();
 	}
+
 	params.ret().udt = UDT_NUM;
 	params.ret().num = double(face->dir());
 }
@@ -7866,7 +8578,12 @@ void itemdirection(CALL_DATA &params)
 	}
 	
 	CItem *p = getItemPointer(params[0]);
-	if (!p) throw CError(_T("ItemDirection(): player not found."));
+
+	if (!p)
+	{
+		throw CError(_T("ItemDirection(): player not found."));
+	}
+
 	CSprite::CFacing *face = p->getFacing();
 
 	if (params.params == 2)
@@ -7876,6 +8593,7 @@ void itemdirection(CALL_DATA &params)
 		renderNow(g_cnvRpgCode, true);
 		renderRpgCodeScreen();
 	}
+
 	params.ret().udt = UDT_NUM;
 	params.ret().num = double(face->dir());
 }
@@ -7892,6 +8610,7 @@ void spritegetpath(const CSprite *spr, CALL_DATA &params)
 	else
 	{
 		const unsigned int i = (unsigned int)params[1].getNum();
+
 		if (i < pos.path.size())
 		{
 			const DB_POINT pt = pos.path[i];
@@ -7922,7 +8641,11 @@ void playergetpath(CALL_DATA &params)
 	}
 	
 	CPlayer *p = getPlayerPointer(params[0]);
-	if (!p) throw CError(_T("PlayerGetPath(): player not found."));
+
+	if (!p)
+	{
+		throw CError(_T("PlayerGetPath(): player not found."));
+	}
 
 	spritegetpath(p, params);
 }
@@ -7942,7 +8665,11 @@ void itemgetpath(CALL_DATA &params)
 	}
 	
 	CItem *p = getItemPointer(params[0]);
-	if (!p) throw CError(_T("ItemGetPath(): player not found."));
+
+	if (!p)
+	{
+		throw CError(_T("ItemGetPath(): player not found."));
+	}
 
 	spritegetpath(p, params);
 }
@@ -7960,6 +8687,7 @@ void spriteTranslucency(CALL_DATA &params)
 	{
 		g_spriteTranslucency = params[0].getNum() / 100.0;
 	}
+
 	params.ret().udt = UDT_NUM;
 	params.ret().num = g_spriteTranslucency * 100.0;
 }
@@ -7979,9 +8707,14 @@ void activePlayer(CALL_DATA &params)
 	if (params.params == 1)
 	{
 		CPlayer *p = getPlayerPointer(params[0]);
-		if (!p) throw CError(_T("activePlayer(): player not found."));
+
+		if (!p)
+		{
+			throw CError(_T("activePlayer(): player not found."));
+		}
 
 		g_pSelectedPlayer = p;
+
 		for (std::vector<CPlayer *>::const_iterator i = g_players.begin(); i != g_players.end(); ++i)
 		{
 			if (*i == p) g_selectedPlayer = int(i - g_players.begin());
@@ -7998,6 +8731,7 @@ inline STACK_FRAME makeNumStackFrame(const double num)
 	STACK_FRAME ret;
 	ret.num = num;
 	ret.udt = UDT_NUM;
+
 	return ret;
 }
 

@@ -1,12 +1,16 @@
 /*
  ********************************************************************
  * The RPG Toolkit, Version 3
- * This file copyright (C) 2006, 2007  Colin James Fitzpatrick
+ * This file copyright (C) 2007-2014 
+ *				- Colin James Fitzpatrick
+ *
+ * Contributors:
+ *				- Joshua Michael Daly
  ********************************************************************
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
+ * as published by the Free Software Foundation; either version 3
  * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -102,17 +106,60 @@ inline STRING getUnitDataType(UNIT_DATA_TYPE udt)
 {
 	STRING ret;
 
-	if (udt & UDT_UNSET) ret += "UDT_UNSET, ";
-	if (udt & UDT_NUM) ret += "UDT_NUM, ";
-	if (udt & UDT_LIT) ret += "UDT_LIT, ";
-	if (udt & UDT_ID) ret += "UDT_ID, ";
-	if (udt & UDT_FUNC) ret += "UDT_FUNC, ";
-	if (udt & UDT_OPEN) ret += "UDT_OPEN, ";
-	if (udt & UDT_CLOSE) ret += "UDT_CLOSE, ";
-	if (udt & UDT_LINE) ret += "UDT_LINE, ";
-	if (udt & UDT_OBJ) ret += "UDT_OBJ, ";
-	if (udt & UDT_LABEL) ret += "UDT_LABEL, ";
-	if (udt & UDT_PLUGIN) ret += "UDT_PLUGIN, ";
+	if (udt & UDT_UNSET)
+	{
+		ret += "UDT_UNSET, ";
+	}
+
+	if (udt & UDT_NUM)
+	{
+		ret += "UDT_NUM, ";
+	}
+
+	if (udt & UDT_LIT)
+	{
+		ret += "UDT_LIT, ";
+	}
+
+	if (udt & UDT_ID)
+	{
+		ret += "UDT_ID, ";
+	}
+
+	if (udt & UDT_FUNC)
+	{
+		ret += "UDT_FUNC, ";
+	}
+
+	if (udt & UDT_OPEN)
+	{
+		ret += "UDT_OPEN, ";
+	}
+
+	if (udt & UDT_CLOSE)
+	{
+		ret += "UDT_CLOSE, ";
+	}
+
+	if (udt & UDT_LINE)
+	{
+		ret += "UDT_LINE, ";
+	}
+
+	if (udt & UDT_OBJ)
+	{
+		ret += "UDT_OBJ, ";
+	}
+
+	if (udt & UDT_LABEL)
+	{
+		ret += "UDT_LABEL, ";
+	}
+
+	if (udt & UDT_PLUGIN)
+	{
+		ret += "UDT_PLUGIN, ";
+	}
 
 	return (!ret.empty()) ? ret.substr(0, ret.length() - 2) : STRING();
 }
@@ -129,11 +176,17 @@ inline STRING freadString(FILE *file)
 {
 	STRING ret;
 	TCHAR c = _T('\0');
+
 	while (fread(&c, sizeof(TCHAR), 1, file) != 0)
 	{
-		if (c == _T('\0')) break;
+		if (c == _T('\0'))
+		{
+			break;
+		}
+
 		ret += c;
 	}
+
 	return ret;
 }
 
@@ -162,6 +215,7 @@ inline bool checkOverloadedOperator(const STRING opr, CALL_DATA &call)
 
 	const STRING type = CProgram::m_objects[obj];
 	std::map<STRING, tagClass>::iterator k = call.prg->m_classes.find(type);
+
 	if (k == call.prg->m_classes.end())
 	{
 		throw CError(_T("Could not find class ") + type + _T("."));
@@ -170,7 +224,11 @@ inline bool checkOverloadedOperator(const STRING opr, CALL_DATA &call)
 	const STRING method = _T("operator") + opr;
 	const CLASS_VISIBILITY cv = (call.prg->m_calls.size() && 
 		(CProgram::m_objects[call.prg->m_calls.back().obj] == type)) ? CV_PRIVATE : CV_PUBLIC;
-	if (!k->second.locate(method, call.params - 1, cv)) return false;
+
+	if (!k->second.locate(method, call.params - 1, cv))
+	{
+		return false;
+	}
 
 	STACK_FRAME &fra = call.ret();
 	fra.udt = UDT_OBJ;
@@ -178,6 +236,7 @@ inline bool checkOverloadedOperator(const STRING opr, CALL_DATA &call)
 	call.prg->m_pStack->push_back(call.prg);
 	call.p = &call.prg->m_pStack->back() - (++call.params);
 	CProgram::methodCall(call);
+
 	return true;
 }
 
@@ -262,9 +321,13 @@ CProgram &CProgram::operator=(const CProgram &rhs)
 		// Find the index of this pointer.
 		int c = 0;
 		STACK_ITR i = rhs.m_stack.begin();
+
 		for (; i != rhs.m_stack.end(); ++i, ++c)
 		{
-			if (&*i == rhs.m_pStack) break;
+			if (&*i == rhs.m_pStack)
+			{
+				break;
+			}
 		}
 		if (i == rhs.m_stack.end())
 		{
@@ -292,11 +355,13 @@ void CProgram::debugger(const STRING str)
 void CProgram::freePlugins()
 {
 	std::vector<IPlugin *>::iterator i = m_plugins.begin();
+
 	for (; i != m_plugins.end(); ++i)
 	{
 		(*i)->terminate();
 		delete *i;
 	}
+
 	m_plugins.clear();
 }
 
@@ -310,12 +375,17 @@ unsigned int CProgram::getLine(CONST_POS pos) const
 {
 	unsigned int i = pos - m_units.begin();
 	std::vector<unsigned int>::const_iterator j = m_lines.begin();
+
 	for (; j != m_lines.end(); ++j)
 	{
 		// No +1 because the first line is a hacky bug fix.
 		// See CProgram::open().
-		if (*j > i) return (j - m_lines.begin());
+		if (*j > i)
+		{
+			return (j - m_lines.begin());
+		}
 	}
+
 	return m_lines.size() - 1;
 }
 
@@ -328,12 +398,14 @@ inline std::pair<bool, STRING> CProgram::getInstanceVar(const STRING name) const
 	}
 
 	const unsigned int obj = m_calls.back().obj;
+
 	if (!obj)
 	{
 		return std::pair<bool, STRING>(false, STRING());
 	}
 
 	std::map<STRING, tagClass>::const_iterator i = m_classes.find(m_objects[obj]);
+
 	if ((i != m_classes.end()) && i->second.memberExists(name, CV_PRIVATE))
 	{
 		TCHAR str[255];
@@ -350,7 +422,12 @@ LPSTACK_FRAME CProgram::getVar(const STRING name, unsigned int *pFrame, STRING *
 	if (name[0] == _T(':'))
 	{
 		STRING var = name.substr(1);
-		if (pName) *pName = var;
+
+		if (pName)
+		{
+			*pName = var;
+		}
+
 		return m_heap[var];
 	}
 	if (name[0] == _T(' '))
@@ -358,6 +435,7 @@ LPSTACK_FRAME CProgram::getVar(const STRING name, unsigned int *pFrame, STRING *
 		const unsigned int i = (unsigned int)name[1];
 		REFERENCE_MAP &r = m_calls.back().refs;
 		REFERENCE_MAP::iterator j = r.find(i);
+
 		if (j != r.end())
 		{
 			return j->second.first;
@@ -365,12 +443,19 @@ LPSTACK_FRAME CProgram::getVar(const STRING name, unsigned int *pFrame, STRING *
 	}
 	// TBD: This should be done at compile-time!
 	const std::pair<bool, STRING> res = getInstanceVar(name);
+
 	if (res.first)
 	{
 		const STRING &qualified = res.second;
-		if (pName) *pName = qualified;
+
+		if (pName)
+		{
+			*pName = qualified;
+		}
+
 		return m_heap[qualified];
 	}
+
 	return (this->*m_pResolveFunc)(name, pFrame);
 }
 
@@ -379,11 +464,17 @@ LPSTACK_FRAME CProgram::resolveVarGlobal(const STRING name, unsigned int *pFrame
 {
 	std::list<std::map<STRING, STACK_FRAME> > *pLocalList = getLocals();
 	std::map<STRING, STACK_FRAME> *pLocals = &pLocalList->back();
+
 	if (pLocals->count(name))
 	{
-		if (pFrame) *pFrame = pLocalList->size();
+		if (pFrame)
+		{
+			*pFrame = pLocalList->size();
+		}
+
 		return &pLocals->find(name)->second;
 	}
+
 	return m_heap[name];
 }
 
@@ -391,12 +482,19 @@ LPSTACK_FRAME CProgram::resolveVarGlobal(const STRING name, unsigned int *pFrame
 LPSTACK_FRAME CProgram::resolveVarLocal(const STRING name, unsigned int *pFrame)
 {
 	std::map<STRING, CPtrData<STACK_FRAME> >::iterator i = m_heap.find(name);
+
 	if (i != m_heap.end())
 	{
 		return i->second;
 	}
+
 	std::list<std::map<STRING, STACK_FRAME> > *pLocals = getLocals();
-	if (pFrame) *pFrame = pLocals->size();
+
+	if (pFrame)
+	{
+		*pFrame = pLocals->size();
+	}
+
 	return &pLocals->back()[name];
 }
 
@@ -418,10 +516,15 @@ void CProgram::removeRedirect(CONST STRING str)
 STRING CProgram::getFunctionName(const MACHINE_FUNC func)
 {
 	std::map<STRING, MACHINE_FUNC>::const_iterator i = m_functions.begin();
+
 	for (; i != m_functions.end(); ++i)
 	{
-		if (i->second == func) break;
+		if (i->second == func)
+		{
+			break;
+		}
 	}
+
 	return ((i != m_functions.end()) ? i->first : _T(""));
 }
 
@@ -437,11 +540,13 @@ void CProgram::addFunction(const STRING name, const MACHINE_FUNC func)
 void CProgram::freeVar(const STRING var)
 {
 	std::map<STRING, STACK_FRAME> *pLocals = &getLocals()->back();
+
 	if (pLocals->count(var))
 	{
 		pLocals->erase(var);
 		return;
 	}
+
 	m_heap.erase(var);
 }
 
@@ -450,6 +555,7 @@ void CProgram::freeObject(unsigned int obj)
 {
 	const STRING type = m_objects[obj];
 	std::map<STRING, tagClass>::iterator i = m_classes.find(type);
+
 	if (i == m_classes.end())
 	{
 		throw CError(_T("Could not find class ") + type + _T("."));
@@ -538,6 +644,7 @@ void CProgram::methodCall(CALL_DATA &call)
 
 		const STRING type = CProgram::m_objects[obj];
 		std::map<STRING, tagClass>::iterator k = call.prg->m_classes.find(type);
+
 		if (k == call.prg->m_classes.end())
 		{
 			throw CError(_T("Could not find class ") + type + _T("."));
@@ -553,6 +660,7 @@ void CProgram::methodCall(CALL_DATA &call)
 		const CLASS_VISIBILITY cv = (call.prg->m_calls.size() && 
 			(CProgram::m_objects[call.prg->m_calls.back().obj] == type)) ? CV_PRIVATE : CV_PUBLIC;
 		LPNAMED_METHOD p = k->second.locate(fra.lit, call.params - 2, cv);
+
 		if (!p)
 		{
 			if (!bRelease)
@@ -620,7 +728,11 @@ void CProgram::methodCall(CALL_DATA &call)
 	// Add each parameter's value to the new local heap.
 	for (unsigned int i = 0; i < (call.params - 1); ++i)
 	{
-		if (i == j) continue;
+		if (i == j)
+		{
+			continue;
+		}
+
 		TCHAR pos = call.params - i - (i < j) - bObjectCall;
 
 		if (pLong[1] & (1 << (pos - 1)))
@@ -630,12 +742,14 @@ void CProgram::methodCall(CALL_DATA &call)
 			{
 				REFERENCE_MAP &res = call.prg->m_calls.back().refs;
 				REFERENCE_MAP::iterator j = res.find((unsigned int)var[1]);
+
 				if (j != res.end())
 				{
 					fr.refs.insert(*j);
 					continue;
 				}
 			}
+
 			unsigned int frame = 0;
 			LPSTACK_FRAME pStackFrame = fra.prg->getVar(var, &frame, &var);
 			fr.refs[pos] = REFERENCE(pStackFrame, REFERENCE_DESC(frame, var));
@@ -762,8 +876,13 @@ void CProgram::pluginCall(CALL_DATA &call)
 
 inline void CProgram::returnFromMethod(STACK_FRAME value)
 {
-	if (!m_calls.size()) return;
+	if (!m_calls.size())
+	{
+		return;
+	}
+
 	LPSTACK_FRAME pValue = m_calls.back().p;
+
 	if (pValue)
 	{
 		*pValue = value;
@@ -782,10 +901,12 @@ void CProgram::returnReference(CALL_DATA &call)
 {
 	// TBD: Do this at compile-time!
 	const std::pair<bool, STRING> res = call.prg->getInstanceVar(call[0].lit);
+
 	if (res.first)
 	{
 		call[0].lit = _T(':') + res.second;
 	}
+
 	call.prg->returnFromMethod(call[0]);
 }
 
@@ -794,6 +915,7 @@ bool CProgram::open(const STRING fileName)
 {
 	// Attempt to locate this program in the cache.
 	CACHE_ITR itr = g_cache.find(fileName);
+
 	if (itr != g_cache.end())
 	{
 		*this = itr->second;
@@ -802,13 +924,18 @@ bool CProgram::open(const STRING fileName)
 	}
 
 	FILE *file = fopen(resolve(fileName).c_str(), _T("rb"));
-	if (!file) return false;
+
+	if (!file)
+	{
+		return false;
+	}
 
 	m_fileName = fileName;
 
 	// Get the length of the file.
 	fseek(file, 0, SEEK_END);
 	const long length = ftell(file);
+
 	if (length == 0)
 	{
 		// It is unlikely that the file is completely blank,
@@ -833,10 +960,15 @@ bool CProgram::open(const STRING fileName)
 
 		// First is a list of functions used.
 		std::vector<MACHINE_FUNC> funcs;
+
 		while (true)
 		{
 			const STRING func = freadString(file);
-			if (func.empty()) break;
+			if (func.empty())
+			{
+				break;
+			}
+
 			funcs.push_back(m_functions[func]);
 		}
 
@@ -845,18 +977,33 @@ bool CProgram::open(const STRING fileName)
 		while (true)
 		{
 			const STRING name = freadString(file);
-			if (name.empty()) break;
+
+			if (name.empty())
+			{
+				break;
+			}
+
 			tagClass cls;
+
 			while (true)
 			{
 				const STRING base = freadString(file);
-				if (base.empty()) break;
+				if (base.empty())
+				{
+					break;
+				}
+
 				cls.inherits.push_back(base);
 			}
 			while (true)
 			{
 				const STRING member = freadString(file);
-				if (member.empty()) break;
+
+				if (member.empty())
+				{
+					break;
+				}
+
 				CLASS_VISIBILITY vis;
 				fread(&vis, sizeof(int), 1, file);
 				cls.members.push_back(std::pair<STRING, CLASS_VISIBILITY>(member, vis));
@@ -864,7 +1011,12 @@ bool CProgram::open(const STRING fileName)
 			while (true)
 			{
 				NAMED_METHOD method;
-				if ((method.name = freadString(file)).empty()) break;
+
+				if ((method.name = freadString(file)).empty())
+				{
+					break;
+				}
+
 				CLASS_VISIBILITY vis;
 				fread(&method.params, sizeof(int), 1, file);
 				fread(&method.i, sizeof(unsigned int), 1, file);
@@ -974,7 +1126,10 @@ bool CProgram::loadFromString(const STRING str)
  	  	 
     FILE *p = fopen(tempfile, _T("wb+"));
 
-	if (!p) return false;
+	if (!p)
+	{
+		return false;
+	}
 
 	fputs(str.c_str(), p);
 	fseek(p, 0, SEEK_SET);
@@ -983,6 +1138,7 @@ bool CProgram::loadFromString(const STRING str)
 
 	remove(tempfile);
 	prime();
+
 	return true;
 }
 
@@ -1023,12 +1179,14 @@ void CProgram::parseFile(FILE *pFile)
 		// If this is a child program, include its parent.
 		// dynamic_cast<> returns null if the cast is unsafe.
 		CProgramChild *pChild = dynamic_cast<CProgramChild *>(this);
+
 		if (pChild)
 		{
 			include(pChild->getParent());
 		}
 
 		extern STRING g_projectPath;
+
 		for (; i != inclusions.end(); ++i)
 		{
 			include(CProgram(g_projectPath + PRG_PATH + *i));
@@ -1050,7 +1208,12 @@ void CProgram::parseFile(FILE *pFile)
 			if (!m_classes.count(*l))
 			{
 				debugger(_T("Could not find ") + j->first + _T("'s base class ") + *l + _T("."));
-				if ((l = immediate.erase(l)) == immediate.end()) break;
+
+				if ((l = immediate.erase(l)) == immediate.end())
+				{
+					break;
+				}
+
 				--l;
 			}
 			else
@@ -1089,7 +1252,10 @@ void CProgram::parseFile(FILE *pFile)
 		else if (i->udt & UDT_CLOSE)
 		{
 			--nestled;
-			if (depth && !--depth) pClass = NULL;
+			if (depth && !--depth)
+			{
+				pClass = NULL;
+			}
 		}
 
 		if ((i->udt & UDT_ID) && (i->udt & UDT_LINE) && ((i == m_units.begin()) || ((i - 1)->udt & UDT_LINE)) && 
@@ -1133,12 +1299,20 @@ void CProgram::parseFile(FILE *pFile)
 			}
 		}
 
-		if (!(i->udt & UDT_FUNC)) continue;
+		if (!(i->udt & UDT_FUNC))
+		{
+			continue;
+		}
 
 		if (i->func == methodCall)
 		{
 			POS unit = i - 1;
-			if (unit->udt & UDT_OBJ) continue;
+
+			if (unit->udt & UDT_OBJ)
+			{
+				continue;
+			}
+
 			if (m_classes.count(unit->lit))
 			{
 				LPCLASS pCls = &m_classes[unit->lit];
@@ -1230,7 +1404,9 @@ unsigned int CProgram::updateLocations(POS i)
 				{
 					p->i = i - m_units.begin() + 1;
 				}
+
 				const STRING::size_type pos = i->lit.find(_T("::"));
+
 				if (pos != STRING::npos)
 				{
 					LPCLASS pCls = &m_classes[i->lit.substr(0, pos)];
@@ -1247,7 +1423,12 @@ unsigned int CProgram::updateLocations(POS i)
 			else if (i->func == methodCall)
 			{
 				POS unit = i - 1;
-				if (unit->udt & UDT_OBJ) continue;
+
+				if (unit->udt & UDT_OBJ)
+				{
+					continue;
+				}
+
 				unit->num = -1;
 			}
 		}
@@ -1377,7 +1558,11 @@ void CProgram::resolveFunctions()
 		if ((i->udt & UDT_FUNC) && (i->func == methodCall))
 		{
 			POS unit = i - 1;
-			if ((unit->udt & UDT_OBJ) || (unit->num != -1)) continue;
+			if ((unit->udt & UDT_OBJ) || (unit->num != -1))
+			{
+				continue;
+			}
+
 			LPNAMED_METHOD p = NAMED_METHOD::locate(unit->lit, i->params - 1, false, *this);
 			if (p)
 			{
@@ -1436,14 +1621,27 @@ unsigned int CProgram::matchBrace(POS i)
 			pLines[0] = i - m_units.begin();
 			for (; i != m_units.begin(); --i)
 			{
-				if ((i->udt & UDT_LINE) && (++depth == 3)) break;
+				if ((i->udt & UDT_LINE) && (++depth == 3))
+				{
+					break;
+				}
 			}
+
 			pLines[1] = i - m_units.begin() + 1;
-			if (i == m_units.begin()) --pLines[1];
+
+			if (i == m_units.begin())
+			{
+				--pLines[1];
+			}
+
 			return pLines[0];
 		}
-		else if (i->udt & UDT_CLOSE) --depth;
+		else if (i->udt & UDT_CLOSE)
+		{
+			--depth;
+		}
 	}
+
 	return 0;
 }
 
@@ -1477,8 +1675,14 @@ void CProgram::include(const CProgram prg)
 		do
 		{
 			m_units.push_back(*j);
-			if (j->udt & UDT_OPEN) ++depth;
-			else if ((j->udt & UDT_CLOSE) && !--depth) break;
+			if (j->udt & UDT_OPEN)
+			{
+				++depth;
+			}
+			else if ((j->udt & UDT_CLOSE) && !--depth)
+			{
+				break;
+			}
 		} while (++j != prg.m_units.end());
 	}
 }
@@ -1684,8 +1888,13 @@ void CProgram::reconstructState(CFile &stream)
 						ref.first = m_heap[ref.second.second];
 						continue;
 					}
+
 					std::list<std::map<STRING, STACK_FRAME> >::iterator itr = getLocals()->begin();
-					for (int i = 0; i < frame - 1; ++i) ++itr;
+					for (int i = 0; i < frame - 1; ++i)
+					{
+						++itr;
+					}
+
 					ref.first = &itr->find(ref.second.second)->second;
 				}
 			}
@@ -1713,6 +1922,7 @@ void CProgram::reconstructState(CFile &stream)
 		m_inclusions.clear();
 		int includes = 0;
 		stream >> includes;
+
 		for (int i = 0; i < includes; ++i)
 		{
 			STRING str;
@@ -1735,15 +1945,23 @@ void CProgram::save(const STRING fileName) const
 	int count = 0;
 	std::map<MACHINE_FUNC, int> funcs;
 	CONST_POS i = m_units.begin();
+
 	for (; i != m_units.end(); ++i)
 	{
 		if (i->udt & UDT_FUNC)
 		{
-			if (funcs.count(i->func) != 0) continue;
+			if (funcs.count(i->func) != 0)
+			{
+				continue;
+			}
+
 			std::map<STRING, MACHINE_FUNC>::iterator j = m_functions.begin();
 			for (; j != m_functions.end(); ++j)
 			{
-				if (i->func == j->second) break;
+				if (i->func == j->second)
+				{
+					break;
+				}
 			}
 
 			fwrite(j->first.c_str(), sizeof(TCHAR), j->first.length() + 1, file);
@@ -1759,19 +1977,23 @@ void CProgram::save(const STRING fileName) const
 	{
 		fwrite(j->first.c_str(), sizeof(TCHAR), j->first.length() + 1, file);
 		std::deque<STRING>::const_iterator k = j->second.inherits.begin();
+
 		for (; k != j->second.inherits.end(); ++k)
 		{
 			fwrite(k->c_str(), sizeof(TCHAR), k->length() + 1, file);
 		}
 		fwrite(&c, sizeof(TCHAR), 1, file);
 		std::deque<std::pair<STRING, CLASS_VISIBILITY> >::const_iterator l = j->second.members.begin();
+		
 		for (; l != j->second.members.end(); ++l)
 		{
 			fwrite(l->first.c_str(), sizeof(TCHAR), l->first.length() + 1, file);
 			fwrite(&l->second, sizeof(CLASS_VISIBILITY), 1, file);
 		}
+		
 		fwrite(&c, sizeof(TCHAR), 1, file);
 		std::deque<std::pair<NAMED_METHOD, CLASS_VISIBILITY> >::const_iterator m = j->second.methods.begin();
+		
 		for (; m != j->second.methods.end(); ++m)
 		{
 			fwrite(m->first.name.c_str(), sizeof(TCHAR), m->first.name.length() + 1, file);
@@ -1779,6 +2001,7 @@ void CProgram::save(const STRING fileName) const
 			fwrite(&m->first.i, sizeof(unsigned int), 1, file);
 			fwrite(&m->second, sizeof(CLASS_VISIBILITY), 1, file);
 		}
+
 		fwrite(&c, sizeof(TCHAR), 1, file);
 	}
 
@@ -1788,6 +2011,7 @@ void CProgram::save(const STRING fileName) const
 	for (i = m_units.begin(); i != m_units.end(); ++i)
 	{
 		fwrite(&i->udt, sizeof(UNIT_DATA_TYPE), 1, file);
+
 		if ((i->udt & UDT_NUM) || (i->udt & UDT_OPEN) || (i->udt & UDT_CLOSE))
 		{
 			fwrite(&i->num, sizeof(double), 1, file);
@@ -1821,9 +2045,8 @@ STACK_FRAME CProgram::run()
 	// *(int *)(&(m_units.back)->udt) &= ~UDT_LINE;
 	int i;
 	for (i = 0, m_i = m_units.begin(); m_i != m_units.end(); ++m_i, ++i)
-//	for (i = 0; i < m_units.size(); ++i)
 	{
-		// m_i->show();
+		//m_i->show();
 		//m_i = m_units.begin() + i;
 		m_i->execute(this);
 		processEvent();
@@ -1854,6 +2077,7 @@ bool CProgram::jump(const STRING label)
 			return true;
 		}
 	}
+
 	return false;
 }
 
@@ -1865,11 +2089,14 @@ void CProgram::resumeFromErrorHandler()
 	{
 		throw CError("Invalid outside functions.");
 	}
+
 	unsigned int &err = m_calls.back().errorReturn;
+
 	if (err == 0)
 	{
 		throw CError("An error handler has not been invoked.");
 	}
+
 	m_i = m_units.begin() + err;
 	err = 0;
 }
@@ -1881,6 +2108,7 @@ void CProgram::handleError(CException *p)
 	{
 		CALL_FRAME &frame = *&m_calls.back();
 		STRING &handler = frame.errorHandler;
+
 		if (!handler.empty())
 		{
 			// Note: a single space is a hard-coded convention
@@ -1895,8 +2123,12 @@ void CProgram::handleError(CException *p)
 			CONST_POS i;
 			for (i = m_i; i != m_units.end(); ++i)
 			{
-				if (i->udt & UDT_LINE) break;
+				if (i->udt & UDT_LINE)
+				{
+					break;
+				}
 			}
+
 			frame.errorReturn = i - m_units.begin();
 
 			// Try to jump to the label specified.
@@ -1913,7 +2145,10 @@ void CProgram::handleError(CException *p)
 		}
 	}
 
-	if (p && (m_debugLevel < p->getType())) return;
+	if (p && (m_debugLevel < p->getType()))
+	{
+		return;
+	}
 
 	STRINGSTREAM ss;
 	ss	<< m_fileName
@@ -1931,15 +2166,21 @@ void CProgram::setErrorHandler(const STRING handler)
 	{
 		throw CError("An error handler cannot be set outside of a function.");
 	}
+
 	m_calls.back().errorHandler = handler;
 }
 
 // If...else control structure.
 void CProgram::conditional(CALL_DATA &call)
 {
-	if (call[0].getNum()) return;
+	if (call[0].getNum())
+	{
+		return;
+	}
+
 	int i = (int)(call.prg->m_i + 1)->num;
 	CONST_POS close = call.prg->m_units.begin() + i;
+
 	if (close == call.prg->m_units.end() - 1)
 	{
 		call.prg->m_i = close;
@@ -1980,7 +2221,9 @@ void CProgram::skipClass(CALL_DATA &call)
 void CProgram::whileLoop(CALL_DATA &call)
 {
 	if (call[0].getNum()) 
+	{
 		return;
+	}
 
 	call.prg->m_i = call.prg->m_units.begin() + (int)(call.prg->m_i + 1)->num;
 }
@@ -1989,7 +2232,9 @@ void CProgram::whileLoop(CALL_DATA &call)
 void CProgram::untilLoop(CALL_DATA &call)
 {
 	if (!call[0].getNum()) 
+	{
 		return;
+	}
 
 	call.prg->m_i = call.prg->m_units.begin() + (int)(call.prg->m_i + 1)->num;
 }
@@ -1998,7 +2243,9 @@ void CProgram::untilLoop(CALL_DATA &call)
 void CProgram::forLoop(CALL_DATA &call)
 {
 	if (call[0].getNum()) 
+	{
 		return;
+	}
 
 	call.prg->m_i = call.prg->m_units.begin() + (int)(call.prg->m_i + 1)->num;
 }
@@ -2010,7 +2257,12 @@ void CProgram::classFactory(CALL_DATA &call)
 	const LPCLASS pClass = &call.prg->m_classes[cls];
 
 	unsigned int obj = m_objects.size() + 1;
-	while (m_objects.count(obj)) ++obj;
+
+	while (m_objects.count(obj))
+	{
+		++obj;
+	}
+
 	m_objects.insert(std::map<unsigned int, STRING>::value_type(obj, cls));
 
 	call.ret().udt = UNIT_DATA_TYPE(UDT_OBJ | UDT_NUM);
@@ -2032,14 +2284,21 @@ void CProgram::verifyType(CALL_DATA &call)
 	}
 	const unsigned int obj = (unsigned int)frame.num;
 	const STRING type = m_objects[obj];
-	if (type == cls) return;
+
+	if (type == cls)
+	{
+		return;
+	}
 
 	LPCLASS pClass = &call.prg->m_classes[type];
 
 	std::deque<STRING>::const_iterator j = pClass->inherits.begin();
 	for (; j != pClass->inherits.end(); ++j)
 	{
-		if (*j == cls) return;
+		if (*j == cls)
+		{
+			return;
+		}
 	}
 
 	throw CError("The method requires a parameter of type " + cls + ".");
@@ -2169,6 +2428,7 @@ m_bSleeping(false)
 {
 	extern STRING g_projectPath;
 	m_fileName = g_projectPath + PRG_PATH + str;
+
 	if (CFile::fileExists(m_fileName))
 	{
 		open(m_fileName);
@@ -2185,6 +2445,7 @@ CThread *CThread::create(const STRING str)
 {
 	CThread *p = new CThread(str);
 	m_threads.insert(p);
+
 	return p;
 }
 
@@ -2203,10 +2464,12 @@ void CThread::destroy(CThread *p)
 void CThread::destroyAll()
 {
 	std::set<CThread *>::iterator i = m_threads.begin();
+
 	for (; i != m_threads.end(); ++i)
 	{
 		delete *i;
 	}
+
 	m_threads.clear();
 }
 
@@ -2214,6 +2477,7 @@ void CThread::destroyAll()
 void CThread::multitask(const unsigned int units)
 {
 	std::set<CThread *>::iterator i = m_threads.begin();
+
 	for (; i != m_threads.end(); ++i)
 	{
 		(*i)->execute(units);
@@ -2232,20 +2496,28 @@ void CThread::sleep(const unsigned long milliseconds)
 // Is a thread sleeping?
 bool CThread::isSleeping() const
 {
-	if (!m_bSleeping) return false;
+	if (!m_bSleeping)
+	{
+		return false;
+	}
 
 	if (m_sleepDuration && (GetTickCount() - m_sleepBegin >= m_sleepDuration))
 	{
 		m_bSleeping = false;
 		return false;
 	}
+
 	return true;
 }
 
 // Check how much sleep is remaining.
 unsigned long CThread::sleepRemaining() const
 {
-	if (!isSleeping() || !m_sleepDuration) return 0;
+	if (!isSleeping() || !m_sleepDuration)
+	{
+		return 0;
+	}
+
 	return (m_sleepDuration - (GetTickCount() - m_sleepBegin));
 }
 
@@ -2258,6 +2530,7 @@ bool CThread::execute(const unsigned int units)
 		m_i->execute(this);
 		++m_i; 
 	}
+
 	return true;
 }
 
@@ -2277,6 +2550,7 @@ tagNamedMethod *tagClass::locate(const STRING name, const int params, const CLAS
 			return &i->first;
 		}
 	}
+
 	return NULL;
 }
 
@@ -2286,8 +2560,12 @@ bool tagClass::memberExists(const STRING name, const CLASS_VISIBILITY vis) const
 	std::deque<std::pair<STRING, CLASS_VISIBILITY> >::const_iterator i = members.begin();
 	for (; i != members.end(); ++i)
 	{
-		if ((i->second >= vis) && (i->first == name)) return true;
+		if ((i->second >= vis) && (i->first == name))
+		{
+			return true;
+		}
 	}
+
 	return false;
 }
 
@@ -2398,6 +2676,7 @@ void tagMachineUnit::execute(CProgram *prg) const
 				prg->m_pStack = &prg->m_stack.back();
 				prg->m_stackIndex = prg->m_stack.size() - 1;
 				prg->getLocals()->pop_back();
+
 				if (bReturn)
 				{
 					LeaveCriticalSection(g_mutex);
@@ -2409,7 +2688,10 @@ void tagMachineUnit::execute(CProgram *prg) const
 				CONST_POS i = prg->m_i;
 				while (++i != prg->m_units.end())
 				{
-					if ((i->udt & UDT_FUNC) && (i->udt & UDT_LINE)) break;
+					if ((i->udt & UDT_FUNC) && (i->udt & UDT_LINE))
+					{
+						break;
+					}
 				}
 				if ((i != prg->m_units.end()) && (i->func == CProgram::elseIf))
 				{
@@ -2458,6 +2740,7 @@ tagNamedMethod *tagNamedMethod::locate(const STRING name, const int params, cons
 			return &*i;
 		}
 	}
+
 	return NULL;
 }
 
@@ -2471,6 +2754,7 @@ tagNamedMethod *tagNamedMethod::locate(const STRING name, const int params, cons
 			return &*i;
 		}
 	}
+
 	return NULL;
 }
 
@@ -2491,6 +2775,7 @@ double tagStackFrame::getNum() const
 	{
 		return atof(lit.c_str());
 	}
+
 	return num;
 }
 
@@ -2501,6 +2786,7 @@ bool tagStackFrame::getBool() const
 	{
 		return (_tcsicmp(getLit().c_str(), _T("off")) != 0);
 	}
+
 	return (getNum() != 0.0);
 }
 
@@ -2530,6 +2816,7 @@ STRING tagStackFrame::getLit() const
 		ss << num;
 		return ss.str();
 	}
+
 	return lit;
 }
 
@@ -2540,6 +2827,7 @@ UNIT_DATA_TYPE tagStackFrame::getType() const
 	{
 		return prg->getVar(lit)->getType();
 	}
+
 	return udt;
 }
 
@@ -2563,8 +2851,10 @@ tagStackFrame tagStackFrame::getValue() const
 	{
 		sf.num = getNum();
 	}
+
 	sf.prg = prg;
 	sf.tag = 0;
+
 	return sf;
 }
 
@@ -2649,6 +2939,7 @@ void operators::ieq(CALL_DATA &call)
 	{
 		call.ret().num = (call[0].getLit() != call[1].getLit());
 	}
+
 	call.ret().udt = UDT_NUM;
 }
 
@@ -2953,6 +3244,7 @@ void operators::member(CALL_DATA &call)
 	unsigned int obj = (unsigned int)call[0].getNum();
 	const STRING type = CProgram::m_objects[obj];
 	std::map<STRING, tagClass>::const_iterator i = call.prg->m_classes.find(type);
+
 	if (i == call.prg->m_classes.end())
 	{
 		throw CError(_T("Could not find class ") + type + _T("."));
@@ -2961,6 +3253,7 @@ void operators::member(CALL_DATA &call)
 	const CLASS_VISIBILITY cv = (call.prg->m_calls.size() && 
 		(CProgram::m_objects[call.prg->m_calls.back().obj] == type)) ? CV_PRIVATE : CV_PUBLIC;
 	const STRING mem = call[1].lit;
+
 	if (!i->second.memberExists(mem, cv))
 	{
 		throw CError(_T("Class ") + type + _T(" has no accessible ") + mem + _T(" member."));
@@ -2977,6 +3270,7 @@ void operators::array(CALL_DATA &call)
 	CHECK_OVERLOADED_OPERATOR([], false);
 
 	call.ret().udt = UDT_ID;
+
 	// TBD: This should be done at compile-time.
 	const std::pair<bool, STRING> res = call.prg->getInstanceVar(call[0].lit);
 	const STRING prefix = (res.first ? (_T(':') + res.second) : call[0].lit);

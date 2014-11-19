@@ -1,16 +1,18 @@
 /*
  ********************************************************************
  * The RPG Toolkit, Version 3
- * This file copyright (C) 2007  Christopher Matthews & contributors
+ * This file copyright (C) 2007-2014 
+ *				- Christopher Matthews
  *
  * Contributors:
- *    - Colin James Fitzpatrick
- *    - Jonathan D. Hughes
+ *				- Colin James Fitzpatrick
+ *				- Jonathan D. Hughes
+ *				- Joshua Michael Daly
  ********************************************************************
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
+ * as published by the Free Software Foundation; either version 3
  * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -91,24 +93,27 @@ inline std::string util::upperCase(std::string strString)
 ///////////////////////////////////////////////////////
 inline int util::getTileNum (std::string strFilename) 
 {
-	//determine tile number from tst filename
-	//ie. tileset.tst48 returns 48
-	//return -1 on failure.
+	// Determine tile number from tst filename
+	// i.e. tileset.tst48 returns 48
+	// return -1 on failure.
 	int length = strFilename.length();
 	
-	for (int t=0;t<length;t++) 
+	for (int t = 0; t < length; t++) 
 	{
 		if (strFilename.at(t) == '.') 
 		{
 			char num[255];
 			int cnt=0;
-			for (int x=t+4;x<length;x++) 
+
+			for (int x = t + 4; x < length; x++) 
 			{
-				num[cnt]=strFilename.at(x);
-				num[cnt+1]='\0';
+				num[cnt] = strFilename.at(x);
+				num[cnt+1] = '\0';
 				cnt++;
 			}
-			int toReturn=atoi(num);
+
+			int toReturn = atoi(num);
+
 			return toReturn;
 		}
 	}
@@ -134,7 +139,7 @@ inline int util::getTileNum (std::string strFilename)
 
 inline std::string util::tilesetFilename(std::string strFilename) 
 {
-	//returns filename w/out the number after ext
+	// Returns filename w/out the number after ext.
 	std::string strToRet = "";
 
 
@@ -146,6 +151,7 @@ inline std::string util::tilesetFilename(std::string strFilename)
 	strExt = getExt(strFilename);
 
 	strToRet += strExt;
+
 	return strToRet;
 
 }

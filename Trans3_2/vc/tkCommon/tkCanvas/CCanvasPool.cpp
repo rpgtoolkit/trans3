@@ -1,12 +1,16 @@
 /*
  ********************************************************************
  * The RPG Toolkit, Version 3
- * This file copyright (C) 2007  Christopher Matthews
+ * This file copyright (C) 2007-2014 
+ *				- Christopher Matthews
+ *
+ * Contributors:
+ *				- Joshua Michael Daly
  ********************************************************************
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
+ * as published by the Free Software Foundation; either version 3
  * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -36,7 +40,7 @@
 //c-tor
 // Create a canvas pool for canvases of sizex, sizey.
 // The pool will contain nPoolSize canvases
-CCanvasPool::CCanvasPool( int nCompatibleDC, int nSizeX, int nSizeY, int nPoolSize )
+CCanvasPool::CCanvasPool(int nCompatibleDC, int nSizeX, int nSizeY, int nPoolSize)
 {
 	m_nCompatibleDC = nCompatibleDC;
 
@@ -45,12 +49,12 @@ CCanvasPool::CCanvasPool( int nCompatibleDC, int nSizeX, int nSizeY, int nPoolSi
 	int nY = nSizeY;
 
 	//create canvases in groups of 25...
-	if ( nPoolSize % POOLS_PER_CANVAS )
+	if (nPoolSize % POOLS_PER_CANVAS)
 	{
-		nPoolSize += ( POOLS_PER_CANVAS - ( nPoolSize % POOLS_PER_CANVAS ) );
+		nPoolSize += (POOLS_PER_CANVAS - (nPoolSize % POOLS_PER_CANVAS));
 	}
 
-	for ( int c = 0; c < ( nPoolSize / POOLS_PER_CANVAS ); c++ )
+	for (int c = 0; c < (nPoolSize / POOLS_PER_CANVAS ); c++)
 	{
 		CCanvas* pCanvas = new CCanvas();
 		pCanvas->CreateBlank( ( HDC ) nCompatibleDC, nX, nY, true );
@@ -62,12 +66,11 @@ CCanvasPool::CCanvasPool( int nCompatibleDC, int nSizeX, int nSizeY, int nPoolSi
 	m_nPoolSize = nPoolSize;
 
 	//mark all as unoccupied...
-	for ( int i = 0; i < nPoolSize; i++ )
+	for (int i = 0; i < nPoolSize; i++)
 	{
-		m_vOccupied.push_back( false );
+		m_vOccupied.push_back(false);
 	}
 }
-
 
 //////////////////////
 //D-tor
@@ -80,19 +83,18 @@ CCanvasPool::~CCanvasPool()
 	}
 }
 
-
-
 //////////////////////
 //Get the index of a free canvas in the pool
 int CCanvasPool::getFree()
 {
 	//search for a free one...
 	int i = 0;
-	for ( i = 0; i < getPoolSize(); i++ )
+	for (i = 0; i < getPoolSize(); i++)
 	{
-		if ( !m_vOccupied[ i ] )
+		if (!m_vOccupied[i])
 		{
-			m_vOccupied[ i ] = true;
+			m_vOccupied[i] = true;
+
 			return i;
 		}
 	}
@@ -103,28 +105,28 @@ int CCanvasPool::getFree()
 	int nY = getSizeY();
 
 	CCanvas* pCanvas = new CCanvas();
-	pCanvas->CreateBlank( ( HDC ) m_nCompatibleDC, nX, nY, true );
-	m_vCanvases.push_back( pCanvas );
+	pCanvas->CreateBlank((HDC) m_nCompatibleDC, nX, nY, true);
+	m_vCanvases.push_back(pCanvas);
 
 	this->m_nPoolSize = getPoolSize() + POOLS_PER_CANVAS;
 
-	for ( i = 0; i < POOLS_PER_CANVAS / 2; i++ )
+	for (i = 0; i < POOLS_PER_CANVAS / 2; i++)
 	{
-		m_vOccupied.push_back( false );
+		m_vOccupied.push_back(false);
 	}
 
-	for ( i = 0; i < getPoolSize(); i++ )
+	for (i = 0; i < getPoolSize(); i++)
 	{
-		if ( !m_vOccupied[ i ] )
+		if (!m_vOccupied[i])
 		{
-			m_vOccupied[ i ] = true;
+			m_vOccupied[i] = true;
+
 			return i;
 		}
 	}
 	
 	return -1;
 }
-
 
 //////////////////////
 //Release a canvas to the pool
@@ -165,7 +167,6 @@ void CCanvasPool::Blt( HDC hDest, int nDestX, int nDestY, int nIndex, long raste
 		getX( 0, nIndex ), getY( 0, nIndex ), getSizeX(), getSizeY(), rasterOp );
 }
 
-
 //////////////////////
 //Blt the whole thing onto another surface
 void CCanvasPool::Blt( CCanvas* pDest, int nDestX, int nDestY, int nIndex, long rasterOp )
@@ -180,7 +181,6 @@ void CCanvasPool::Blt( CCanvas* pDest, int nDestX, int nDestY, int nIndex, long 
 	pCanvas->BltPart( pDest, nDestX, nDestY, 
 		getX( 0, nIndex ), getY( 0, nIndex ), getSizeX(), getSizeY(), rasterOp );
 }
-
 
 //////////////////////
 //Lock for pixel setting.  Remember to unlock!
@@ -198,7 +198,6 @@ void CCanvasPool::Unlock( int nIndex )
 	pCanvas->Unlock();
 }
 
-
 //////////////////////
 //Set pixels into canvas
 void CCanvasPool::SetPixels( long* p_crPixelArray, int x, int y, int width, int height, int nIndex )
@@ -213,7 +212,6 @@ void CCanvasPool::SetPixels( long* p_crPixelArray, int x, int y, int width, int 
 	pCanvas->SetPixels( p_crPixelArray, getX( x, nIndex ), getY( y, nIndex ), width, height );
 }
 
-
 //////////////////////
 // Get the canvas for the associated index
 CCanvas* CCanvasPool::getCanvas( int nIndex )
@@ -225,9 +223,9 @@ CCanvas* CCanvasPool::getCanvas( int nIndex )
 	}
 
 	int nCnv = nIndex / POOLS_PER_CANVAS;
+
 	return m_vCanvases[ nCnv ];
 }
-
 
 void CCanvasPool::BltTransparent( HDC hDest, int nDestX, int nDestY, int nIndex, long crTransparent )
 {

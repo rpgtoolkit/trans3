@@ -1,12 +1,16 @@
 /*
  ********************************************************************
  * The RPG Toolkit, Version 3
- * This file copyright (C) 2006  Colin James Fitzpatrick
+ * This file copyright (C) 2006-2014 
+ *				- Colin James Fitzpatrick
+ *
+ * Contributors:
+ *				- Joshua Michael Daly
  ********************************************************************
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
+ * as published by the Free Software Foundation; either version 3
  * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -69,6 +73,7 @@ inline STRING getLit(const double num)
 	// Just cast the number to a string.
 	std::stringstream ss;
 	ss << num;
+
 	return ss.str();
 }
 
@@ -137,16 +142,20 @@ class CPlayerHandle : public tagStackFrame
 public:
 	CPlayerHandle(int idx) { tag = (void *)idx; }
 	double getNum() const { return atof(getLit().c_str()); }
+
 	STRING getLit() const
 	{
 		extern std::vector<CPlayer *> g_players;
 		unsigned int iTag = (unsigned int)tag;
+
 		if (g_players.size() > iTag)
 		{
 			return g_players[iTag]->name();
 		}
+
 		return _T("");
 	}
+
 	UNIT_DATA_TYPE getType() const { return UDT_LIT; }
 };
 
@@ -155,11 +164,13 @@ class CPlayingMusic : public tagStackFrame
 {
 public:
 	double getNum() const { return atof(getLit().c_str()); }
+
 	STRING getLit() const
 	{
 		extern CAudioSegment *g_bkgMusic;
 		return g_bkgMusic->getPlayingFile();
 	}
+
 	UNIT_DATA_TYPE getType() const { return UDT_LIT; }
 };
 
@@ -172,6 +183,7 @@ public:
 		extern GAME_TIME g_gameTime;
 		return g_gameTime.gameTime();
 	}
+
 	STRING getLit() const { return ::getLit(getNum()); }
 	UNIT_DATA_TYPE getType() const { return UDT_NUM; }
 };
@@ -181,11 +193,13 @@ class CBoardTitle : public tagStackFrame
 {
 public:
 	CBoardTitle(int idx) { tag = (void *)idx; }
+
 	STRING getLit() const
 	{
 		extern LPBOARD g_pBoard;
 		return g_pBoard->layerTitles[int(tag)];
 	}
+
 	double getNum() const { return atof(getLit().c_str()); }
 	UNIT_DATA_TYPE getType() const { return UDT_LIT; }
 };
@@ -195,11 +209,13 @@ class CBoardConstant : public tagStackFrame
 {
 public:
 	CBoardConstant(int idx) { tag = (void *)idx; }
+
 	STRING getLit() const
 	{
 		extern LPBOARD g_pBoard;
 		return g_pBoard->constants[int(tag)];
 	}
+
 	double getNum() const { return atof(getLit().c_str()); }
 	UNIT_DATA_TYPE getType() const { return UDT_LIT; }
 };
@@ -213,6 +229,7 @@ public:
 		extern LPBOARD g_pBoard;
 		return g_pBoard->battleBackground;
 	}
+
 	double getNum() const { return atof(getLit().c_str()); }
 	UNIT_DATA_TYPE getType() const { return UDT_LIT; }
 };
@@ -226,6 +243,7 @@ public:
 		extern LPBOARD g_pBoard;
 		return g_pBoard->battleSkill;
 	}
+
 	STRING getLit() const { return ::getLit(getNum()); }
 	UNIT_DATA_TYPE getType() const { return UDT_NUM; }
 };
@@ -239,6 +257,7 @@ public:
 		extern RENDER_OVERLAY g_renderNow;
 		return double(int(g_renderNow.cnv));
 	}
+
 	STRING getLit() const { return ::getLit(getNum()); }
 	UNIT_DATA_TYPE getType() const { return UDT_NUM; }
 };
