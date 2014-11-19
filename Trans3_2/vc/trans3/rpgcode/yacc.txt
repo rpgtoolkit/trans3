@@ -219,6 +219,10 @@ _value:
 			mu.num = $1.getNum();
 			mu.udt = UDT_NUM;
 			CProgram::m_pyyUnits->push_back(mu);
+			
+			//STRINGSTREAM ss;
+			//ss << mu.num;
+			//CProgram::debugger(ss.str());
 		}
 |	STRING
 		{
@@ -432,13 +436,16 @@ line_terminator:
 			++g_depth;
 			MACHINE_UNIT &back = CProgram::m_pyyUnits->back();
 			bool bVerify = false;
+			
 			if ((back.udt & UDT_FUNC) && (back.func == CProgram::skipMethod))
 			{
 				bVerify = true;
 			}
+			
 			MACHINE_UNIT mu;
 			mu.udt = UDT_OPEN;
 			CProgram::m_pyyUnits->push_back(mu);
+			
 			if (bVerify)
 			{
 				std::map<STD_NATURAL_STRING, int> *params = &g_methods.back();
@@ -446,19 +453,23 @@ line_terminator:
 				//std::map<STD_NATURAL_STRING, int> *i = params;//->begin();
 				STD_NATURAL_STRING key = "";
 				int count = 0;
+				
 				for (; i != params->end(); ++i)
 				//for (count = 0; count < params.size(); ++count, ++i)
 				{
 					const STD_NATURAL_STRING &strParam = i->first;
 					unsigned int space = strParam.find(_T(' '));
+					
 					if (space != -1)
 					{
 						const STD_NATURAL_STRING type = strParam.substr(0, space);
 						const STD_NATURAL_STRING name = strParam.substr(space + 1);
 						key = i->first;
 						params->insert(std::pair<STD_NATURAL_STRING, int>(name, i->second));
+						
 						//i = params->begin() + count;
 						//params = &g_methods.back();
+						
 						i = params->find(key);
 						//CProgram::debugger(_T("map iterator i=\"") + i->first + _T("\" name was") + name + _T("param:") + TCHAR(i->second + 1));
 
@@ -484,26 +495,31 @@ line_terminator:
 			--g_depth;
 			MACHINE_UNIT mu;
 			mu.udt = UDT_CLOSE;
+			
 			/* Find the corresponding opening brace. */
 			POS i = CProgram::m_pyyUnits->end() - 1;
-			int ictr = CProgram::m_pyyUnits->size(); - 1;
+			int ictr = CProgram::m_pyyUnits->size();
 			int depth = 0;
+			
 			for (; i != CProgram::m_pyyUnits->begin(); --i, --ictr)
 			{
 				if ((i->udt & UDT_OPEN) && (depth++ == 0))
 				{
 					unsigned long *const pLines = (unsigned long *)&mu.num;
 					pLines[0] = i - CProgram::m_pyyUnits->begin();
+					
 					if ((i - 1)->udt & UDT_FUNC)
 					{
 						if ((i - 1)->func == CProgram::forLoop)
 						{
 							CONST_POS j = CProgram::m_yyFors.back().begin();
+							
 							for (; j != CProgram::m_yyFors.back().end(); ++j)
 							{
 								CProgram::m_pyyUnits->push_back(*j);
 								i = CProgram::m_pyyUnits->begin() + ictr;
 							}
+							
 							CProgram::m_yyFors.pop_back();
 						}
 						else if ((i - 1)->func == CProgram::skipMethod)
@@ -513,17 +529,20 @@ line_terminator:
 						else if ((i - 1)->func == CProgram::skipClass)
 						{
 							MACHINE_UNIT &mu = *(CProgram::m_pyyUnits->end() - 1);
+							
 							if ((mu.udt & UDT_FUNC) && (mu.func == CProgram::skipMethod) && g_methods.size())
 							{
 								g_pClass->second.methods.back().first.i = NAMED_METHOD::m_methods.back().i = 0xffffff;
 								g_methods.pop_back();
 							}
+							
 							g_pClass = NULL;
 						}
 						else if ((i - 1)->func == switchFunc)
 						{
 							--g_switch;
 							g_switchFirst.pop_back();
+							
 							/**************************************************************/
 							// Note that this leaves pointless calls to some nonexistent
 							// function switch() calls kicking around.
@@ -531,16 +550,23 @@ line_terminator:
 							/**************************************************************/
 						}
 					}
-					i->num = CProgram::m_pyyUnits->size();
+					
+					(i - 1)->num = CProgram::m_pyyUnits->size();
+					
 					for (; i != CProgram::m_pyyUnits->begin(); --i)
 					{
 						if ((i->udt & UDT_LINE) && (++depth == 3)) break;
 					}
+					
 					pLines[1] = i - CProgram::m_pyyUnits->begin() + 1;
 					break;
 				}
-				else if (i->udt & UDT_CLOSE) --depth;
+				else if (i->udt & UDT_CLOSE)
+				{
+					--depth;
+				}
 			}
+			
 			CProgram::m_pyyUnits->push_back(mu);
 		}
 ;

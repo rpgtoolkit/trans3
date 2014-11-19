@@ -1979,21 +1979,27 @@ void CProgram::skipClass(CALL_DATA &call)
 // While loop.
 void CProgram::whileLoop(CALL_DATA &call)
 {
-	if (call[0].getNum()) return;
+	if (call[0].getNum()) 
+		return;
+
 	call.prg->m_i = call.prg->m_units.begin() + (int)(call.prg->m_i + 1)->num;
 }
 
 // Until loop.
 void CProgram::untilLoop(CALL_DATA &call)
 {
-	if (!call[0].getNum()) return;
+	if (!call[0].getNum()) 
+		return;
+
 	call.prg->m_i = call.prg->m_units.begin() + (int)(call.prg->m_i + 1)->num;
 }
 
 // For loop.
 void CProgram::forLoop(CALL_DATA &call)
 {
-	if (call[0].getNum()) return;
+	if (call[0].getNum()) 
+		return;
+
 	call.prg->m_i = call.prg->m_units.begin() + (int)(call.prg->m_i + 1)->num;
 }
 

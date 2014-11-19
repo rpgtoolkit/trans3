@@ -991,7 +991,7 @@ static short   *yyss;
 static short   *yysslim;
 static YYSTYPE *yyvs;
 static int      yystacksize;
-#line 967 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 993 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 
 #include "lex.yy.c"
 #include "../../tkCommon/strings.h"
@@ -1296,10 +1296,14 @@ case 20:
 			mu.num = yyvsp[0].getNum();
 			mu.udt = UDT_NUM;
 			CProgram::m_pyyUnits->push_back(mu);
+			
+			/*STRINGSTREAM ss;*/
+			/*ss << mu.num;*/
+			/*CProgram::debugger(ss.str());*/
 		}
 break;
 case 21:
-#line 224 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 228 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 {
 			MACHINE_UNIT mu;
 			mu.lit = yyvsp[0].getLit().substr(1, yyvsp[0].getLit().length() - 2);
@@ -1308,23 +1312,23 @@ case 21:
 		}
 break;
 case 23:
-#line 235 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 239 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _FOUND_PARAM; }
 break;
 case 24:
-#line 237 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 241 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _FOUND_PARAM; }
 break;
 case 25:
-#line 239 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 243 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { }
 break;
 case 27:
-#line 245 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 249 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { yyval = yyvsp[-2].getLit() + _T(".") + yyvsp[0].getLit(); }
 break;
 case 28:
-#line 250 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 254 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 {
 			/* Check for redirected functions. */
 			std::map<STD_NATURAL_STRING, STD_NATURAL_STRING>::iterator i =
@@ -1347,18 +1351,18 @@ case 28:
 		}
 break;
 case 29:
-#line 271 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 275 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { addInclusion(yyvsp[-2].getLit() + _T(".prg")); yyval = yyvsp[0]; }
 break;
 case 30:
-#line 276 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 280 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 {
 			CProgram::m_params.push_back(0);
 			g_bVarFlag = false;
 		}
 break;
 case 31:
-#line 281 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 285 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 {
 			MACHINE_FUNC pFunc = NULL;
 			if (CProgram::m_functions.count(yyvsp[-4].getLit()))
@@ -1380,319 +1384,322 @@ case 31:
 		}
 break;
 case 32:
-#line 308 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 312 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { yyval = _T("`="); }
 break;
 case 33:
-#line 309 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 313 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { yyval = _T("|="); }
 break;
 case 34:
-#line 310 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 314 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { yyval = _T("&="); }
 break;
 case 35:
-#line 311 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 315 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { yyval = _T(">>="); }
 break;
 case 36:
-#line 312 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 316 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { yyval = _T("<<="); }
 break;
 case 37:
-#line 313 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 317 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { yyval = _T("-="); }
 break;
 case 38:
-#line 314 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 318 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { yyval = _T("+="); }
 break;
 case 39:
-#line 315 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 319 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { yyval = _T("%="); }
 break;
 case 40:
-#line 316 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 320 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { yyval = _T("/="); }
 break;
 case 41:
-#line 317 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 321 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { yyval = _T("*="); }
 break;
 case 42:
-#line 318 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 322 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { yyval = _T("^="); }
 break;
 case 43:
-#line 319 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 323 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { yyval = _T("="); }
 break;
 case 44:
-#line 320 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 324 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { yyval = _T("||"); }
 break;
 case 45:
-#line 321 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 325 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { yyval = _T("&&"); }
 break;
 case 46:
-#line 322 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 326 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { yyval = _T("|"); }
 break;
 case 47:
-#line 323 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 327 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { yyval = _T("`"); }
 break;
 case 48:
-#line 324 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 328 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { yyval = _T("&"); }
 break;
 case 49:
-#line 325 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 329 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { yyval = _T("~="); }
 break;
 case 50:
-#line 326 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 330 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { yyval = _T("=="); }
 break;
 case 51:
-#line 327 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 331 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { yyval = _T(">="); }
 break;
 case 52:
-#line 328 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 332 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { yyval = _T("<="); }
 break;
 case 53:
-#line 329 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 333 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { yyval = _T(">"); }
 break;
 case 54:
-#line 330 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 334 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { yyval = _T("<"); }
 break;
 case 55:
-#line 331 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 335 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { yyval = _T(">>"); }
 break;
 case 56:
-#line 332 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 336 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { yyval = _T("<<"); }
 break;
 case 57:
-#line 333 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 337 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { yyval = _T("-"); }
 break;
 case 58:
-#line 334 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 338 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { yyval = _T("+"); }
 break;
 case 59:
-#line 335 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 339 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { yyval = _T("%"); }
 break;
 case 60:
-#line 336 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 340 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { yyval = _T("/"); }
 break;
 case 61:
-#line 337 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 341 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { yyval = _T("*"); }
 break;
 case 62:
-#line 338 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 342 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { yyval = _T("^"); }
 break;
 case 63:
-#line 339 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 343 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { yyval = _T("!"); }
 break;
 case 64:
-#line 340 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 344 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { yyval = _T("~"); }
 break;
 case 65:
-#line 341 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 345 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { yyval = _T("++"); }
 break;
 case 66:
-#line 342 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 346 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { yyval = _T("--"); }
 break;
 case 67:
-#line 343 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 347 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { yyval = _T("[]"); }
 break;
 case 68:
-#line 348 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 352 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(operators::prefixIncrement, 1); }
 break;
 case 69:
-#line 350 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 354 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(operators::postfixIncrement, 1); }
 break;
 case 70:
-#line 352 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 356 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(operators::prefixDecrement, 1); }
 break;
 case 71:
-#line 354 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 358 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(operators::postfixDecrement, 1); }
 break;
 case 72:
-#line 356 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 360 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(operators::unaryNegation, 1); }
 break;
 case 73:
-#line 358 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 362 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(operators::bnot, 1); }
 break;
 case 74:
-#line 360 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 364 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(operators::lnot, 1); }
 break;
 case 75:
-#line 362 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 366 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(operators::xor_assign, 2); }
 break;
 case 76:
-#line 364 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 368 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(operators::or_assign, 2); }
 break;
 case 77:
-#line 366 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 370 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(operators::and_assign, 2); }
 break;
 case 78:
-#line 368 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 372 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(operators::rs_assign, 2); }
 break;
 case 79:
-#line 370 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 374 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(operators::ls_assign, 2); }
 break;
 case 80:
-#line 372 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 376 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(operators::sub_assign, 2); }
 break;
 case 81:
-#line 374 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 378 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(operators::add_assign, 2); }
 break;
 case 82:
-#line 376 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 380 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(operators::mod_assign, 2); }
 break;
 case 83:
-#line 378 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 382 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(operators::div_assign, 2); }
 break;
 case 84:
-#line 380 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 384 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(operators::mul_assign, 2); }
 break;
 case 85:
-#line 382 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 386 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(operators::pow_assign, 2); }
 break;
 case 86:
-#line 384 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 388 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(operators::assign, 2); }
 break;
 case 87:
-#line 386 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 390 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(operators::lor, 2); }
 break;
 case 88:
-#line 388 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 392 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(operators::land, 2); }
 break;
 case 89:
-#line 390 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 394 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(operators::bor, 2); }
 break;
 case 90:
-#line 392 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 396 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(operators::bxor, 2); }
 break;
 case 91:
-#line 394 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 398 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(operators::band, 2); }
 break;
 case 92:
-#line 396 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 400 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(operators::ieq, 2); }
 break;
 case 93:
-#line 398 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 402 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(operators::eq, 2); }
 break;
 case 94:
-#line 400 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 404 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(operators::gte, 2); }
 break;
 case 95:
-#line 402 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 406 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(operators::lte, 2); }
 break;
 case 96:
-#line 404 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 408 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(operators::gt, 2); }
 break;
 case 97:
-#line 406 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 410 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(operators::lt, 2); }
 break;
 case 98:
-#line 408 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 412 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(operators::rs, 2); }
 break;
 case 99:
-#line 410 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 414 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(operators::ls, 2); }
 break;
 case 100:
-#line 412 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 416 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(operators::sub, 2); }
 break;
 case 101:
-#line 414 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 418 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(operators::add, 2); }
 break;
 case 102:
-#line 416 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 420 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(operators::mod, 2); }
 break;
 case 103:
-#line 418 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 422 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(operators::div, 2); }
 break;
 case 104:
-#line 420 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 424 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(operators::mul, 2); }
 break;
 case 105:
-#line 422 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 426 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(operators::pow, 2); }
 break;
 case 106:
-#line 424 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 428 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(operators::tertiary, 3); }
 break;
 case 108:
-#line 430 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 434 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 {
 			_END_LINE;
 			++g_depth;
 			MACHINE_UNIT &back = CProgram::m_pyyUnits->back();
 			bool bVerify = false;
+			
 			if ((back.udt & UDT_FUNC) && (back.func == CProgram::skipMethod))
 			{
 				bVerify = true;
 			}
+			
 			MACHINE_UNIT mu;
 			mu.udt = UDT_OPEN;
 			CProgram::m_pyyUnits->push_back(mu);
+			
 			if (bVerify)
 			{
 				std::map<STD_NATURAL_STRING, int> *params = &g_methods.back();
@@ -1700,19 +1707,23 @@ case 108:
 				/*std::map<STD_NATURAL_STRING, int> *i = params;//->begin();*/
 				STD_NATURAL_STRING key = "";
 				int count = 0;
+				
 				for (; i != params->end(); ++i)
 				/*for (count = 0; count < params.size(); ++count, ++i)*/
 				{
 					const STD_NATURAL_STRING &strParam = i->first;
 					unsigned int space = strParam.find(_T(' '));
+					
 					if (space != -1)
 					{
 						const STD_NATURAL_STRING type = strParam.substr(0, space);
 						const STD_NATURAL_STRING name = strParam.substr(space + 1);
 						key = i->first;
 						params->insert(std::pair<STD_NATURAL_STRING, int>(name, i->second));
+						
 						/*i = params->begin() + count;*/
 						/*params = &g_methods.back();*/
+						
 						i = params->find(key);
 						/*CProgram::debugger(_T("map iterator i=\"") + i->first + _T("\" name was") + name + _T("param:") + TCHAR(i->second + 1));*/
 
@@ -1734,32 +1745,37 @@ case 108:
 		}
 break;
 case 109:
-#line 482 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 493 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 {
 			_END_LINE;
 			--g_depth;
 			MACHINE_UNIT mu;
 			mu.udt = UDT_CLOSE;
+			
 			/* Find the corresponding opening brace. */
 			POS i = CProgram::m_pyyUnits->end() - 1;
-			int ictr = CProgram::m_pyyUnits->size(); - 1;
+			int ictr = CProgram::m_pyyUnits->size();
 			int depth = 0;
+			
 			for (; i != CProgram::m_pyyUnits->begin(); --i, --ictr)
 			{
 				if ((i->udt & UDT_OPEN) && (depth++ == 0))
 				{
 					unsigned long *const pLines = (unsigned long *)&mu.num;
 					pLines[0] = i - CProgram::m_pyyUnits->begin();
+					
 					if ((i - 1)->udt & UDT_FUNC)
 					{
 						if ((i - 1)->func == CProgram::forLoop)
 						{
 							CONST_POS j = CProgram::m_yyFors.back().begin();
+							
 							for (; j != CProgram::m_yyFors.back().end(); ++j)
 							{
 								CProgram::m_pyyUnits->push_back(*j);
 								i = CProgram::m_pyyUnits->begin() + ictr;
 							}
+							
 							CProgram::m_yyFors.pop_back();
 						}
 						else if ((i - 1)->func == CProgram::skipMethod)
@@ -1769,17 +1785,20 @@ case 109:
 						else if ((i - 1)->func == CProgram::skipClass)
 						{
 							MACHINE_UNIT &mu = *(CProgram::m_pyyUnits->end() - 1);
+							
 							if ((mu.udt & UDT_FUNC) && (mu.func == CProgram::skipMethod) && g_methods.size())
 							{
 								g_pClass->second.methods.back().first.i = NAMED_METHOD::m_methods.back().i = 0xffffff;
 								g_methods.pop_back();
 							}
+							
 							g_pClass = NULL;
 						}
 						else if ((i - 1)->func == switchFunc)
 						{
 							--g_switch;
 							g_switchFirst.pop_back();
+							
 							/**************************************************************/
 							/* Note that this leaves pointless calls to some nonexistent*/
 							/* function switch() calls kicking around.*/
@@ -1787,21 +1806,28 @@ case 109:
 							/**************************************************************/
 						}
 					}
-					i->num = CProgram::m_pyyUnits->size();
+					
+					(i - 1)->num = CProgram::m_pyyUnits->size();
+					
 					for (; i != CProgram::m_pyyUnits->begin(); --i)
 					{
 						if ((i->udt & UDT_LINE) && (++depth == 3)) break;
 					}
+					
 					pLines[1] = i - CProgram::m_pyyUnits->begin() + 1;
 					break;
 				}
-				else if (i->udt & UDT_CLOSE) --depth;
+				else if (i->udt & UDT_CLOSE)
+				{
+					--depth;
+				}
 			}
+			
 			CProgram::m_pyyUnits->push_back(mu);
 		}
 break;
 case 112:
-#line 555 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 581 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 {
 			_END_LINE;
 			if (CProgram::m_pyyUnits->size() > 1)
@@ -1816,21 +1842,21 @@ case 112:
 		}
 break;
 case 113:
-#line 571 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 597 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { yyval = yyvsp[-1].getLit() + _T(' ') + yyvsp[0].getLit(); }
 break;
 case 115:
-#line 577 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 603 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { }
 break;
 case 116:
-#line 579 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 605 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 {
 			yyval = _T('&') + yyvsp[-1].getLit();
 		}
 break;
 case 119:
-#line 591 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 617 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 {
 			STD_NATURAL_STRING param = yyvsp[0].getLit();
 			if (param[0] == '&')
@@ -1842,32 +1868,32 @@ case 119:
 		}
 break;
 case 120:
-#line 601 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 627 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { }
 break;
 case 122:
-#line 607 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 633 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { yyval = yyvsp[-3].getLit() + _T("::") + yyvsp[0].getLit(); }
 break;
 case 123:
-#line 609 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 635 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 {
 			yyval = yyvsp[-1].getLit() + yyvsp[0].getLit();
 		}
 break;
 case 125:
-#line 617 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 643 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { g_bInline = true; }
 break;
 case 126:
-#line 622 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 648 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 {
 			g_methods.push_back(std::map<STD_NATURAL_STRING, int>());
 			g_byref = 0;
 		}
 break;
 case 127:
-#line 627 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 653 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 {
 			const STD_NATURAL_STRING name = (g_pClass ? (g_pClass->first + _T("::")) : _T("")) + yyvsp[-3].getLit();
 			if (NAMED_METHOD::locate(name, g_methods.back().size(), false))
@@ -1924,11 +1950,11 @@ case 127:
 		}
 break;
 case 130:
-#line 687 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 713 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { }
 break;
 case 132:
-#line 693 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 719 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 {
 			MACHINE_UNIT mu;
 			mu.udt = UDT_NUM;
@@ -1937,11 +1963,11 @@ case 132:
 		}
 break;
 case 133:
-#line 703 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 729 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _END_LINE; }
 break;
 case 134:
-#line 705 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 731 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 {
 			g_yyOldUnits = CProgram::m_pyyUnits;
 			CProgram::m_yyFors.push_back(MACHINE_UNITS());
@@ -1949,7 +1975,7 @@ case 134:
 		}
 break;
 case 135:
-#line 711 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 737 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 {
 			_END_LINE;
 			CProgram::m_pyyUnits = g_yyOldUnits;
@@ -1957,31 +1983,31 @@ case 135:
 		}
 break;
 case 139:
-#line 726 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 752 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(CProgram::returnVal, 1); }
 break;
 case 140:
-#line 728 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 754 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(CProgram::returnReference, 1); }
 break;
 case 141:
-#line 733 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 759 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { g_pClass->second.inherits.push_back(yyvsp[0].getLit()); }
 break;
 case 145:
-#line 744 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 770 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { }
 break;
 case 146:
-#line 749 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 775 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { g_vis = CV_PRIVATE; }
 break;
 case 147:
-#line 751 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 777 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { g_vis = CV_PUBLIC; }
 break;
 case 148:
-#line 756 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 782 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 {
 			const STD_NATURAL_STRING clsName = yyvsp[0].getLit();
 			g_pClass = &*CProgram::m_pClasses->insert(std::map<STD_NATURAL_STRING, tagClass>::value_type(clsName, tagClass())).first;
@@ -1992,7 +2018,7 @@ case 148:
 		}
 break;
 case 156:
-#line 791 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 817 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 {
 			if (g_pClass)
 			{
@@ -2001,23 +2027,23 @@ case 156:
 		}
 break;
 case 160:
-#line 810 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 836 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { addInclusion(yyvsp[0].getLit().substr(1, yyvsp[0].getLit().length() - 2)); }
 break;
 case 161:
-#line 812 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 838 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { addInclusion(yyvsp[-1].getLit().substr(1, yyvsp[-1].getLit().length() - 2)); }
 break;
 case 162:
-#line 814 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 840 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { _MACHINE_UNIT(CProgram::runtimeInclusion, 1); }
 break;
 case 163:
-#line 819 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 845 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { CProgram::addRedirect(yyvsp[-3].getLit(), yyvsp[-1].getLit()); }
 break;
 case 164:
-#line 821 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 847 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 {
 			CProgram::addRedirect(
 				lcase(yyvsp[-3].getLit().substr(1, yyvsp[-3].getLit().length() - 2)),
@@ -2026,23 +2052,23 @@ case 164:
 		}
 break;
 case 165:
-#line 831 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 857 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { CProgram::removeRedirect(yyvsp[-1].getLit()); }
 break;
 case 166:
-#line 833 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 859 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { CProgram::removeRedirect(lcase(yyvsp[-1].getLit().substr(1, yyvsp[-1].getLit().length() - 2))); }
 break;
 case 167:
-#line 838 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 864 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { CProgram::clearRedirects(); }
 break;
 case 168:
-#line 840 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 866 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { CProgram::clearRedirects(); }
 break;
 case 169:
-#line 845 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 871 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 {
 			MACHINE_UNIT mu;
 			++g_switch;
@@ -2052,7 +2078,7 @@ case 169:
 		}
 break;
 case 170:
-#line 853 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 879 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 {
 			_MACHINE_UNIT(operators::assign, 2);
 
@@ -2061,7 +2087,7 @@ case 170:
 		}
 break;
 case 176:
-#line 874 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 900 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 {
 			MACHINE_UNIT &prevMu = CProgram::m_pyyUnits->back();
 			if ((prevMu.udt & UDT_ID) && (lcase(prevMu.lit) == _T("else")))
@@ -2090,39 +2116,39 @@ case 176:
 		}
 break;
 case 177:
-#line 901 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 927 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 {
 			_MACHINE_UNIT(CProgram::skipElse, 0);
 		}
 break;
 case 179:
-#line 908 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 934 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 {
 			_MACHINE_UNIT(setResumeNextHandler, 0);
 		}
 break;
 case 180:
-#line 912 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 938 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 {
 			_MACHINE_UNIT(setErrorHandler, 1);
 		}
 break;
 case 181:
-#line 918 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 944 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { g_bErrorHandler = true; }
 break;
 case 182:
-#line 918 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 944 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 { g_bErrorHandler = false; }
 break;
 case 183:
-#line 920 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 946 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 {
 			_MACHINE_UNIT(resumeNext, 0);
 		}
 break;
 case 188:
-#line 931 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 957 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 {
 			MACHINE_UNIT mu;
 			mu.udt = UNIT_DATA_TYPE(UDT_ID | UDT_NUM);
@@ -2131,7 +2157,7 @@ case 188:
 		}
 break;
 case 189:
-#line 938 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
+#line 964 "c:\engine\Trans3_2\vc\trans3\rpgcode\yacc.txt"
 {
 			MACHINE_UNIT mu;
 			mu.udt = UNIT_DATA_TYPE(UDT_ID | UDT_NUM);
@@ -2139,7 +2165,7 @@ case 189:
 			CProgram::m_pyyUnits->push_back(mu);
 		}
 break;
-#line 2143 "c:\engine\Trans3_2\vc\trans3\rpgcode\y.tab.c"
+#line 2169 "c:\engine\Trans3_2\vc\trans3\rpgcode\y.tab.c"
     }
     yyssp -= yym;
     yystate = *yyssp;
