@@ -6125,15 +6125,18 @@ void openFileAppend(CALL_DATA &params)
 	{
 		throw CError(_T("OpenFileOutput() requires two parameters."));
 	}
+
 	CFile &file = g_files[parser::uppercase(params[0].getLit())];
 	CONST STRING filename = getFolderPath(params[1].getLit()) + _T('\\') + params[0].getLit();
 	
 	// Create the file if it doesn't exist.
 	file.open(filename, OF_WRITE);
+
 	if (!file.isOpen())
 	{
 		file.open(filename, OF_CREATE | OF_WRITE);
 	}
+
 	file.seek(file.size());
 }
 

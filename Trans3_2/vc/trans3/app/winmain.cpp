@@ -203,11 +203,21 @@ void setUpGame()
 	// Load plugins.
 	CProgram::freePlugins();
 	std::vector<STRING>::iterator i = g_mainFile.plugins.begin();
+
 	for (; i != g_mainFile.plugins.end(); ++i)
 	{
-		if (i->empty()) continue;
+		if (i->empty())
+		{
+			continue;
+		}
+
 		IPlugin *p = loadPlugin(g_projectPath + PLUG_PATH + *i);
-		if (!p) continue;
+
+		if (!p)
+		{
+			continue;
+		}
+
 		if (p->plugType(PT_RPGCODE))
 		{
 			CProgram::addPlugin(p);
@@ -294,8 +304,12 @@ void setUpGame()
 				break;
 		}
 	}
+
 	// Do an fps estimate.
-	if (avgTime < 0) avgTime = 0.1; 
+	if (avgTime < 0)
+	{
+		avgTime = 0.1;
+	}
 
 	m_renderTime = avgTime * MILLISECONDS;
 	m_renderCount = 100;
@@ -306,6 +320,7 @@ void setUpGame()
 	{
 		delete *j;
 	}
+
 	g_players.clear();
 
 	if (!g_mainFile.initChar.empty())
@@ -326,7 +341,10 @@ void setUpGame()
 	}
 
 	// Cannot proceed without a player.
-	if (!g_pSelectedPlayer) throw STRING(_T("Error: an initial character must be defined in the main file or loaded in the start program: cannot proceed."));
+	if (!g_pSelectedPlayer)
+	{
+		throw STRING(_T("Error: an initial character must be defined in the main file or loaded in the start program: cannot proceed."));
+	}
 
 	if (!g_mainFile.initBoard.empty() && !g_loadFromStartPrg)
 	{
@@ -428,18 +446,21 @@ void reset()
 	CProgram::freeGlobals();
 	CProgram::clearRedirects();
 	CProgram::freePlugins();
+
 	if (g_pMenuPlugin)
 	{
 		g_pMenuPlugin->terminate();
 		delete g_pMenuPlugin;
 		g_pMenuPlugin = NULL;
 	}
+
 	if (g_pFightPlugin)
 	{
 		g_pFightPlugin->terminate();
 		delete g_pFightPlugin;
 		g_pFightPlugin = NULL;
 	}
+
 	CThread::destroyAll();
 	setUpGame();
 }
@@ -454,18 +475,21 @@ void closeSystems()
 	CProgram::freePlugins();
 	CThread::destroyAll();
 	extern IPlugin *g_pMenuPlugin, *g_pFightPlugin;
+
 	if (g_pMenuPlugin)
 	{
 		g_pMenuPlugin->terminate();
 		delete g_pMenuPlugin;
 		g_pMenuPlugin = NULL;
 	}
+
 	if (g_pFightPlugin)
 	{
 		g_pFightPlugin->terminate();
 		delete g_pFightPlugin;
 		g_pFightPlugin = NULL;
 	}
+
 	freePluginSystem();
 
 	closeGraphics();
@@ -521,12 +545,17 @@ STRING getMainFileName(const STRING cmdLine)
 	{
 		// Main game file passed on command line.
 		const STRING ret = GAM_PATH + parts[1];
-		if (CFile::fileExists(ret)) return ret;
+
+		if (CFile::fileExists(ret))
+		{
+			return ret;
+		}
 	}
 	else if (parts.size() == 3)
 	{
 		// Run program.
 		const STRING main = GAM_PATH + parts[1];
+
 		if (CFile::fileExists(main))
 		{
 			GdiplusStartupInput gdiplusStartupInput;
@@ -605,18 +634,21 @@ GAME_STATE gameLogic()
 			// Frames per millisecond.
 			g_fpms = (m_renderCount / m_renderTime);
 			const unsigned long fps = g_fpms * MILLISECONDS;
-g_mainFile.bFpsInTitleBar = 1;//~TEMP
+			g_mainFile.bFpsInTitleBar = 1;//~TEMP
+
 			if (g_mainFile.bFpsInTitleBar)
 			{
 				extern HWND g_hHostWnd;
 				STRINGSTREAM ss;
+
+#if _DEBUG
 				ss <<	g_mainFile.gameTitle.c_str()
 					<< _T(" — ") << g_pBoard->vectors.size()
 					<< _T(" vectors, ") << (g_fpms * MILLISECONDS)
 					<< _T(" FPS");
-#if _DEBUG
 				ss << _T(", ") << g_allocated << _T(" bytes");
 #endif
+
 				SetWindowText(g_hHostWnd, ss.str().c_str());
 			}
 
@@ -639,18 +671,12 @@ g_mainFile.bFpsInTitleBar = 1;//~TEMP
 			CThread::multitask((units < 1) ? 10 : ((units > 8) ? 80 : units*10));
 
 			// Movement.
-			//std::vector<CSprite *>::const_iterator i = g_sprites.v.begin();
 			// Remember the vector size, so we'll know if it has been tampered with from within the move function
 			int s = g_sprites.v.size(), i;
-			//for (; i != g_sprites.v.end();)
+
 			for (i = 0; i < s; ++i)
 			{
-				//(*i)->move(g_pSelectedPlayer, false);
 				g_sprites.v[i]->move(g_pSelectedPlayer, false);
-//				if (s == g_sprites.v.size())
-//					++i;
-//				else
-//					s = g_sprites.v.size();
 			}
 
 			// Run programs outside of the above loop for the cases
@@ -662,8 +688,8 @@ g_mainFile.bFpsInTitleBar = 1;//~TEMP
 
 			// Render.
 			renderNow();
-		} break;
-
+		} 
+			break;
 		case GS_PAUSE:
 			// Relinquish some CPU time.
 			Sleep(100);
@@ -723,9 +749,10 @@ int mainEventLoop()
 			if (gameLogic() != GS_PAUSE)
 			{
 				// Count this loop if not in Paused state
-
-				// Sleep for any remaining time
-				while ((GetTickCount() - dwTimeNow) < dwOneFrame);
+				while ((GetTickCount() - dwTimeNow) < dwOneFrame)
+				{
+					// Sleep for any remaining time
+				}
 
 				// Update length rendering took
 				dwTimeNow = GetTickCount() - dwTimeNow;
@@ -765,11 +792,8 @@ int mainEntry(const HINSTANCE hInstance, const HINSTANCE /*hPrevInstance*/, cons
 	TCHAR buffer [_MAX_PATH], *path = buffer;
 	if (_tgetcwd(buffer, _MAX_PATH) == NULL) return EXIT_SUCCESS;
 
-//	TCHAR dev[] = _T("C:\\CVS\\Tk3 Dev\\");
-//	TCHAR dev[] = _T("C:\\Program Files\\Toolkit3\\");
-//	path = dev;
-   GdiplusStartupInput gdiplusStartupInput;
-   ULONG_PTR           gdiplusToken;
+	GdiplusStartupInput gdiplusStartupInput;
+	ULONG_PTR           gdiplusToken;
    
 	set_terminate(termFunc);
 
@@ -794,11 +818,19 @@ int mainEntry(const HINSTANCE hInstance, const HINSTANCE /*hPrevInstance*/, cons
 	}
 	// For everything else use the patch of this program
 	else
+	{
 		_tchdir(path);
+	}
 
-	if (fileName.empty()) return EXIT_SUCCESS;
+	if (fileName.empty())
+	{
+		return EXIT_SUCCESS;
+	}
 
-	if (!g_mainFile.open(fileName)) return EXIT_SUCCESS;
+	if (!g_mainFile.open(fileName)) 
+	{
+		return EXIT_SUCCESS;
+	}
 
     // Initialize GDI+.
     GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);

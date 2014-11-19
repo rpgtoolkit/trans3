@@ -79,16 +79,23 @@ STRING resolveNonPakFile(const STRING path)
 // Resolve a file name
 STRING resolvePakFile(const STRING path)
 {
-	if(path.find("Saved\\",0) ==0){ return path;}
+	if (path.find("Saved\\", 0) == 0)
+	{ 
+		return path;
+	}
+
 	const STRING file = g_pakTempPath + path;
 	resolve = resolveNonPakFile;
+
 	if (!CFile::fileExists(file))
 	{
 		// Extract the file from the pak file or this executable.
 		// (Assume the zip is open!)
 		ZIPExtract(const_cast<char *>(path.c_str()), const_cast<char *>(file.c_str()));
 	}
+
 	resolve = resolvePakFile;
+
 	return file;
 }
 
@@ -100,12 +107,12 @@ void setResolve(const bool bPak)
 bool initialisePakFile(const STRING file)
 {
 //	MessageBox(NULL, _T("We are checking PakFile"),_T("Just Checking"),0);
+
 	TCHAR pstrTemp[_MAX_PATH];
 	GetTempPath(_MAX_PATH, pstrTemp);
 	_tcscat(pstrTemp, _T("TKTemp"));
 
 	g_pakTempPath = pstrTemp + STRING(_T("\\"));
-	//sg_savePath = _T("");
 
 	// Create the directory %temp%\TKTemp.
 	if (FAILED(CreateDirectory(pstrTemp, NULL)))
@@ -113,25 +120,37 @@ bool initialisePakFile(const STRING file)
 		MessageBox(NULL, _T("A temporary directory for this application could not be created."), _T("Directory error."), 0);
 		return false;
 	}
+
 //	MessageBox(NULL, _T("Passed Directory Check"),_T("Just Checking"),0);
+
 	// Set of all directories.
-	const TCHAR *directories[] = {TILE_PATH, BRD_PATH, TEM_PATH, SPC_PATH, BKG_PATH, MEDIA_PATH, PRG_PATH, FONT_PATH, ITM_PATH, ENE_PATH, BMP_PATH, STATUS_PATH, MISC_PATH, PLUG_PATH};
+	const TCHAR *directories[] = {
+		TILE_PATH, BRD_PATH, TEM_PATH, SPC_PATH, BKG_PATH, MEDIA_PATH, 
+		PRG_PATH, FONT_PATH, ITM_PATH, ENE_PATH, BMP_PATH, STATUS_PATH, 
+		MISC_PATH, PLUG_PATH};
 
 	for (unsigned int i = 0; i < 14; ++i)
 	{
 		CreateDirectory((pstrTemp + STRING(_T("\\")) + directories[i]).c_str(), NULL);
 	}
+
 //	MessageBox(NULL, _T("CreatedDirectories"),_T("Just Checking"),0);
+
 	// Open the archive.
 	if (!ZIPOpen(const_cast<char *>(file.c_str())))
 	{
-		MessageBox(NULL, _T("The PAK file or executable could not be successfully opened and is probably invalid."), _T("Invalid PAK File"), 0);
+		MessageBox(NULL, _T("The PAK file or executable could not be successfully opened and is probably invalid."), 
+			_T("Invalid PAK File"), 0);
 	}
 
 	g_pakFile = file;
+
 //	MessageBox(NULL, _T("Set Pak File"),_T("Just Checking"),0);
+
 	setResolve(true);
+
 //	MessageBox(NULL, _T("Resolve is true"),_T("Just Checking"),0);
+
 	return true;
 }
 
@@ -143,11 +162,13 @@ bool isStandaloneGame()
 	char path[_MAX_PATH];
 	GetModuleFileNameA(g_hInstance, path, _MAX_PATH);
 
-	if (!ZIPIsCompoundFile(path)) return false;
+	if (!ZIPIsCompoundFile(path))
+	{
+		return false;
+	}
 
 	// We are a standalone file, so let's cheat a bit and
 	// do some stuff here.
-
 	TCHAR pstrTemp[_MAX_PATH];
 	GetTempPath(_MAX_PATH, pstrTemp);
 	_tcscat(pstrTemp, _T("temp.tpk"));
