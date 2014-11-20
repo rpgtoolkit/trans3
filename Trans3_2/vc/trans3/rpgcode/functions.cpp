@@ -6613,7 +6613,7 @@ void openFileInput(CALL_DATA &params)
 	}
 
 	CFile &file = g_files[parser::uppercase(params[0].getLit())];
-	file.open(getFolderPath(params[1].getLit()) + _T('\\') + params[0].getLit(), OF_READ);
+	file.open(getFolderPath(params[1].getLit()) + _T('\\') + params[0].getLit());
 
 	if (!file.isOpen())
 	{
@@ -6633,7 +6633,8 @@ void openFileOutput(CALL_DATA &params)
 		throw CError(_T("OpenFileOutput() requires two parameters."));
 	}
 
-	g_files[parser::uppercase(params[0].getLit())].open(getFolderPath(params[1].getLit()) + _T('\\') + params[0].getLit(), OF_CREATE | OF_WRITE);
+	g_files[parser::uppercase(params[0].getLit())].open
+		(getFolderPath(params[1].getLit()) + _T('\\') + params[0].getLit(), GENERIC_WRITE, CREATE_NEW);
 }
 
 /*
@@ -6652,11 +6653,11 @@ void openFileAppend(CALL_DATA &params)
 	CONST STRING filename = getFolderPath(params[1].getLit()) + _T('\\') + params[0].getLit();
 	
 	// Create the file if it doesn't exist.
-	file.open(filename, OF_WRITE);
+	file.open(filename, GENERIC_WRITE);
 
 	if (!file.isOpen())
 	{
-		file.open(filename, OF_CREATE | OF_WRITE);
+		file.open(filename, GENERIC_WRITE, CREATE_NEW);
 	}
 
 	file.seek(file.size());

@@ -46,8 +46,8 @@ class CFile
 
 public:
 	CFile(): m_hFile(HFILE_ERROR) { }
-	void open(const STRING fileName, CONST UINT mode = OF_READ);
-	CFile(CONST STRING fileName, CONST UINT mode = OF_READ);
+	void open(const STRING fileName, CONST UINT mode = GENERIC_READ, CONST UINT strategy = OPEN_EXISTING);
+	CFile(CONST STRING fileName, CONST UINT mode = GENERIC_READ);
 	//
 	// Write.
 	//

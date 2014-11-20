@@ -450,7 +450,7 @@
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
 				BrowseInformation="1"
-				WarningLevel="2"
+				WarningLevel="0"
 				SuppressStartupBanner="false"
 				DebugInformationFormat="3"
 			/>

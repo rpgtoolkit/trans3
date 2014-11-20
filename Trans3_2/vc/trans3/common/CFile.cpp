@@ -46,7 +46,7 @@ CFile::CFile(CONST STRING fileName, CONST UINT mode)
 {
 	m_hFile = (HFILE)CreateFile(
 		resolve(fileName.c_str()).c_str(),	// file to open
-		GENERIC_READ | GENERIC_WRITE,		// open for reading and writing
+		mode,								// based on the mode parameter
         FILE_SHARE_READ,					// share for reading
         NULL,								// default security
         OPEN_EXISTING,						// existing file only
@@ -56,7 +56,7 @@ CFile::CFile(CONST STRING fileName, CONST UINT mode)
 	memset(&m_ptr, 0, sizeof(m_ptr));
 }
 
-void CFile::open(const STRING fileName, CONST UINT mode)
+void CFile::open(const STRING fileName, CONST UINT mode, CONST UINT strategy)
 {
 	// If the file is already open close the handle.
 	if (m_hFile != HFILE_ERROR)
@@ -64,28 +64,14 @@ void CFile::open(const STRING fileName, CONST UINT mode)
 		CloseHandle(HANDLE(m_hFile));
 	}
 
-	// Try to open an existing file.
 	m_hFile = (HFILE)CreateFile(
 		resolve(fileName.c_str()).c_str(),			// file to open
-		GENERIC_READ | GENERIC_WRITE,				// open for reading and writing
+		mode,										// based on the mode parameter
         FILE_SHARE_READ,							// share for reading
         NULL,										// default security
-        OPEN_EXISTING,								// existing file only
+        strategy,									// based on the strategy parameter
         FILE_ATTRIBUTE_NORMAL,						// normal file
         NULL);
-
-	// If the above failed create a new one.
-	if (m_hFile == HFILE_ERROR)
-	{
-		m_hFile = (HFILE)CreateFile(
-		resolve(fileName.c_str()).c_str(),			// file to open
-		GENERIC_READ | GENERIC_WRITE,				// open for reading and writing
-        FILE_SHARE_READ,							// share for reading
-        NULL,										// default security
-        CREATE_NEW,									// create new
-        FILE_ATTRIBUTE_NORMAL,						// normal file
-        NULL);
-	}
 
 	memset(&m_ptr, 0, sizeof(m_ptr));
 }
