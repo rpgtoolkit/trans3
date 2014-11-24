@@ -195,6 +195,7 @@ void registerFonts(const STRING path, bool bRegister)
 		}
 	} while (FindNextFile(hSearch, &fd));
 }
+
 void registerFonts(bool bRegister)
 {
 	extern STRING g_projectPath;

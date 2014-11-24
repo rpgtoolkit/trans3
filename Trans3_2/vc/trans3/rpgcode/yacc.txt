@@ -517,7 +517,7 @@ line_terminator:
 							for (; j != CProgram::m_yyFors.back().end(); ++j)
 							{
 								CProgram::m_pyyUnits->push_back(*j);
-								i = CProgram::m_pyyUnits->begin() + ictr;
+								i = CProgram::m_pyyUnits->begin() + ictr - 1; // Go back 1 more here other wise it won't match
 							}
 							
 							CProgram::m_yyFors.pop_back();
@@ -551,7 +551,9 @@ line_terminator:
 						}
 					}
 					
-					(i - 1)->num = CProgram::m_pyyUnits->size();
+					// Put the location of the closing curly brace into the opening
+					// braces num attribute.
+					(i)->num = CProgram::m_pyyUnits->size();
 					
 					for (; i != CProgram::m_pyyUnits->begin(); --i)
 					{
