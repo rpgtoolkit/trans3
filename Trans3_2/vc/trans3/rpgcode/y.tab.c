@@ -1773,7 +1773,7 @@ case 109:
 							for (; j != CProgram::m_yyFors.back().end(); ++j)
 							{
 								CProgram::m_pyyUnits->push_back(*j);
-								i = CProgram::m_pyyUnits->begin() + ictr - 1;
+								i = CProgram::m_pyyUnits->begin() + ictr - 1; /* Go back 1 more here other wise it won't match*/
 							}
 							
 							CProgram::m_yyFors.pop_back();
