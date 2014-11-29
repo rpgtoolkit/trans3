@@ -1,12 +1,17 @@
 /*
  ********************************************************************
  * The RPG Toolkit, Version 3
- * This file copyright (C) 2007 Jonathan D. Hughes & Colin James Fitzpatrick
+ * This file copyright (C) 2007-2014 
+ *				- Colin James Fitzpatrick
+ *				- Johnathan D. Hughes
+ *
+ * Contributors:
+ *				- Joshua Michael Daly
  ********************************************************************
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
+ * as published by the Free Software Foundation; either version 3
  * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -52,6 +57,7 @@ m_pThread(NULL)
 		// Create standard vectors for old items.
 		createVectors();
 	}
+
 	m_bActive = show;				// Overwrite open() result.
 }
 
@@ -73,6 +79,7 @@ m_pThread(NULL)
 short CItem::open(const STRING file, const bool thread) throw(CInvalidItem)
 {
 	const short minorVer = m_itemMem.open(file, &m_attr);
+
 	if (minorVer == 0)
 	{
 		throw CInvalidItem();
@@ -89,8 +96,15 @@ short CItem::open(const STRING file, const bool thread) throw(CInvalidItem)
 
 	// Override the item's programs for the board's, and
 	// make them accessible to CSprite.
-	if (m_brdData.prgMultitask.empty()) m_brdData.prgMultitask = m_itemMem.itmPrgOnBoard;
-	if (m_brdData.prgActivate.empty()) m_brdData.prgActivate = m_itemMem.itmPrgPickUp;
+	if (m_brdData.prgMultitask.empty())
+	{
+		m_brdData.prgMultitask = m_itemMem.itmPrgOnBoard;
+	}
+
+	if (m_brdData.prgActivate.empty())
+	{
+		m_brdData.prgActivate = m_itemMem.itmPrgPickUp;
+	}
 
 	// Check activation conditions.
 	m_bActive = true;
@@ -117,7 +131,11 @@ short CItem::open(const STRING file, const bool thread) throw(CInvalidItem)
  */
 void CItem::attachThread(CItemThread *pThread)
 {
-	if (m_pThread) CThread::destroy(m_pThread);
+	if (m_pThread)
+	{
+		CThread::destroy(m_pThread);
+	}
+
 	m_pThread = pThread;
 }
 
@@ -139,7 +157,10 @@ bool CItemThread::execute(const unsigned int units)
 {
 	extern ENTITY g_target, g_source;
 
-	if (!m_pItem->isActive() || (m_i == m_units.end())) return false;
+	if (!m_pItem->isActive() || (m_i == m_units.end()))
+	{
+		return false;
+	}
 
 	ENTITY t = g_target, s = g_source;
 
@@ -152,6 +173,7 @@ bool CItemThread::execute(const unsigned int units)
 		m_i->execute(this);
 		++m_i;
 	} 
+
 	g_target = t; g_source = s;
 
 	return true;

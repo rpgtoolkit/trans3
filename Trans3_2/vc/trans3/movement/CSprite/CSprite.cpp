@@ -1,12 +1,16 @@
 /*
  ********************************************************************
  * The RPG Toolkit, Version 3
- * This file copyright (C) 2006  Jonathan D. Hughes
+ * This file copyright (C) 2006-2014 
+ *				- Johnathan D. Hughes
+ *
+ * Contributors:
+ *				- Joshua Michael Daly
  ********************************************************************
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
+ * as published by the Free Software Foundation; either version 3
  * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -95,7 +99,10 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 	if (m_pos.loopFrame == LOOP_FREEZE)
 	{
 		// Return true because sprite will resume movement.
-		if (GetTickCount() - m_pos.timer.frameTime < m_pos.timer.idleTime) return true;
+		if (GetTickCount() - m_pos.timer.frameTime < m_pos.timer.idleTime)
+		{
+			return true;
+		}
 
 		m_pos.loopFrame = LOOP_WAIT;
 		m_pos.timer.idleTime = m_pos.timer.frameTime = 0;
@@ -122,7 +129,10 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 				CSprite *pSprite = NULL;
 				if (spriteCollisions(pSprite) & TT_SOLID)
 				{
-					if (handleCollision(*pSprite)) return true;
+					if (handleCollision(*pSprite))
+					{
+						return true;
+					}
 
 					// if (false), findDiversion() failed and movement
 					// must stop. If this sprite is waiting for pSprite
@@ -151,18 +161,30 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 			}
 
 			// Start the render frame counter.
-			if (isUser || (~m_tileType & TT_SOLID)) m_pos.loopFrame = LOOP_MOVE;
+			if (isUser || (~m_tileType & TT_SOLID))
+			{
+				m_pos.loopFrame = LOOP_MOVE;
+			}
 
 			// Do this after the above if, to prevent walking on the target board.
-			if (isUser) m_tileType = TILE_TYPE(m_tileType | checkBoardEdges());
+			if (isUser)
+			{
+				m_tileType = TILE_TYPE(m_tileType | checkBoardEdges());
+			}
 		}
 		else
 		{
 			// Set g_gamestate to GS_IDLE to accept user input for the selected player.
-			if (isUser) g_gameState = GS_IDLE;
+			if (isUser)
+			{
+				g_gameState = GS_IDLE;
+			}
 
 			// Clear any LOOP_DONE status.
-			if (m_pos.loopFrame == LOOP_DONE) m_pos.loopFrame = LOOP_WAIT;
+			if (m_pos.loopFrame == LOOP_DONE)
+			{
+				m_pos.loopFrame = LOOP_WAIT;
+			}
 			
 			// Clear any pathfinding status.
 			m_pos.bIsPath = true;
@@ -197,16 +219,21 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 				// Reassign the direction in case of alteration.
 				m_facing.assign(getDirection(m_v));
 
-				if (isUser) m_tileType = TILE_TYPE(m_tileType | checkBoardEdges());
+				if (isUser)
+				{
+					m_tileType = TILE_TYPE(m_tileType | checkBoardEdges());
+				}
 
 				// Check stairs.
 				DB_POINT pt = m_pos.target;
 				CVector sprBase = m_attr.vBase + pt;
 				
 				int dest = m_pos.l;
-				for (std::vector<BRD_VECTOR>::const_iterator i = g_pBoard->vectors.begin(); i != g_pBoard->vectors.end(); ++i)
+				for (std::vector<BRD_VECTOR>::const_iterator i = g_pBoard->vectors.begin(); 
+					i != g_pBoard->vectors.end(); ++i)
 				{
-					if ((i->type & TT_STAIRS) && (i->layer == m_pos.l) && i->pV->contains(sprBase, pt))
+					if ((i->type & TT_STAIRS) && (i->layer == m_pos.l) && 
+						i->pV->contains(sprBase, pt))
 					{
 						dest = i->attributes;
 					}
@@ -216,7 +243,10 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 				CSprite *pSprite = NULL;
 				if (spriteCollisions(pSprite) & TT_SOLID)
 				{
-					if (handleCollision(*pSprite)) return true;
+					if (handleCollision(*pSprite))
+					{
+						return true;
+					}
 
 					// if (false), findDiversion() failed and movement
 					// must stop. If this sprite is waiting for pSprite
@@ -322,7 +352,10 @@ bool CSprite::move(const CSprite *selectedPlayer, const bool bRunningProgram)
 		} // if (movement ended)
 
 		// Return true for a set path only (not a board path).
-		if (!m_pos.path.empty()) return true;
+		if (!m_pos.path.empty())
+		{
+			return true;
+		}
 
 	} // if (movement occurred)
 
@@ -357,29 +390,43 @@ bool CSprite::push(const bool bScroll)
 		// Bitshift in place of divide by two (>> 1 equivalent to / 2)
 		if ((m_v.y < 0 && m_pos.y < (g_screen.top + g_screen.bottom >> 1) && g_screen.top > 0) ||
 			// North. Scroll if in upper half of screen.
-			(m_v.y > 0 && m_pos.y > (g_screen.top + g_screen.bottom >> 1) && g_screen.bottom < g_pBoard->pxHeight()))
+			(m_v.y > 0 && m_pos.y > (g_screen.top + g_screen.bottom >> 1) && 
+			g_screen.bottom < g_pBoard->pxHeight()))
 			// South. Scroll if in lower half of screen.
 		{
 			const int height = g_screen.bottom - g_screen.top;
 			g_screen.top += scy;
 
 			// Check bounds.
-			if (g_screen.top < 0) g_screen.top = 0;
-			else if (g_screen.top + height > g_pBoard->pxHeight()) g_screen.top = g_pBoard->pxHeight() - height;
+			if (g_screen.top < 0)
+			{
+				g_screen.top = 0;
+			}
+			else if (g_screen.top + height > g_pBoard->pxHeight())
+			{
+				g_screen.top = g_pBoard->pxHeight() - height;
+			}
 
 			g_screen.bottom = g_screen.top + height;
 		}
 
 		if ((m_v.x < 0 && m_pos.x < (g_screen.left + g_screen.right >> 1) && g_screen.left > 0) ||
 			// West. Scroll if in left half of screen.
-			(m_v.x > 0 && m_pos.x > (g_screen.left + g_screen.right >> 1) && g_screen.right < g_pBoard->pxWidth()))
+			(m_v.x > 0 && m_pos.x > (g_screen.left + g_screen.right >> 1) && 
+			g_screen.right < g_pBoard->pxWidth()))
 			// East. Scroll if in right half of screen.
 		{
 			const int width = g_screen.right - g_screen.left;
 			g_screen.left += scx;
 
-			if (g_screen.left < 0) g_screen.left = 0;
-			else if (g_screen.left + width > g_pBoard->pxWidth()) g_screen.left = g_pBoard->pxWidth() - width;
+			if (g_screen.left < 0)
+			{
+				g_screen.left = 0;
+			}
+			else if (g_screen.left + width > g_pBoard->pxWidth())
+			{
+				g_screen.left = g_pBoard->pxWidth() - width;
+			}
 
 			g_screen.right = g_screen.left + width;
 		}
@@ -411,11 +458,21 @@ bool CSprite::findDiversion(void)
 			const int flags = (path() ? PF_AVOID_SPRITE : PF_AVOID_SPRITE | PF_QUIT_BLOCKED);
 			p = pathFind(pt.x, pt.y, PF_PREVIOUS, flags);
 
-			if (!p.empty()) break;
-			else p.clear();
+			if (!p.empty())
+			{
+				break;
+			}
+			else
+			{
+				p.clear();
+			}
 
 			// Advance before obtaining node to preserve nextNode if path is found.
-			if (!path()) break;
+			if (!path())
+			{
+				break;
+			}
+
 			pt = path.getNextNode();
 		}
 
@@ -440,6 +497,7 @@ bool CSprite::findDiversion(void)
 		MV_PATH path = m_pos.path;		
 		PF_PATH p;
 		MV_PATH::iterator i;
+
 		for (i = path.begin(); i != path.end(); ++i)
 		{
 			// Try each point along the path in turn.
@@ -447,8 +505,14 @@ bool CSprite::findDiversion(void)
 			const int flags = (i != path.end() - 1 ? PF_AVOID_SPRITE : PF_AVOID_SPRITE | PF_QUIT_BLOCKED);
 			p = pathFind(i->x, i->y, PF_PREVIOUS, flags);
 
-			if (!p.empty()) break;
-			else p.clear();
+			if (!p.empty())
+			{
+				break;
+			}
+			else
+			{
+				p.clear();
+			}
 		}
 
 		// Was a path to some point found?
@@ -461,14 +525,17 @@ bool CSprite::findDiversion(void)
 		{
 			// Set the diversion and append the partial old path.
 			setQueuedPath(p, true);
+
 			// Miss the first point of partial path to avoid duplication.
 			if (++i != path.end())
 			{
 				m_pos.path.insert(m_pos.path.end(), i, path.end());
 			}
+
 			return true;
 		}
 	} // if (m_pos.path.empty())
+
 	return false;
 }
 
@@ -529,6 +596,7 @@ bool CSprite::handleCollision(CSprite &sprite)
 			sprite.m_pos.timer.idleTime = freeze;
 			sprite.m_pos.timer.frameTime = GetTickCount();
 		}
+
 		return result;
 	}
 
@@ -558,15 +626,29 @@ MV_ENUM CSprite::getDirection(const DB_POINT &unitVector)
 	// that corresponds to the implied direction, and that can 
 	// be used along with non-iso boards.
 	// arctan returns -pi/2 to +pi/2 radians (-90 to +90 degrees).
-	if (unitVector.x) angle = RADIAN * (g_pBoard->isIsometric() ?
+	if (unitVector.x)
+	{
+		angle = RADIAN * (g_pBoard->isIsometric() ?
 							  atan(2 * unitVector.y / unitVector.x) : 
 							  atan(unitVector.y / unitVector.x));
+	}
 
-	if (angle == 0.0 && unitVector.x < 0.0) angle = 180.0;
+	if (angle == 0.0 && unitVector.x < 0.0)
+	{
+		angle = 180.0;
+	}
+
 	// Correct for negatives.
-	if (angle < 0.0) angle += 180.0;
+	if (angle < 0.0)
+	{
+		angle += 180.0;
+	}
+
 	// Correct for inversion.
-	if (unitVector.y < 0.0) angle += 180.0;
+	if (unitVector.y < 0.0)
+	{
+		angle += 180.0;
+	}
 
 	return MV_ENUM((round(angle / 45.0) % 8) + 1);
 }
@@ -585,6 +667,7 @@ DB_POINT CSprite::getTarget(void) const
 							m_pos.y + step * m_v.y};
 		return p;
 	}
+
 	return m_pos.target;
 }
 
@@ -606,13 +689,6 @@ void CSprite::setTarget(MV_ENUM direction)
 	m_v.x = g_directions[nIso][direction][0];
 	m_v.y = g_directions[nIso][direction][1];
 
-/*
-	if (nIso == 1 && !m_bPxMovement && m_v.x && !m_v.y)
-	{
-		// Cause players to move twice as far for East/West in tile movement.
-		m_v.x *= 2;
-	}
-*/
 	m_pos.target.x = m_pos.x + m_v.x * step;
 	m_pos.target.y = m_pos.y + m_v.y * step;
 }
@@ -631,7 +707,10 @@ void CSprite::setPathTarget(void)
 		// Do not queue up the point - an empty queue signifies a board path.
 		m_pos.target = m_brdData.boardPath.getNextNode();
 	}
-	else return;
+	else
+	{
+		return;
+	}
 
 	const double dx = m_pos.target.x - m_pos.x,
 				 dy = m_pos.target.y - m_pos.y;
@@ -661,7 +740,10 @@ void CSprite::parseQueuedMovements(const STRING str, const bool bClearQueue)
 	STRING s;
 
 	// Break out of the current movement.
-	if (bClearQueue) clearQueue();
+	if (bClearQueue)
+	{
+		clearQueue();
+	}
 
 	// Should step = 8 for pixel push?
 	const int step = (g_mainFile.pixelMovement == MF_PUSH_PIXEL ? 8 : 32);
@@ -673,33 +755,57 @@ void CSprite::parseQueuedMovements(const STRING str, const bool bClearQueue)
 		{
 			MV_ENUM mv = MV_IDLE;
 			if (!s.compare(_T("NORTH")) || !s.compare(_T("N")) || !s.compare(MVQ_NORTH))
+			{
 				mv = MV_N;
+			}
 			else if (!s.compare(_T("SOUTH")) || !s.compare(_T("S")) || !s.compare(MVQ_SOUTH))
+			{
 				mv = MV_S;
+			}
 			else if (!s.compare(_T("EAST")) || !s.compare(_T("E")) || !s.compare(MVQ_EAST))
+			{
 				mv = MV_E;
+			}
 			else if (!s.compare(_T("WEST")) || !s.compare(_T("W")) || !s.compare(MVQ_WEST))
+			{
 				mv = MV_W;
+			}
 			else if (!s.compare(_T("NORTHEAST")) || !s.compare(_T("NE")) || !s.compare(MVQ_NE))
+			{
 				mv = MV_NE;
+			}
 			else if (!s.compare(_T("NORTHWEST")) || !s.compare(_T("NW")) || !s.compare(MVQ_NW))
+			{
 				mv = MV_NW;
+			}
 			else if (!s.compare(_T("SOUTHEAST")) || !s.compare(_T("SE")) || !s.compare(MVQ_SE))
+			{
 				mv = MV_SE;
+			}
 			else if (!s.compare(_T("SOUTHWEST")) || !s.compare(_T("SW")) || !s.compare(MVQ_SW))
+			{
 				mv = MV_SW;
+			}
 
-			if (mv != MV_IDLE) setQueuedMovement(mv, false, step);
+			if (mv != MV_IDLE)
+			{
+				setQueuedMovement(mv, false, step);
+			}
 
 			s.erase();
 		}
 		else
 		{
-			if (i[0] != _T(' ')) s += *i;
+			if (i[0] != _T(' '))
+			{
+				s += *i;
+			}
 		}
 
 		if (i == str.end())
+		{
 			break;
+		}
 	}
 }
 
@@ -708,7 +814,10 @@ void CSprite::parseQueuedMovements(const STRING str, const bool bClearQueue)
  */
 void CSprite::clearQueue(void)
 {
-	if (m_pos.loopFrame != LOOP_DONE) m_pos.loopFrame = LOOP_WAIT;
+	if (m_pos.loopFrame != LOOP_DONE)
+	{
+		m_pos.loopFrame = LOOP_WAIT;
+	}
 	
 	m_pos.target.x = m_pos.x;
 	m_pos.target.y = m_pos.y;
@@ -721,7 +830,11 @@ void CSprite::clearQueue(void)
 void CSprite::setQueuedMovement(const int direction, const bool bClearQueue, int step)
 {
 	// Break out of the current movement.
-	if (bClearQueue) clearQueue();
+	if (bClearQueue)
+	{
+		clearQueue();
+	}
+
 	m_pos.bIsPath = false;
 
 	extern LPBOARD g_pBoard;
@@ -730,16 +843,13 @@ void CSprite::setQueuedMovement(const int direction, const bool bClearQueue, int
 	const int nIso = int(g_pBoard->isIsometric());
 
 	// Pixels travelled this move, optionally overriden for rpgcode commands.
-	if (!step) step = moveSize();
+	if (!step)
+	{
+		step = moveSize();
+	}
 
 	// g_directions[isIsometric()][MV_CODE][x OR y].
 	const double x = g_directions[nIso][direction][0], y = g_directions[nIso][direction][1];
-
-	/** if (nIso == 1 && !m_bPxMovement && x && !y)
-	{
-		// Cause players to move twice as far for East/West in tile movement.
-		m_v.x *= 2;
-	} **/
 
 	DB_POINT dest;
 	getDestination(dest);
@@ -770,17 +880,6 @@ void CSprite::runQueuedMovements(void)
 		DWORD reframe = GetTickCount();
 		DWORD remaining = reframe - t - frame;
 		reframe = reframe - t;
-
-		/*if(reframe == remaining)
-		{
-			
-			MessageBox(NULL, _T("Frame = 0"), _T("JUST HERE"), 0);
-		}
-		if (remaining > 0)
-		{
-			MessageBox(NULL, _T("remaining is larger than 0"), _T("JUST HERE"), 0);
-			Sleep(remaining);
-		} */
 	}
 }
 
@@ -795,7 +894,6 @@ void CSprite::getDestination(DB_POINT &p) const
 		// of the previous movement (origin = target on arrival).
 		// Note to self - the origin will always equal pos whilst path has points
 		// because the last point isn't cleared until movement ends. (Delano)
-
 		p.x = m_pos.x;
 		p.y = m_pos.y;
 	}
@@ -811,7 +909,10 @@ void CSprite::getDestination(DB_POINT &p) const
  */
 void CSprite::setQueuedPath(PF_PATH &path, const bool bClearQueue)
 {
-	if (bClearQueue) clearQueue();
+	if (bClearQueue)
+	{
+		clearQueue();
+	}
 
 	// PF_PATH is a std::vector<DB_POINT> with the points stored in reverse.
 	PF_PATH::reverse_iterator i = path.rbegin();
@@ -850,7 +951,11 @@ PF_PATH CSprite::pathFind(const int x, const int y, const int type, const int fl
 void CSprite::playerDoneMove(void) 
 {
 	// Check if the selected player just completed a move.
-	if (!m_bDoneMove) return;
+	if (!m_bDoneMove)
+	{
+		return;
+	}
+
 	m_bDoneMove = false;
 
 	extern GAME_STATE g_gameState;
@@ -898,7 +1003,11 @@ void CSprite::doMovement(const CProgram *prg, const bool bPauseThread)
 			// Hold thread execution until this command is finished.
 
 			// Free any current thread.
-			if (m_thread) m_thread->wakeUp();
+			if (m_thread)
+			{
+				m_thread->wakeUp();
+			}
+
 			// Give thread control to the sprite.
 			m_thread = (CThread *)prg;
 			// Pause the thread indefinitely (until movement ends).
@@ -939,7 +1048,10 @@ void CSprite::setBoardPath(CVector *const pV, const int cycles, const int flags)
 		// Standard queued path.
 		for (int i = 0; i < cycles; ++i)
 		{
-			for (unsigned int j = 0; j != pV->size(); ++j) m_pos.path.push_back((*pV)[j]);
+			for (unsigned int j = 0; j != pV->size(); ++j)
+			{
+				m_pos.path.push_back((*pV)[j]);
+			}
 		}
 	}
 }
@@ -968,7 +1080,10 @@ TILE_TYPE CSprite::boardCollisions(LPBOARD board, const bool recursing)
 	// Loop over the board CVectors and check for intersections.
 	for (std::vector<BRD_VECTOR>::iterator i = board->vectors.begin(); i != board->vectors.end(); ++i)
 	{
-		if (i->type == TT_UNDER || i->layer != m_pos.l) continue;
+		if (i->type == TT_UNDER || i->layer != m_pos.l)
+		{
+			continue;
+		}
 
 		TILE_TYPE tt = TT_NORMAL;
 
@@ -990,25 +1105,6 @@ TILE_TYPE CSprite::boardCollisions(LPBOARD board, const bool recursing)
 			// Hold the target layer, stored in tagBoardVector.attributes.
 			layer = i->attributes;
 		}			
-
-		/** Problem: corners on UNIDIRECTIONALs - more distant vector is
-		// sometimes detected, and if the corner angle is <= 90, the wrong
-		// result will be given.
-
-		if (tt & TT_UNIDIRECTIONAL)
-		{
-			// Use the returned point to determine the direction of approach 
-			// by crossing it with the sprite's movement vector. 
-			if (p.x * m_v.y - p.y * m_v.x >= 0)
-			{
-				// Crossing boundary from the solid side.
-				tt = TT_SOLID;
-			}
-			else
-			{
-				tt = TT_NORMAL;
-			}
-		}**/
 
 		if ((tt & TT_SOLID) && !recursing && m_bPxMovement)
 		{
@@ -1057,35 +1153,51 @@ TILE_TYPE CSprite::boardCollisions(LPBOARD board, const bool recursing)
 				// Otherwise, p is to the "left" of m_v.
 
 				if ((angle > 0) == (normal > 0))
+				{
 					// Rotate right. Reinsert the target and test again.
 					setTarget(m_facing.right());
+				}
 				else
+				{
 					// Rotate left.
 					setTarget(m_facing.left());
+				}
 
 				// Recurse on the new target - evaluate all vectors and
 				// return, rather than pausing as it has here.
 				tt = boardCollisions(board, true);
+
 				if (tt & TT_SOLID) 
 				{
 					// Target blocked.
 
 					// Recurse once more in the opposite direction.
 					if ((angle > 0) == (normal > 0))
+					{
 						setTarget(m_facing.left());
+					}
 					else
+					{
 						setTarget(m_facing.right());
+					}
 
 					tt = boardCollisions(board, true);
+
 					if (tt & TT_SOLID) 
 					{
 						// Restore.
 						setTarget(m_facing.dir());
 						tt = TT_SOLID;
 					}
-					else return tt;
+					else
+					{
+						return tt;
+					}
 				}
-				else return tt;
+				else
+				{
+					return tt;
+				}
 			} // if (abs(angle) <= 45.0)
 		} // if (intersect)
 
@@ -1130,7 +1242,9 @@ TILE_TYPE CSprite::spriteCollisions(CSprite *&pSprite)
 
 	// Remove the pointer from the vector if it was found.
 	if (i != g_sprites.v.end())
+	{
 		i = g_sprites.v.erase(i);
+	}
 
 	TILE_TYPE result = TT_NORMAL;			// To return.
 
@@ -1155,7 +1269,10 @@ TILE_TYPE CSprite::spriteCollisions(CSprite *&pSprite)
 			// that is due to be drawn after this sprite, then we want
 			// to insert this before *i. pos is the iterator position
 			// we are going to insert this in front of.
-			if (pos == g_sprites.v.end()) pos = i;
+			if (pos == g_sprites.v.end())
+			{
+				pos = i;
+			}
 
 			// Also, we haven't collided with it.
 			continue;
@@ -1176,7 +1293,9 @@ TILE_TYPE CSprite::spriteCollisions(CSprite *&pSprite)
 			// corner position.
 			if ((bounds.bottom * g_pBoard->pxWidth() + bounds.left) <
 				(tBounds.bottom * g_pBoard->pxWidth() + tBounds.left))
+			{
 				pos = i;
+			}
 		}
 		else if (!(zo & ZO_ABOVE) && pos == g_sprites.v.end())
 		{
@@ -1194,16 +1313,23 @@ TILE_TYPE CSprite::spriteCollisions(CSprite *&pSprite)
 			pSprite = *i;
 
 			// If we already have an insertion point, no need to continue.
-			if (pos != g_sprites.v.end()) break;
+			if (pos != g_sprites.v.end())
+			{
+				break;
+			}
 		}
 
 		// Compare origins? Merge origins and targets? (how?)
 	}
 
 	if (pos == g_sprites.v.end())
+	{
 		g_sprites.v.push_back(this);
+	}
 	else
+	{
 		g_sprites.v.insert(pos, this);
+	}
 
 	return result;
 }
@@ -1226,18 +1352,36 @@ TILE_TYPE CSprite::checkBoardEdges(void)
 	const DB_POINT p = getTarget();
 
 	// Check if any part of the vector base is off an edge.
-	if (r.top + p.y < 0) link = LK_N;
-	else if (r.bottom + p.y > g_pBoard->pxHeight()) link = LK_S;
-	else if (r.right + p.x > g_pBoard->pxWidth()) link = LK_E;
-	else if (r.left + p.x < 0) link = LK_W;
+	if (r.top + p.y < 0)
+	{
+		link = LK_N;
+	}
+	else if (r.bottom + p.y > g_pBoard->pxHeight())
+	{
+		link = LK_S;
+	}
+	else if (r.right + p.x > g_pBoard->pxWidth())
+	{
+		link = LK_E;
+	}
+	else if (r.left + p.x < 0)
+	{
+		link = LK_W;
+	}
 
 	// Not off an edge.
-	if (link == LK_NONE) return TT_NORMAL;
+	if (link == LK_NONE)
+	{
+		return TT_NORMAL;
+	}
 
 	// No board exists.
 	if (g_pBoard->links.size() >= link && g_pBoard->links.size() > 0)
 	{
-		if (g_pBoard->links[link].empty()) return TT_SOLID;
+		if (g_pBoard->links[link].empty())
+		{
+			return TT_SOLID;
+		}
 	}
 
 	// Board exists - send after exit from g_sprites movement for().
@@ -1261,19 +1405,37 @@ bool CSprite::doBoardEdges(void)
 	const DB_POINT p = getTarget();
 
 	// Check if any part of the vector base is off an edge.
-	if (r.top + p.y < 0) link = LK_N;
-	else if (r.bottom + p.y > g_pBoard->pxHeight()) link = LK_S;
-	else if (r.right + p.x > g_pBoard->pxWidth()) link = LK_E;
-	else if (r.left + p.x < 0) link = LK_W;
+	if (r.top + p.y < 0)
+	{
+		link = LK_N;
+	}
+	else if (r.bottom + p.y > g_pBoard->pxHeight())
+	{
+		link = LK_S;
+	}
+	else if (r.right + p.x > g_pBoard->pxWidth())
+	{
+		link = LK_E;
+	}
+	else if (r.left + p.x < 0)
+	{
+		link = LK_W;
+	}
 
 	// Not off an edge.
-	if (link == LK_NONE) return false;
+	if (link == LK_NONE)
+	{
+		return false;
+	}
 
 	// This corresponds to the order links are stored in the board format.
 	const STRING &fileName = g_pBoard->links[link];
 
 	// No board exists.
-	if (fileName.empty()) return false; 
+	if (fileName.empty())
+	{
+		return false; 
+	}
 
 	if (_stricmp(getExtension(fileName).c_str(), _T("prg")) == 0)
 	{
@@ -1305,18 +1467,26 @@ bool CSprite::doBoardEdges(void)
 			m_pos.y = pBoard->pxHeight();
 
             if (!m_bPxMovement && pBoard->isIsometric())
+			{
                 m_pos.y -= (int(pos.y) % 32 != int(m_pos.y) % 32 ? 16.0 : 32.0);
+			}
 			else
+			{
 				m_pos.y -= (pBoard->isIsometric() ? height : 32.0);
+			}
 
 			break;
 
 		case LK_S:
 			// South
             if (!m_bPxMovement && pBoard->isIsometric())
+			{
                 m_pos.y = (int(pos.y) % 32 ? 16.0 : 32.0);
+			}
 			else
+			{
 				m_pos.y = (height - offset < BASE_POINT_Y ? BASE_POINT_Y : height - offset);
+			}
 
 			break;
 
@@ -1415,21 +1585,6 @@ bool CSprite::programTest(const bool keypressOnly)
 	DB_POINT p = getTarget();
 	CVector sprBase = m_attr.vBase + p;
 
-	/** Currently unused
-	// Players 
-	for (std::vector<CPlayer *>::iterator i = g_players.begin(); i != g_players.end(); ++i)
-	{
-		if (this == *i || m_pos.l != (*i)->m_pos.l) continue;
-
-		DB_POINT pt = {(*i)->m_pos.x, (*i)->m_pos.x};
-		CVector tarActivate = (*i)->m_attr.vActivate + pt;
-
-		if (tarActivate.contains(sprBase, p))
-		{
-			// Standing in another player's area.
-		}
-	} **/
-
 	CItem *itm = NULL; DB_POINT f = {0, 0}; double fs = -1;
 
 	// Items
@@ -1439,8 +1594,15 @@ bool CSprite::programTest(const bool keypressOnly)
 
 		// Some item entries may be NULL since users
 		// can insert items at any slot number.
-		if (!pItm || this == pItm || !pItm->isActive() || m_pos.l != pItm->m_pos.l) continue;
-		if (pItm->m_brdData.prgActivate.empty()) continue;
+		if (!pItm || this == pItm || !pItm->isActive() || m_pos.l != pItm->m_pos.l)
+		{
+			continue;
+		}
+
+		if (pItm->m_brdData.prgActivate.empty())
+		{
+			continue;
+		}
 
 		const DB_POINT pt = {pItm->m_pos.x, pItm->m_pos.y};
 		CVector tarActivate = pItm->m_attr.vActivate + pt;
@@ -1465,7 +1627,10 @@ bool CSprite::programTest(const bool keypressOnly)
 			if (!(pItm->m_brdData.activationType & SPR_KEYPRESS))
 			{
 				distance += moveSize();
-				if (distance != moveSize()) continue;
+				if (distance != moveSize())
+				{
+					continue;
+				}
 			}
 
 			// The separation of the two sprites (should use centre-points of m_bounds).
@@ -1475,14 +1640,20 @@ bool CSprite::programTest(const bool keypressOnly)
 			const DB_POINT d = {double(sgn(s.x) == m_v.x), double(sgn(s.y) == m_v.y)};
 
 			// This item is less directly in front of the player.
-			if (d.x + d.y < f.x + f.y) continue;
+			if (d.x + d.y < f.x + f.y)
+			{
+				continue;
+			}
 
 			const double ds = s.x * s.x + s.y * s.y; 
 			if (d.x + d.y == f.x + f.y)
 			{
 				// Check the separation when we 
 				// can't determine on direction alone.
-				if (ds > fs && fs != -1) continue;
+				if (ds > fs && fs != -1)
+				{
+					continue;
+				}
 			}
 
 			if (pItm->m_brdData.activationType & SPR_KEYPRESS)
@@ -1490,9 +1661,15 @@ bool CSprite::programTest(const bool keypressOnly)
 				// General activation key. GetAsyncKeyState is
 				// negative if key is currently down.
 				const short state = GetAsyncKeyState(MapVirtualKeyEx(g_mainFile.key, 1, hkl));
-				if (state >= 0) continue;
+				if (state >= 0)
+				{
+					continue;
+				}
 			}
-			else if (keypressOnly) continue;
+			else if (keypressOnly)
+			{
+				continue;
+			}
 
 			// Check activation conditions.
 			if (pItm->m_brdData.activate == SPR_CONDITIONAL)
@@ -1577,13 +1754,19 @@ bool CSprite::programTest(const bool keypressOnly)
 
 	for (; k != g_pBoard->programs.end(); ++k)
 	{
-		if (!*k) continue;
+		if (!*k)
+		{
+			continue;
+		}
 
 		// Local copy of the program to avoid derefencing.
 		const BRD_PROGRAM bp = **k;
 		double &distance = (*k)->distance;
 
-		if (bp.layer != m_pos.l) continue;
+		if (bp.layer != m_pos.l)
+		{
+			continue;
+		}
 
 		// Check that the board vector contains the player.
 		// We check *every* vector, in order to reset the 
@@ -1613,7 +1796,10 @@ bool CSprite::programTest(const bool keypressOnly)
 			{
 				// Repeat triggers - check player has moved
 				// the required distance.
-				if (distance < bp.distanceRepeat) continue;
+				if (distance < bp.distanceRepeat)
+				{
+					continue;
+				}
 			}
 			else
 			{
@@ -1622,7 +1808,10 @@ bool CSprite::programTest(const bool keypressOnly)
 				// without the PRG_REPEAT can always trigger).
 				if (!(bp.activationType & PRG_KEYPRESS))
 				{
-					if (distance != moveSize()) continue;
+					if (distance != moveSize())
+					{
+						continue;
+					}
 				}
 			}
 
@@ -1630,9 +1819,15 @@ bool CSprite::programTest(const bool keypressOnly)
 			{
 				// General activation key - if not pressed, continue.
 				const short state = GetAsyncKeyState(MapVirtualKeyEx(g_mainFile.key, 1, hkl));
-				if (state >= 0) continue;
+				if (state >= 0)
+				{
+					continue;
+				}
 			}
-			else if (keypressOnly) continue;
+			else if (keypressOnly)
+			{
+				continue;
+			}
 
 			// Check activation conditions.
 			if (bp.activate == PRG_CONDITIONAL)
@@ -1769,7 +1964,10 @@ void CSprite::drawVector(CCanvas *const cnv)
 	}
 
 	// Only drawing path and destination for selected player.
-	if (this != g_pSelectedPlayer) return;
+	if (this != g_pSelectedPlayer)
+	{
+		return;
+	}
 
 	if (g_mainFile.drawVectors & CV_DRAW_SP_PATH)
 	{
@@ -1806,7 +2004,10 @@ void CSprite::drawPath(CCanvas *const cnv, const LONG color)
 	if (!m_pos.bIsPath ||
 		(round(m_pos.x) == m_pos.target.x &&
 		round(m_pos.y) == m_pos.target.y && 
-		m_pos.path.empty())) return;
+		m_pos.path.empty()))
+	{
+		return;
+	}
 
 	const int x = m_pos.target.x - g_screen.left, y = m_pos.target.y - g_screen.top;
 
@@ -1853,14 +2054,20 @@ void tagZOrderedSprites::zOrder(void)
 	CSprite *pUnused = NULL;
 	for (std::vector<CPlayer *>::iterator i = g_players.begin(); i != g_players.end(); ++i)
 	{
-		if ((*i)->isActive()) (*i)->spriteCollisions(pUnused);
+		if ((*i)->isActive())
+		{
+			(*i)->spriteCollisions(pUnused);
+		}
 	}
 
 	for (std::vector<CItem *>::iterator j = g_pBoard->items.begin(); j != g_pBoard->items.end(); ++j)
 	{
 		// Some item entries may be NULL since users
 		// can insert items at any slot number.
-		if (*j && (*j)->isActive()) (*j)->spriteCollisions(pUnused);
+		if (*j && (*j)->isActive())
+		{
+			(*j)->spriteCollisions(pUnused);
+		}
 	}
 }
 
@@ -1895,6 +2102,7 @@ void CSprite::alignBoard(RECT &rect, const bool bAllowNegatives)
 			// Align to left of board.
 			rect.left = 0;
 		}
+
 		if (rect.left + width > g_pBoard->pxWidth())
 		{
 			// Align to right of board.
@@ -1921,6 +2129,7 @@ void CSprite::alignBoard(RECT &rect, const bool bAllowNegatives)
 		{
 			rect.top = 0;
 		}
+
 		if (rect.top + height > g_pBoard->pxHeight())
 		{
 			rect.top = g_pBoard->pxHeight() - height;
@@ -1944,7 +2153,11 @@ void CSprite::customStance(const STRING stance, const CProgram *prg, const bool 
 	extern void processEvent();
 
 	GFX_CUSTOM_MAP::iterator i = m_attr.mapCustomGfx.find(stance);
-	if (i == m_attr.mapCustomGfx.end()) return;
+
+	if (i == m_attr.mapCustomGfx.end())
+	{
+		return;
+	}
 
 	m_pos.pAnm = i->second.pAnm->m_pAnm;
 	m_pos.timer.frameDelay = m_pos.pAnm->data()->delay * MILLISECONDS;
@@ -1963,7 +2176,11 @@ void CSprite::customStance(const STRING stance, const CProgram *prg, const bool 
 			// Hold thread execution until this command is finished.
 
 			// Free any current thread.
-			if (m_thread) m_thread->wakeUp();
+			if (m_thread)
+			{
+				m_thread->wakeUp();
+			}
+
 			// Give thread control to the sprite.
 			m_thread = (CThread *)prg;
 			// Pause the thread indefinitely (until movement ends).
@@ -1993,7 +2210,8 @@ void CSprite::setAnm(MV_ENUM dir)
 			if (m_attr.mapGfx[GFX_IDLE][dir].pAnm)
 			{
 				m_pos.pAnm = m_attr.mapGfx[GFX_IDLE][dir].pAnm->m_pAnm;
-			} break;
+			} 
+			break;
 		default:
 			if (m_attr.mapGfx[GFX_MOVE][dir].pAnm)
 			{
@@ -2010,7 +2228,8 @@ void CSprite::checkIdling(void)
 {
 	if (m_pos.loopFrame < LOOP_MOVE)
 	{
-		if ((m_pos.loopFrame == LOOP_WAIT) && m_pos.path.empty() && (GetTickCount() - m_pos.timer.idleTime >= m_attr.idleTime))
+		if ((m_pos.loopFrame == LOOP_WAIT) && m_pos.path.empty() && 
+			(GetTickCount() - m_pos.timer.idleTime >= m_attr.idleTime))
 		{
 			// Push into idle graphics if not already.
 
@@ -2082,12 +2301,18 @@ bool CSprite::render(CCanvas *const cnv, const int layer, RECT &rect)
 	extern RECT g_screen;
 	extern double g_spriteTranslucency;
 
-	if (!m_pos.l) return false;
+	if (!m_pos.l)
+	{
+		return false;
+	}
 
 	// If we're rendering the top layer, draw the translucent sprite.
 	if (layer != m_pos.l && 
 		(layer != g_pBoard->sizeL || !g_spriteTranslucency)
-		) return false;
+		) 
+	{
+		return false;
+	}
 
 	// Screen location on board.
 	// Referencing with m_pos at the bottom-centre of the tile for
@@ -2110,7 +2335,10 @@ bool CSprite::render(CCanvas *const cnv, const int layer, RECT &rect)
 		board.bottom = centreY;
 
 		// Off the screen!
-		if (!IntersectRect(&screen, &board, &g_screen)) return false;
+		if (!IntersectRect(&screen, &board, &g_screen))
+		{
+			return false;
+		}
 	}
 	else
 	{
@@ -2128,7 +2356,12 @@ bool CSprite::render(CCanvas *const cnv, const int layer, RECT &rect)
 		if (m_pos.pAnm)
 		{
 			CCanvas *p = m_pos.pAnm->getFrame(m_pos.frame);
-			if (p != m_pCanvas) m_pos.pAnm->playFrameSound(m_pos.frame);
+
+			if (p != m_pCanvas)
+			{
+				m_pos.pAnm->playFrameSound(m_pos.frame);
+			}
+
 			m_pCanvas = p;
 		}
 		else 
@@ -2137,7 +2370,10 @@ bool CSprite::render(CCanvas *const cnv, const int layer, RECT &rect)
 			return false;
 		}
 	}
-	else if (!m_pCanvas) return false;
+	else if (!m_pCanvas)
+	{
+		return false;
+	}
 
 	if (bCheckIntersection)
 	{
@@ -2145,7 +2381,11 @@ bool CSprite::render(CCanvas *const cnv, const int layer, RECT &rect)
 		board.top = centreY - m_pCanvas->GetHeight();
 		board.right = centreX - (board.left - centreX);
 		board.bottom = centreY;
-		if (!IntersectRect(&screen, &board, &g_screen)) return false;
+
+		if (!IntersectRect(&screen, &board, &g_screen))
+		{
+			return false;
+		}
 	}
 
 	// screen holds the portion of the frame we need to draw.

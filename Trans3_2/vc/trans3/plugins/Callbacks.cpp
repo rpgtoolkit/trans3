@@ -1,12 +1,17 @@
 /*
  ********************************************************************
  * The RPG Toolkit, Version 3
- * This file copyright (C) 2006  Colin Fitzpatrick & Jonathan Hughes
+ * This file copyright (C) 2006-2014 
+ *				- Colin James Fitzpatrick
+ *				- Jonathan D. Hughes
+ *
+ * Contributors:
+ *				- Joshua Michael Daly
  ********************************************************************
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
+ * as published by the Free Software Foundation; either version 3
  * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -95,6 +100,7 @@ SystemFont g_fntMenuLists("Arial", 20, g_crTextColor, RGB(255, 255, 0), RGB(128,
 void* GetMenuFontProperty(int iFont, int iProperty)
 {
 	SystemFont *p;
+
 	switch(iFont)
 	{
 	case SLOT_MENUFONT_INFO:
@@ -219,6 +225,10 @@ template <class T>
 inline T advance(T i, unsigned int j)
 {
 	for (unsigned int k = 0; k < j; ++k, ++i);
+	{
+
+	}
+
 	return i;
 }
 
@@ -242,14 +252,17 @@ STDMETHODIMP CCallbacks::CBGetString(BSTR varname, BSTR *pRet)
 {
 	STRING var = getString(varname);
 	const unsigned int last = var.length() - 1;
+
 	if (var[last] == '$')
 	{
 		var.erase(last);
 	}
+
 	LPSTACK_FRAME pVar = g_prg ? g_prg->getVar(lcase(var)) : CProgram::getGlobal(var);
 	BSTR bstr = getString(pVar->getLit());
 	SysReAllocString(pRet, bstr);
 	SysFreeString(bstr);
+
 	return S_OK;
 }
 
@@ -257,12 +270,15 @@ STDMETHODIMP CCallbacks::CBGetNumerical(BSTR varname, double *pRet)
 {
 	STRING var = getString(varname);
 	const unsigned int last = var.length() - 1;
+
 	if (var[last] == '!')
 	{
 		var.erase(last);
 	}
+
 	LPSTACK_FRAME pVar = g_prg ? g_prg->getVar(lcase(var)) : CProgram::getGlobal(var);
 	*pRet = pVar->getNum();
+
 	return S_OK;
 }
 
@@ -270,13 +286,16 @@ STDMETHODIMP CCallbacks::CBSetString(BSTR varname, BSTR newValue)
 {
 	STRING var = getString(varname);
 	const unsigned int last = var.length() - 1;
+
 	if (var[last] == '$')
 	{
 		var.erase(last);
 	}
+
 	LPSTACK_FRAME pVar = g_prg ? g_prg->getVar(lcase(var)) : CProgram::getGlobal(var);
 	pVar->udt = UDT_LIT;
 	pVar->lit = getString(newValue);
+
 	return S_OK;
 }
 
@@ -284,13 +303,16 @@ STDMETHODIMP CCallbacks::CBSetNumerical(BSTR varname, double newValue)
 {
 	STRING var = getString(varname);
 	const unsigned int last = var.length() - 1;
+
 	if (var[last] == '!')
 	{
 		var.erase(last);
 	}
+
 	LPSTACK_FRAME pVar = g_prg ? g_prg->getVar(lcase(var)) : CProgram::getGlobal(var);
 	pVar->udt = UDT_NUM;
 	pVar->num = newValue;
+
 	return S_OK;
 }
 
@@ -351,7 +373,9 @@ STDMETHODIMP CCallbacks::CBGetEnemyNum(int infoCode, int eneSlot, int *pRet)
 		*pRet = 0;
 		return S_OK;
 	}
+
 	ENEMY &ene = g_enemies[eneSlot].enemy;
+
 	switch (infoCode)
 	{
 		case ENE_HP:
@@ -399,6 +423,7 @@ STDMETHODIMP CCallbacks::CBGetEnemyNum(int infoCode, int eneSlot, int *pRet)
 			*pRet = 0;
 			break;
 	}
+
 	return S_OK;
 }
 
@@ -409,8 +434,10 @@ STDMETHODIMP CCallbacks::CBGetEnemyString(int infoCode, int eneSlot, BSTR *pRet)
 		SysReAllocString(pRet, L"");
 		return S_OK;
 	}
+
 	ENEMY &ene = g_enemies[eneSlot].enemy;
 	BSTR bstr = NULL;
+
 	switch (infoCode)
 	{
 		case ENE_FILENAME:
@@ -432,18 +459,25 @@ STDMETHODIMP CCallbacks::CBGetEnemyString(int infoCode, int eneSlot, BSTR *pRet)
 			SysReAllocString(pRet, L"");
 			break;
 	}
+
 	if (bstr)
 	{
 		SysReAllocString(pRet, bstr);
 		SysFreeString(bstr);
 	}
+
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBSetEnemyNum(int infoCode, int newValue, int eneSlot)
 {
-	if (!g_enemies.count(eneSlot)) return S_OK;
+	if (!g_enemies.count(eneSlot))
+	{
+		return S_OK;
+	}
+
 	ENEMY &ene = g_enemies[eneSlot].enemy;
+
 	switch (infoCode)
 	{
 		case ENE_HP:
@@ -487,6 +521,7 @@ STDMETHODIMP CCallbacks::CBSetEnemyNum(int infoCode, int newValue, int eneSlot)
 			ene.gp = newValue;
 			break;
 	}
+
 	return S_OK;
 }
 
@@ -494,6 +529,7 @@ STDMETHODIMP CCallbacks::CBSetEnemyString(int infoCode, BSTR newValue, int eneSl
 {
 	if (!g_enemies.count(eneSlot)) return S_OK;
 	ENEMY &ene = g_enemies[eneSlot].enemy;
+
 	switch (infoCode)
 	{
 		case ENE_FILENAME:
@@ -512,6 +548,7 @@ STDMETHODIMP CCallbacks::CBSetEnemyString(int infoCode, BSTR newValue, int eneSl
 			ene.runPrg = getString(newValue);
 			break;
 	}
+
 	return S_OK;
 }
 
@@ -606,6 +643,7 @@ STDMETHODIMP CCallbacks::CBGetPlayerNum(int infoCode, int arrayPos, int playerSl
 			*pRet = 0;
 			break;
 	}
+
 	return S_OK;
 }
 
@@ -686,6 +724,7 @@ STDMETHODIMP CCallbacks::CBGetPlayerString(int infoCode, int arrayPos, int playe
 	BSTR bstr = getString(str);
 	SysReAllocString(pRet, bstr);
 	SysFreeString(bstr);
+
 	return S_OK;
 }
 
@@ -767,6 +806,7 @@ STDMETHODIMP CCallbacks::CBSetPlayerNum(int infoCode, int arrayPos, int newVal, 
 			pPlayer->getFacing()->assign(MV_ENUM(newVal));
 			break;
 	}
+
 	return S_OK;
 }
 
@@ -842,6 +882,7 @@ STDMETHODIMP CCallbacks::CBSetPlayerString(int infoCode, int arrayPos, BSTR newV
 			pData->charLevelUpRPGCode = str;
 			break;
 	}
+
 	return S_OK;
 }
 
@@ -851,9 +892,14 @@ STDMETHODIMP CCallbacks::CBGetGeneralString(int infoCode, int arrayPos, int play
 	extern MAIN_FILE g_mainFile;
 
 	CPlayer *pPlayer = NULL;
-	if (abs(playerSlot) < g_players.size()) pPlayer = g_players[abs(playerSlot)]; 
+
+	if (abs(playerSlot) < g_players.size())
+	{
+		pPlayer = g_players[abs(playerSlot)];
+	}
 
 	BSTR bstr = NULL;
+
 	switch (infoCode)
 	{
 		case GEN_MENUFONT_FACE:
@@ -888,7 +934,8 @@ STDMETHODIMP CCallbacks::CBGetGeneralString(int infoCode, int arrayPos, int play
 		case GEN_EQUIP_HANDLES:
 			{
 				LPEQ_SLOT pEq = pPlayer->equipment(arrayPos);
-				if(pEq != NULL){
+				if(pEq != NULL)
+				{
 					bstr = getString(pEq->second);
 				}
 			} break;
@@ -926,6 +973,7 @@ STDMETHODIMP CCallbacks::CBGetGeneralString(int infoCode, int arrayPos, int play
 		case GEN_ENE_STATUS:
 		case GEN_PLYR_STATUS:
 			int party, idx;
+
 			if (infoCode == GEN_PLYR_STATUS)
 			{
 				getFighterIndices(pPlayer, party, idx);
@@ -935,13 +983,19 @@ STDMETHODIMP CCallbacks::CBGetGeneralString(int infoCode, int arrayPos, int play
 				party = ENEMY_PARTY;
 				idx = playerSlot;
 			}
+
 			if ((party != -1) && (idx != -1))
 			{
 				LPFIGHTER pFighter = getFighter(party, idx);
 				if (pFighter)
 				{
 					std::map<STRING, STATUS_EFFECT>::iterator i = pFighter->statuses.begin();
-					if (arrayPos < 0) arrayPos = 0;
+
+					if (arrayPos < 0)
+					{
+						arrayPos = 0;
+					}
+
 					if (pFighter->statuses.size() > arrayPos)
 					{
 						advance(i, arrayPos);
@@ -960,6 +1014,7 @@ STDMETHODIMP CCallbacks::CBGetGeneralString(int infoCode, int arrayPos, int play
 			bstr = getString(g_mainFile.cursorCancelSound);
 			break;
 	}
+
 	if (bstr)
 	{
 		SysReAllocString(pRet, bstr);
@@ -969,6 +1024,7 @@ STDMETHODIMP CCallbacks::CBGetGeneralString(int infoCode, int arrayPos, int play
 	{
 		SysReAllocString(pRet, L"");
 	}
+
 	return S_OK;
 }
 
@@ -980,7 +1036,11 @@ STDMETHODIMP CCallbacks::CBGetGeneralNum(int infoCode, int arrayPos, int playerS
 	extern RECT g_screen;
 
 	CPlayer *pPlayer = NULL;
-	if (abs(playerSlot) < g_players.size()) pPlayer = g_players[abs(playerSlot)]; 
+
+	if (abs(playerSlot) < g_players.size())
+	{
+		pPlayer = g_players[abs(playerSlot)]; 
+	}
 
 	switch (infoCode)
 	{
@@ -1011,16 +1071,32 @@ STDMETHODIMP CCallbacks::CBGetGeneralNum(int infoCode, int arrayPos, int playerS
 			*pRet = g_inv.quantityAt(arrayPos);
 			break;
 		case GEN_EQUIP_HPADD:
-			if (pPlayer) *pRet = pPlayer->equipmentHP();
+			if (pPlayer)
+			{
+				*pRet = pPlayer->equipmentHP();
+			}
+
 			break;
 		case GEN_EQUIP_SMPADD:
-			if (pPlayer) *pRet = pPlayer->equipmentSM();
+			if (pPlayer)
+			{
+				*pRet = pPlayer->equipmentSM();
+			}
+
 			break;
 		case GEN_EQUIP_DPADD:
-			if (pPlayer) *pRet = pPlayer->equipmentDP();
+			if (pPlayer)
+			{
+				*pRet = pPlayer->equipmentDP();
+			}
+
 			break;
 		case GEN_EQUIP_FPADD:
-			if (pPlayer) *pRet = pPlayer->equipmentFP();
+			if (pPlayer)
+			{
+				*pRet = pPlayer->equipmentFP();
+			}
+
 			break;
 		case GEN_CURX:
 		case GEN_CURY:
@@ -1032,7 +1108,11 @@ STDMETHODIMP CCallbacks::CBGetGeneralNum(int infoCode, int arrayPos, int playerS
 				*pRet = (infoCode == GEN_CURX ? x : y);
 			} break;
 		case GEN_CURLAYER:
-			if (pPlayer) *pRet = pPlayer->getPosition().l;
+			if (pPlayer)
+			{
+				*pRet = pPlayer->getPosition().l;
+			}
+
 			break;
 		case GEN_CURRENT_PLYR:
 			extern int g_selectedPlayer;
@@ -1109,7 +1189,11 @@ STDMETHODIMP CCallbacks::CBSetGeneralString(int infoCode, int arrayPos, int play
 
 	CPlayer *pPlayer = NULL;
 	playerSlot = abs(playerSlot);
-	if (playerSlot < g_players.size()) pPlayer = g_players[playerSlot]; 
+
+	if (playerSlot < g_players.size())
+	{
+		pPlayer = g_players[playerSlot];
+	}
 
 	switch (infoCode)
 	{
@@ -1117,7 +1201,11 @@ STDMETHODIMP CCallbacks::CBSetGeneralString(int infoCode, int arrayPos, int play
 			SetMenuFontProperty(arrayPos, GEN_MENUFONT_FACE, newVal);
 			break;
 		case GEN_PLAYERHANDLES:
-			if (pPlayer) pPlayer->name(getString(newVal));
+			if (pPlayer)
+			{
+				pPlayer->name(getString(newVal));
+			}
+
 			break;
 		case GEN_PLAYERFILES:
 			// Change a player.
@@ -1125,7 +1213,9 @@ STDMETHODIMP CCallbacks::CBSetGeneralString(int infoCode, int arrayPos, int play
 			{
 				delete pPlayer;
 				g_players[playerSlot] = new CPlayer(g_projectPath + TEM_PATH + removePath(getString(newVal)), false, true);
-			} break;
+			} 
+
+			break;
 		case GEN_PLYROTHERHANDLES:
 			// TBD. [Not currently held.]
 			break;
@@ -1141,17 +1231,22 @@ STDMETHODIMP CCallbacks::CBSetGeneralString(int infoCode, int arrayPos, int play
 		case GEN_EQUIP_FILES:
 			{
 				LPEQ_SLOT pEq = pPlayer->equipment(arrayPos);
-				if(pEq){
+				if(pEq)
+				{
 					pEq->first = getString(newVal);
 				}
-			} break;		
+
+			} 
+			break;		
 		case GEN_EQUIP_HANDLES:
 			{
 				LPEQ_SLOT pEq = pPlayer->equipment(arrayPos);
-				if(pEq){
+				if(pEq)
+				{
 					pEq->second = getString(newVal);
 				}
-			} break;
+			} 
+			break;
 		case GEN_MUSICPLAYING:
 			extern CAudioSegment *g_bkgMusic;
 			g_bkgMusic->open(getString(newVal));
@@ -1191,6 +1286,7 @@ STDMETHODIMP CCallbacks::CBSetGeneralString(int infoCode, int arrayPos, int play
 		case GEN_PLYR_STATUS:
 			// Replace a status effect file.
 			int party, idx;
+
 			if (infoCode == GEN_PLYR_STATUS)
 			{
 				getFighterIndices(pPlayer, party, idx);
@@ -1200,23 +1296,30 @@ STDMETHODIMP CCallbacks::CBSetGeneralString(int infoCode, int arrayPos, int play
 				party = ENEMY_PARTY;
 				idx = playerSlot;
 			}
+
 			if ((party != -1) && (idx != -1))
 			{
 				LPFIGHTER pFighter = getFighter(party, idx);
 				if (pFighter)
 				{
 					std::map<STRING, STATUS_EFFECT>::iterator i = pFighter->statuses.begin();
-					if (arrayPos < 0) arrayPos = 0;
+					if (arrayPos < 0)
+					{
+						arrayPos = 0;
+					}
+
 					if (pFighter->statuses.size() > arrayPos)
 					{
 						advance(i, arrayPos);
 
 						// Map key is const, new arrayPos is unlikely to be the same.
 						pFighter->statuses.erase(i);
-						pFighter->statuses[getString(newVal)].open(g_projectPath + STATUS_PATH + getString(newVal));
+						pFighter->statuses[getString(newVal)].open(g_projectPath + 
+							STATUS_PATH + getString(newVal));
 					}
 				}
-			} break;
+			} 
+			break;
 		case GEN_CURSOR_MOVESOUND:
 			g_mainFile.cursorMoveSound = getString(newVal);
 			break;
@@ -1283,20 +1386,24 @@ STDMETHODIMP CCallbacks::CBSetGeneralNum(int infoCode, int arrayPos, int playerS
 				// Pass board coordinates to CSprite to convert back to pixel.
 				(infoCode == GEN_CURX ? x = newVal : y = newVal);
 				pPlayer->setPosition(x, y, p.l, g_pBoard->coordType);
-			} break;
+			} 
+			break;
 		case GEN_CURLAYER:
 			if (pPlayer)
 			{
 				const SPRITE_POSITION p = pPlayer->getPosition();
 				pPlayer->setPosition(int(p.x), int(p.y), newVal, PX_ABSOLUTE);
-			} break;
+			} 
+			break;
 		case GEN_CURRENT_PLYR:
 			extern int g_selectedPlayer;
+
 			if (abs(newVal) < g_players.size())
 			{
 				g_selectedPlayer = abs(newVal);
 				g_pSelectedPlayer = g_players[g_selectedPlayer];
-			} break;
+			} 
+			break;
 		case GEN_RESX:
 		case GEN_RESY:
 			// *Really* bad idea to change these here.
@@ -1339,6 +1446,7 @@ STDMETHODIMP CCallbacks::CBSetGeneralNum(int infoCode, int arrayPos, int playerS
 			// Obsolete.
 			break;
 	}
+
 	return S_OK;
 }
 
@@ -1351,6 +1459,7 @@ STDMETHODIMP CCallbacks::CBGetCommandName(BSTR rpgcodeCommand, BSTR *pRet)
 	SysReAllocString(pRet, bstr);
 	SysFreeString(bstr);
 	free(pstr);
+
 	return S_OK;
 }
 
@@ -1362,6 +1471,7 @@ STDMETHODIMP CCallbacks::CBGetBrackets(BSTR rpgcodeCommand, BSTR *pRet)
 	BSTR bstr = getString(str);
 	SysReAllocString(pRet, bstr);
 	SysFreeString(bstr);
+
 	return S_OK;
 }
 
@@ -1370,10 +1480,15 @@ void getParameters(const STRING str, std::vector<STRING> &ret)
 	int pos = str.find(_T('(')) + 1;
 	bool bQuotes = false;
 	unsigned int i;
+
 	for (i = pos; i < str.length(); ++i)
 	{
 		const char &c = str[i];
-		if (c == _T('"')) bQuotes = !bQuotes;
+
+		if (c == _T('"'))
+		{
+			bQuotes = !bQuotes;
+		}
 		else if (!bQuotes)
 		{
 			if (c == _T(','))
@@ -1381,10 +1496,15 @@ void getParameters(const STRING str, std::vector<STRING> &ret)
 				ret.push_back(str.substr(pos, i - pos));
 				pos = i + 1;
 			}
-			else if (c == _T(')')) break;
+			else if (c == _T(')'))
+			{
+				break;
+			}
 		}
 	}
+
 	const STRING push = str.substr(pos, i - pos);
+
 	if (!push.empty())
 	{
 		ret.push_back(push);
@@ -1405,6 +1525,7 @@ STDMETHODIMP CCallbacks::CBGetBracketElement(BSTR rpgcodeCommand, int elemNum, B
 	const STRING str = getString(rpgcodeCommand);
 	std::vector<STRING> parts;
 	getParameters(str, parts);
+
 	if (parts.size() > --elemNum)
 	{
 		BSTR bstr = getString(parts[elemNum]);
@@ -1415,6 +1536,7 @@ STDMETHODIMP CCallbacks::CBGetBracketElement(BSTR rpgcodeCommand, int elemNum, B
 	{
 		SysReAllocString(pRet, L"");
 	}
+
 	return S_OK;
 }
 
@@ -1423,6 +1545,7 @@ STDMETHODIMP CCallbacks::CBGetStringElementValue(BSTR rpgcodeCommand, BSTR *pRet
 	const STRING str = getString(rpgcodeCommand);
 	STRING ret;
 	char c = str[str.length() - 1];
+
 	if (c == _T('$'))
 	{
 		const STRING var = str.substr(0, str.length() - 1);
@@ -1436,6 +1559,7 @@ STDMETHODIMP CCallbacks::CBGetStringElementValue(BSTR rpgcodeCommand, BSTR *pRet
 	BSTR bstr = getString(ret);
 	SysReAllocString(pRet, bstr);
 	SysFreeString(bstr);
+
 	return S_OK;
 }
 
@@ -1443,6 +1567,7 @@ STDMETHODIMP CCallbacks::CBGetNumElementValue(BSTR rpgcodeCommand, double *pRet)
 {
 	const STRING str = getString(rpgcodeCommand);
 	char c = str[str.length() - 1];
+
 	if (c == _T('!'))
 	{
 		const STRING var = str.substr(0, str.length() - 1);
@@ -1452,12 +1577,14 @@ STDMETHODIMP CCallbacks::CBGetNumElementValue(BSTR rpgcodeCommand, double *pRet)
 	{
 		*pRet = atof(str.c_str());
 	}
+
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetElementType(BSTR data, int *pRet)
 {
 	const STRING str = getString(data);
+
 	if (str[0] == _T('"'))
 	{
 		*pRet = PLUG_DT_LIT;
@@ -1465,13 +1592,20 @@ STDMETHODIMP CCallbacks::CBGetElementType(BSTR data, int *pRet)
 	else
 	{
 		char c = str[str.length() - 1];
-		if (c == _T('!')) *pRet = PLUG_DT_NUM;
-		else if (c == _T('$')) *pRet = PLUG_DT_LIT;
+		if (c == _T('!'))
+		{
+			*pRet = PLUG_DT_NUM;
+		}
+		else if (c == _T('$'))
+		{
+			*pRet = PLUG_DT_LIT;
+		}
 		else
 		{
 			*pRet = PLUG_DT_NUM;
 		}
 	}
+
 	return S_OK;
 }
 
@@ -1541,6 +1675,7 @@ STDMETHODIMP CCallbacks::CBGetPathString(int infoCode, BSTR *pRet)
 	BSTR bstr = getString(str);
 	SysReAllocString(pRet, bstr);
 	SysFreeString(bstr);
+
 	return S_OK;
 }
 
@@ -1576,6 +1711,7 @@ STDMETHODIMP CCallbacks::CBGetSpecialMoveString(int infoCode, BSTR *pRet)
 	BSTR bstr = getString(str);
 	SysReAllocString(pRet, bstr);
 	SysFreeString(bstr);
+
 	return S_OK;
 }
 
@@ -1602,6 +1738,7 @@ STDMETHODIMP CCallbacks::CBGetSpecialMoveNum(int infoCode, int *pRet)
 			*pRet = 0;
 			break;
 	}
+
 	return S_OK;
 }
 
@@ -1637,6 +1774,7 @@ LPITEM getItemFromSlot(int itmSlot)
 	if (itmSlot < 0)
 	{
 		itmSlot = -itmSlot;
+
 		if (g_items.size() > itmSlot)
 		{
 			return &g_items[itmSlot];
@@ -1646,6 +1784,7 @@ LPITEM getItemFromSlot(int itmSlot)
 	{
 		return g_pBoard->items[itmSlot]->getItem();
 	}
+
 	return NULL;
 }
 
@@ -1701,6 +1840,7 @@ STDMETHODIMP CCallbacks::CBGetItemString(int infoCode, int arrayPos, int itmSlot
 	BSTR bstr = getString(str);
 	SysReAllocString(pRet, bstr);
 	SysFreeString(bstr);
+
 	return S_OK;
 }
 
@@ -1768,6 +1908,7 @@ STDMETHODIMP CCallbacks::CBGetItemNum(int infoCode, int arrayPos, int itmSlot, i
 			*pRet = pItem->keyItem;
 			break;
 	}
+
 	return S_OK;
 }
 
@@ -1785,7 +1926,10 @@ STDMETHODIMP CCallbacks::CBGetBoardNum(int infoCode, int arrayPos1, int arrayPos
 		{
 			pPrg = g_pBoard->programs[bounds(arrayPos1, 0, int(g_pBoard->programs.size() - 1))];
 		}
-		catch (...) { }
+		catch (...) 
+		{ 
+
+		}
 	}
 	else if ((infoCode >= BRD_ITM_X) && (infoCode <= BRD_ITM_ACTIV_TYPE))
 	{
@@ -1793,7 +1937,10 @@ STDMETHODIMP CCallbacks::CBGetBoardNum(int infoCode, int arrayPos1, int arrayPos
 		{
 			pItem = g_pBoard->items[bounds(arrayPos1, 0, int(g_pBoard->items.size() - 1))];
 		}
-		catch (...) { }
+		catch (...) 
+		{
+
+		}
 	}
 
 	switch (infoCode)
@@ -1909,10 +2056,12 @@ STDMETHODIMP CCallbacks::CBGetBoardNum(int infoCode, int arrayPos1, int arrayPos
 			*pRet = g_pBoard->bDisableSaving ? 1 : 0;
 			break;
 	}
+
 	return S_OK;
 }
 
-STDMETHODIMP CCallbacks::CBGetBoardString(int infoCode, int arrayPos1, int arrayPos2, int arrayPos3, BSTR *pRet)
+STDMETHODIMP CCallbacks::CBGetBoardString(int infoCode, int arrayPos1, int arrayPos2, 
+										  int arrayPos3, BSTR *pRet)
 {
 	extern LPBOARD g_pBoard;
 
@@ -1925,7 +2074,10 @@ STDMETHODIMP CCallbacks::CBGetBoardString(int infoCode, int arrayPos1, int array
 		{
 			pPrg = g_pBoard->programs[bounds(arrayPos1, 0, int(g_pBoard->programs.size() - 1))];
 		}
-		catch (...) { }
+		catch (...) 
+		{ 
+
+		}
 	}
 	else if ((infoCode >= BRD_ITM) && (infoCode <= BRD_ITM_MULTI))
 	{
@@ -1933,7 +2085,10 @@ STDMETHODIMP CCallbacks::CBGetBoardString(int infoCode, int arrayPos1, int array
 		{
 			pItem = g_pBoard->items[bounds(arrayPos1, 0, int(g_pBoard->items.size() - 1))];
 		}
-		catch (...) { }
+		catch (...) 
+		{ 
+
+		}
 	}
 
 	STRING str;
@@ -1945,7 +2100,10 @@ STDMETHODIMP CCallbacks::CBGetBoardString(int infoCode, int arrayPos1, int array
 			{
 				str = g_pBoard->tileIndex[g_pBoard->board[arrayPos3][arrayPos2][arrayPos1]];
 			}
-			catch (...) { }
+			catch (...) 
+			{ 
+
+			}
 			break;
 		case BRD_BACK_IMAGE:
 			if (g_pBoard->bkgImage) str = g_pBoard->bkgImage->file;
@@ -1967,54 +2125,95 @@ STDMETHODIMP CCallbacks::CBGetBoardString(int infoCode, int arrayPos1, int array
 			str = g_pBoard->layerTitles[bounds(arrayPos1, 0, int(g_pBoard->layerTitles.size() - 1))];
 			break;
 		case BRD_PRG:
-			if (pPrg) str = pPrg->fileName;
+			if (pPrg)
+			{
+				str = pPrg->fileName;
+			}
 			break;
 		case BRD_PRG_GFX:
-			if (pPrg) str = pPrg->graphic;
+			if (pPrg)
+			{
+				str = pPrg->graphic;
+			}
 			break;
 		case BRD_PRG_ACTIVE_VAR:
-			if (pPrg) str = pPrg->initialVar;
+			if (pPrg)
+			{
+				str = pPrg->initialVar;
+			}
 			break;
 		case BRD_PRG_DONE_VAR:
-			if (pPrg) str = pPrg->finalVar;
+			if (pPrg)
+			{
+				str = pPrg->finalVar;
+			}
 			break;
 		case BRD_PRG_ACTIVE_INIT:
-			if (pPrg) str = pPrg->initialValue;
+			if (pPrg)
+			{
+				str = pPrg->initialValue;
+			}
 			break;
 		case BRD_PRG_DONE_INIT:
-			if (pPrg) str = pPrg->finalValue;
+			if (pPrg)
+			{
+				str = pPrg->finalValue;
+			}
 			break;
 		case BRD_ITM:
-			if (pItem) str = pItem->getBoardSprite()->fileName;
+			if (pItem)
+			{
+				str = pItem->getBoardSprite()->fileName;
+			}
 			break;
 		case BRD_ITM_ACTIVE_VAR:
-			if (pItem) str = pItem->getBoardSprite()->initialVar;
+			if (pItem)
+			{
+				str = pItem->getBoardSprite()->initialVar;
+			}
 			break;
 		// TBD: pItem->getBoardSprite()->loadingVar;
 		case BRD_ITM_DONE_VAR:
-			if (pItem) str = pItem->getBoardSprite()->finalVar;
+			if (pItem)
+			{
+				str = pItem->getBoardSprite()->finalVar;
+			}
 			break;
 		case BRD_ITM_ACTIVE_INIT:
-			if (pItem) str = pItem->getBoardSprite()->initialValue;
+			if (pItem)
+			{
+				str = pItem->getBoardSprite()->initialValue;
+			}
 			break;
 		case BRD_ITM_DONE_INIT:
-			if (pItem) str = pItem->getBoardSprite()->finalValue;
+			if (pItem)
+			{
+				str = pItem->getBoardSprite()->finalValue;
+			}
 			break;
 		case BRD_ITM_PROGRAM:
-			if (pItem) str = pItem->getBoardSprite()->prgActivate;
+			if (pItem)
+			{
+				str = pItem->getBoardSprite()->prgActivate;
+			}
 			break;
 		case BRD_ITM_MULTI:
-			if (pItem) str = pItem->getBoardSprite()->prgMultitask;
+			if (pItem)
+			{
+				str = pItem->getBoardSprite()->prgMultitask;
+			}
 			break;
 	}
 
 	BSTR bstr = getString(str);
 	SysReAllocString(pRet, bstr);
 	SysFreeString(bstr);
+
 	return S_OK;
 }
 
-STDMETHODIMP CCallbacks::CBSetBoardNum(int infoCode, int arrayPos1, int arrayPos2, int arrayPos3, int nValue)
+STDMETHODIMP CCallbacks::CBSetBoardNum(int infoCode, int arrayPos1, int arrayPos2, 
+									   int arrayPos3, int nValue)
 {
 	extern LPBOARD g_pBoard;
 
@@ -2027,7 +2226,10 @@ STDMETHODIMP CCallbacks::CBSetBoardNum(int infoCode, int arrayPos1, int arrayPos
 		{
 			pPrg = g_pBoard->programs[bounds(arrayPos1, 0, int(g_pBoard->programs.size() - 1))];
 		}
-		catch (...) { }
+		catch (...) 
+		{ 
+
+		}
 	}
 	else if ((infoCode >= BRD_ITM_X) && (infoCode <= BRD_ITM_ACTIV_TYPE))
 	{
@@ -2035,7 +2237,10 @@ STDMETHODIMP CCallbacks::CBSetBoardNum(int infoCode, int arrayPos1, int arrayPos
 		{
 			pItem = g_pBoard->items[bounds(arrayPos1, 0, int(g_pBoard->items.size() - 1))];
 		}
-		catch (...) { }
+		catch (...) 
+		{ 
+
+		}
 	}
 
 	switch (infoCode)
@@ -2050,7 +2255,10 @@ STDMETHODIMP CCallbacks::CBSetBoardNum(int infoCode, int arrayPos1, int arrayPos
 				// Superseded by single layer shading, arrayPos3 neglected.
 				g_pBoard->tileShading[0]->shades[arrayPos1][arrayPos2].r = short(nValue);
 			}
-			catch (...)	{ } 
+			catch (...)	
+			{ 
+
+			} 
 			break;
 		case BRD_AMBIENTGREEN:
 			try
@@ -2058,7 +2266,10 @@ STDMETHODIMP CCallbacks::CBSetBoardNum(int infoCode, int arrayPos1, int arrayPos
 				// Superseded by single layer shading, arrayPos3 neglected.
 				g_pBoard->tileShading[0]->shades[arrayPos1][arrayPos2].g = short(nValue);
 			}
-			catch (...)	{ } 
+			catch (...)	
+			{ 
+
+			} 
 			break;
 		case BRD_AMBIENTBLUE:
 			try
@@ -2066,7 +2277,10 @@ STDMETHODIMP CCallbacks::CBSetBoardNum(int infoCode, int arrayPos1, int arrayPos
 				// Superseded by single layer shading, arrayPos3 neglected.
 				g_pBoard->tileShading[0]->shades[arrayPos1][arrayPos2].b = short(nValue);
 			}
-			catch (...)	{ } 
+			catch (...)	
+			{ 
+
+			} 
 			break;
 		case BRD_TILETYPE:
 			// Only pass pre-C++ tiletypes. Do not use with vectors.
@@ -2077,7 +2291,10 @@ STDMETHODIMP CCallbacks::CBSetBoardNum(int infoCode, int arrayPos1, int arrayPos
 				g_pBoard->freeVectors(arrayPos3);
 				g_pBoard->vectorize(arrayPos3);
 			}
-			catch (...)	{ } 
+			catch (...)	
+			{ 
+
+			} 
 			break;
 		case BRD_BACKCOLOR:
 			g_pBoard->bkgColor = nValue;
@@ -2103,13 +2320,22 @@ STDMETHODIMP CCallbacks::CBSetBoardNum(int infoCode, int arrayPos1, int arrayPos
 				pPrg->vBase.move(x, y);
 			} break;
 		case BRD_PRG_LAYER:
-			if (pPrg) pPrg->layer = short(nValue);
+			if (pPrg)
+			{
+				pPrg->layer = short(nValue);
+			}
 			break;
 		case BRD_PRG_ACTIVATION:
-			if (pPrg) pPrg->activate = short(nValue);
+			if (pPrg)
+			{
+				pPrg->activate = short(nValue);
+			}
 			break;
 		case BRD_PRG_ACTIV_TYPE:
-			if (pPrg) pPrg->activationType = short(nValue);
+			if (pPrg)
+			{
+				pPrg->activationType = short(nValue);
+			}
 			break;
 		case BRD_ITM_X:
 		case BRD_ITM_Y:
@@ -2117,10 +2343,16 @@ STDMETHODIMP CCallbacks::CBSetBoardNum(int infoCode, int arrayPos1, int arrayPos
 			// Obsolete, board item locations unused after loading.
 			break;
 		case BRD_ITM_ACTIVATION:
-			if (pItem) pItem->getBoardSprite()->activate = short(nValue);
+			if (pItem)
+			{
+				pItem->getBoardSprite()->activate = short(nValue);
+			}
 			break;
 		case BRD_ITM_ACTIV_TYPE:
-			if (pItem) pItem->getBoardSprite()->activationType = short(nValue);
+			if (pItem)
+			{
+				pItem->getBoardSprite()->activationType = short(nValue);
+			}
 			break;
 		case BRD_PLAYERX:
 		case BRD_PLAYERY:
@@ -2132,6 +2364,7 @@ STDMETHODIMP CCallbacks::CBSetBoardNum(int infoCode, int arrayPos1, int arrayPos
 			g_pBoard->bDisableSaving = bool(nValue);
 			break;
 	}
+
 	return S_OK;
 }
 
@@ -2148,7 +2381,10 @@ STDMETHODIMP CCallbacks::CBSetBoardString(int infoCode, int arrayPos1, int array
 		{
 			pPrg = g_pBoard->programs[bounds(arrayPos1, 0, int(g_pBoard->programs.size() - 1))];
 		}
-		catch (...) { }
+		catch (...) 
+		{ 
+
+		}
 	}
 	else if ((infoCode >= BRD_ITM) && (infoCode <= BRD_ITM_MULTI))
 	{
@@ -2156,7 +2392,10 @@ STDMETHODIMP CCallbacks::CBSetBoardString(int infoCode, int arrayPos1, int array
 		{
 			pItem = g_pBoard->items[bounds(arrayPos1, 0, int(g_pBoard->items.size() - 1))];
 		}
-		catch (...) { }
+		catch (...)
+		{ 
+
+		}
 	}
 
 	switch (infoCode)
@@ -2171,14 +2410,17 @@ STDMETHODIMP CCallbacks::CBSetBoardString(int infoCode, int arrayPos1, int array
 			{
 				g_pBoard->bkgImage = new BRD_IMAGE();
 			}
+
 			g_pBoard->bkgImage->file = getString(newVal);
 			g_pBoard->bkgImage->createCanvas(*g_pBoard);
+
 			break;
 		case BRD_BORDER_IMAGE:
 			// Obsolete.
 			break;
 		case BRD_DIR_LINK:
-			g_pBoard->links[bounds(arrayPos1 - 1, 0, int(g_pBoard->links.size() - 1))] = getString(newVal);
+			g_pBoard->links[bounds(arrayPos1 - 1, 0, int(g_pBoard->links.size() - 1))] = 
+				getString(newVal);
 			break;
 		case BRD_FIGHT_BKG:
 			g_pBoard->battleBackground = getString(newVal);
@@ -2190,25 +2432,44 @@ STDMETHODIMP CCallbacks::CBSetBoardString(int infoCode, int arrayPos1, int array
 			g_bkgMusic->play(true);
 			break;
 		case BRD_LAYER_NAME:
-			g_pBoard->layerTitles[bounds(arrayPos1, 0, int(g_pBoard->layerTitles.size() - 1))] = getString(newVal);
+			g_pBoard->layerTitles[bounds(arrayPos1, 0, int(g_pBoard->layerTitles.size() - 1))] = 
+				getString(newVal);
 			break;
 		case BRD_PRG:
-			if (pPrg) pPrg->fileName = getString(newVal);
+			if (pPrg)
+			{
+				pPrg->fileName = getString(newVal);
+			}
 			break;
 		case BRD_PRG_GFX:
-			if (pPrg) pPrg->graphic = getString(newVal);
+			if (pPrg)
+			{
+				pPrg->graphic = getString(newVal);
+			}
 			break;
 		case BRD_PRG_ACTIVE_VAR:
-			if (pPrg) pPrg->initialVar = getString(newVal);
+			if (pPrg)
+			{
+				pPrg->initialVar = getString(newVal);
+			}
 			break;
 		case BRD_PRG_DONE_VAR:
-			if (pPrg) pPrg->finalVar = getString(newVal);
+			if (pPrg)
+			{
+				pPrg->finalVar = getString(newVal);
+			}
 			break;
 		case BRD_PRG_ACTIVE_INIT:
-			if (pPrg) pPrg->initialValue = getString(newVal);
+			if (pPrg)
+			{
+				pPrg->initialValue = getString(newVal);
+			}
 			break;
 		case BRD_PRG_DONE_INIT:
-			if (pPrg) pPrg->finalValue = getString(newVal);
+			if (pPrg)
+			{
+				pPrg->finalValue = getString(newVal);
+			}
 			break;
 		case BRD_ITM:
 			extern STRING g_projectPath;
@@ -2224,35 +2485,60 @@ STDMETHODIMP CCallbacks::CBSetBoardString(int infoCode, int arrayPos1, int array
 				{
 					pItem = new CItem(g_projectPath + ITM_PATH + spr.fileName, spr, version);
 					g_pBoard->items[bounds(arrayPos1, 0, int(g_pBoard->items.size() - 1))] = pItem;
+
 					if (version <= PRE_VECTOR_ITEM)
 					{
 						// Create standard vectors for old items.
 						pItem->createVectors();
 					}
+
 					pItem->setPosition(pos.x, pos.y, pos.l, PX_ABSOLUTE);
 				}
-				catch (CInvalidItem) { }
-			} break;
+				catch (CInvalidItem) 
+				{ 
+
+				}
+			} 
+			break;
 		case BRD_ITM_ACTIVE_VAR:
-			if (pItem) pItem->getBoardSprite()->initialVar = getString(newVal);
+			if (pItem)
+			{
+				pItem->getBoardSprite()->initialVar = getString(newVal);
+			}
 			break;
 		// TBD: if (pItem) pItem->getBoardSprite()->loadingVar = getString(newVal);
 		case BRD_ITM_DONE_VAR:
-			if (pItem) pItem->getBoardSprite()->finalVar = getString(newVal);
+			if (pItem)
+			{
+				pItem->getBoardSprite()->finalVar = getString(newVal);
+			}
 			break;
 		case BRD_ITM_ACTIVE_INIT:
-			if (pItem) pItem->getBoardSprite()->initialValue = getString(newVal);
+			if (pItem)
+			{
+				pItem->getBoardSprite()->initialValue = getString(newVal);
+			}
 			break;
 		case BRD_ITM_DONE_INIT:
-			if (pItem) pItem->getBoardSprite()->finalValue = getString(newVal);
+			if (pItem)
+			{
+				pItem->getBoardSprite()->finalValue = getString(newVal);
+			}
 			break;
 		case BRD_ITM_PROGRAM:
-			if (pItem) pItem->getBoardSprite()->prgActivate = getString(newVal);
+			if (pItem)
+			{
+				pItem->getBoardSprite()->prgActivate = getString(newVal);
+			}
 			break;
 		case BRD_ITM_MULTI:
-			if (pItem) pItem->getBoardSprite()->prgMultitask = getString(newVal);
+			if (pItem)
+			{
+				pItem->getBoardSprite()->prgMultitask = getString(newVal);
+			}
 			break;
 	}	
+
 	return S_OK;
 }
 
@@ -2273,6 +2559,7 @@ STDMETHODIMP CCallbacks::CBRefreshScreen(int *pRet)
 	{
 		*pRet = g_pDirectDraw->Refresh();
 	}
+
 	return S_OK;
 }
 
@@ -2294,6 +2581,7 @@ STDMETHODIMP CCallbacks::CBDestroyCanvas(int canvasID, int *pRet)
 STDMETHODIMP CCallbacks::CBDrawCanvas(int canvasID, int x, int y, int *pRet)
 {
 	CCanvas *p = g_canvases.cast(canvasID);
+
 	if (p)
 	{
 		*pRet = p->Blt(getBackBuffer(), x, y);
@@ -2302,10 +2590,12 @@ STDMETHODIMP CCallbacks::CBDrawCanvas(int canvasID, int x, int y, int *pRet)
 	{
 		*pRet = FALSE;
 	}
+
 	return S_OK;
 }
 
-STDMETHODIMP CCallbacks::CBDrawCanvasPartial(int canvasID, int xDest, int yDest, int xsrc, int ysrc, int width, int height, int *pRet)
+STDMETHODIMP CCallbacks::CBDrawCanvasPartial(int canvasID, int xDest, int yDest, int xsrc, 
+											 int ysrc, int width, int height, int *pRet)
 {
 	CCanvas *p = g_canvases.cast(canvasID);
 	if (p)
@@ -2316,12 +2606,15 @@ STDMETHODIMP CCallbacks::CBDrawCanvasPartial(int canvasID, int xDest, int yDest,
 	{
 		*pRet = FALSE;
 	}
+
 	return S_OK;
 }
 
-STDMETHODIMP CCallbacks::CBDrawCanvasTransparent(int canvasID, int x, int y, int crTransparentColor, int *pRet)
+STDMETHODIMP CCallbacks::CBDrawCanvasTransparent(int canvasID, int x, int y, 
+												 int crTransparentColor, int *pRet)
 {
 	CCanvas *p = g_canvases.cast(canvasID);
+
 	if (p)
 	{
 		*pRet = p->BltTransparent(getBackBuffer(), x, y, crTransparentColor);
@@ -2330,12 +2623,16 @@ STDMETHODIMP CCallbacks::CBDrawCanvasTransparent(int canvasID, int x, int y, int
 	{
 		*pRet = FALSE;
 	}
+
 	return S_OK;
 }
 
-STDMETHODIMP CCallbacks::CBDrawCanvasTransparentPartial(int canvasID, int xDest, int yDest, int xsrc, int ysrc, int width, int height, int crTransparentColor, int *pRet)
+STDMETHODIMP CCallbacks::CBDrawCanvasTransparentPartial(int canvasID, int xDest, int yDest, 
+														int xsrc, int ysrc, int width, int height, 
+														int crTransparentColor, int *pRet)
 {
 	CCanvas *p = g_canvases.cast(canvasID);
+
 	if (p)
 	{
 		*pRet = p->BltTransparentPart(getBackBuffer(), xDest, yDest, xsrc, ysrc, width, height, crTransparentColor);
@@ -2344,26 +2641,33 @@ STDMETHODIMP CCallbacks::CBDrawCanvasTransparentPartial(int canvasID, int xDest,
 	{
 		*pRet = FALSE;
 	}
+
 	return S_OK;
 }
 
-STDMETHODIMP CCallbacks::CBDrawCanvasTranslucent(int canvasID, int x, int y, double dIntensity, int crUnaffectedColor, int crTransparentColor, int *pRet)
+STDMETHODIMP CCallbacks::CBDrawCanvasTranslucent(int canvasID, int x, int y, double dIntensity, 
+												 int crUnaffectedColor, int crTransparentColor, 
+												 int *pRet)
 {
 	CCanvas *p = g_canvases.cast(canvasID);
+
 	if (p)
 	{
-		*pRet = p->BltTranslucent(getBackBuffer(), x, y, dIntensity, crUnaffectedColor, crTransparentColor);
+		*pRet = p->BltTranslucent(getBackBuffer(), x, y, dIntensity, crUnaffectedColor, 
+			crTransparentColor);
 	}
 	else
 	{
 		*pRet = FALSE;
 	}
+
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBCanvasLoadImage(int canvasID, BSTR filename, int *pRet)
 {
 	CCanvas *p = g_canvases.cast(canvasID);
+
 	if (p)
 	{
 		extern STRING g_projectPath;
@@ -2373,47 +2677,56 @@ STDMETHODIMP CCallbacks::CBCanvasLoadImage(int canvasID, BSTR filename, int *pRe
 	{
 		*pRet = FALSE;
 	}
+
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBCanvasLoadSizedImage(int canvasID, BSTR filename, int *pRet)
 {
 	CCanvas *p = g_canvases.cast(canvasID);
+
 	if (p)
 	{
 		extern STRING g_projectPath;
-		drawImage(g_projectPath + BMP_PATH + getString(filename), p, 0, 0, p->GetWidth(), p->GetHeight());
+		drawImage(g_projectPath + BMP_PATH + getString(filename), p, 0, 0, p->GetWidth(), 
+			p->GetHeight());
 	}
 	else
 	{
 		*pRet = FALSE;
 	}
+
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBCanvasFill(int canvasID, int crColor, int *pRet)
 {
 	CCanvas *p = g_canvases.cast(canvasID);
+
 	if (*pRet = (p != NULL))
 	{
 		p->ClearScreen(crColor);
 	}
+
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBCanvasResize(int canvasID, int width, int height, int *pRet)
 {
 	CCanvas *p = g_canvases.cast(canvasID);
+
 	if (*pRet = (p != NULL))
 	{
 		p->Resize(NULL, width, height);
 	}
+
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBCanvas2CanvasBlt(int cnvSrc, int cnvDest, int xDest, int yDest, int *pRet)
 {
 	CCanvas *p = g_canvases.cast(cnvSrc);
+
 	if (p)
 	{
 		CCanvas *pDest = g_canvases.cast(cnvDest);
@@ -2430,15 +2743,20 @@ STDMETHODIMP CCallbacks::CBCanvas2CanvasBlt(int cnvSrc, int cnvDest, int xDest, 
 	{
 		*pRet = FALSE;
 	}
+
 	return S_OK;
 }
 
-STDMETHODIMP CCallbacks::CBCanvas2CanvasBltPartial(int cnvSrc, int cnvDest, int xDest, int yDest, int xsrc, int ysrc, int width, int height, int *pRet)
+STDMETHODIMP CCallbacks::CBCanvas2CanvasBltPartial(int cnvSrc, int cnvDest, int xDest, 
+												   int yDest, int xsrc, int ysrc, int width, 
+												   int height, int *pRet)
 {
 	CCanvas *p = g_canvases.cast(cnvSrc);
+
 	if (p)
 	{
 		CCanvas *pDest = g_canvases.cast(cnvDest);
+
 		if (pDest)
 		{	
 			*pRet = p->BltPart(pDest, xDest, yDest, xsrc, ysrc, width, height, SRCCOPY);
@@ -2452,15 +2770,19 @@ STDMETHODIMP CCallbacks::CBCanvas2CanvasBltPartial(int cnvSrc, int cnvDest, int 
 	{
 		*pRet = FALSE;
 	}
+
 	return S_OK;
 }
 
-STDMETHODIMP CCallbacks::CBCanvas2CanvasBltTransparent(int cnvSrc, int cnvDest, int xDest, int yDest, int crTransparentColor, int *pRet)
+STDMETHODIMP CCallbacks::CBCanvas2CanvasBltTransparent(int cnvSrc, int cnvDest, int xDest,
+													   int yDest, int crTransparentColor, int *pRet)
 {
 	CCanvas *p = g_canvases.cast(cnvSrc);
+
 	if (p)
 	{
 		CCanvas *pDest = g_canvases.cast(cnvDest);
+
 		if (pDest)
 		{	
 			*pRet = p->BltTransparent(pDest, xDest, yDest, crTransparentColor);
@@ -2474,18 +2796,25 @@ STDMETHODIMP CCallbacks::CBCanvas2CanvasBltTransparent(int cnvSrc, int cnvDest, 
 	{
 		*pRet = FALSE;
 	}
+
 	return S_OK;
 }
 
-STDMETHODIMP CCallbacks::CBCanvas2CanvasBltTransparentPartial(int cnvSrc, int cnvDest, int xDest, int yDest, int xsrc, int ysrc, int width, int height, int crTransparentColor, int *pRet)
+STDMETHODIMP CCallbacks::CBCanvas2CanvasBltTransparentPartial(int cnvSrc, int cnvDest, int xDest, 
+															  int yDest, int xsrc, int ysrc, 
+															  int width, int height, 
+															  int crTransparentColor, int *pRet)
 {
 	CCanvas *p = g_canvases.cast(cnvSrc);
+
 	if (p)
 	{
 		CCanvas *pDest = g_canvases.cast(cnvDest);
+
 		if (pDest)
 		{	
-			*pRet = p->BltTransparentPart(pDest, xDest, yDest, xsrc, ysrc, width, height, crTransparentColor);
+			*pRet = p->BltTransparentPart(pDest, xDest, yDest, xsrc, ysrc, width, height, 
+				crTransparentColor);
 		}
 		else
 		{
@@ -2496,18 +2825,25 @@ STDMETHODIMP CCallbacks::CBCanvas2CanvasBltTransparentPartial(int cnvSrc, int cn
 	{
 		*pRet = FALSE;
 	}
+
 	return S_OK;
 }
 
-STDMETHODIMP CCallbacks::CBCanvas2CanvasBltTranslucent(int cnvSrc, int cnvDest, int destX, int destY, double dIntensity, int crUnaffectedColor, int crTransparentColor, int *pRet)
+STDMETHODIMP CCallbacks::CBCanvas2CanvasBltTranslucent(int cnvSrc, int cnvDest, int destX, 
+													   int destY, double dIntensity, 
+													   int crUnaffectedColor, 
+													   int crTransparentColor, int *pRet)
 {
 	CCanvas *p = g_canvases.cast(cnvSrc);
+
 	if (p)
 	{
 		CCanvas *pDest = g_canvases.cast(cnvDest);
+
 		if (pDest)
 		{	
-			*pRet = p->BltTranslucent(pDest, destX, destY, dIntensity, crUnaffectedColor, crTransparentColor);
+			*pRet = p->BltTranslucent(pDest, destX, destY, dIntensity, crUnaffectedColor, 
+				crTransparentColor);
 		}
 		else
 		{
@@ -2518,12 +2854,14 @@ STDMETHODIMP CCallbacks::CBCanvas2CanvasBltTranslucent(int cnvSrc, int cnvDest, 
 	{
 		*pRet = FALSE;
 	}
+
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBCanvasGetScreen(int cnvDest, int *pRet)
 {
 	CCanvas *p = g_canvases.cast(cnvDest);
+
 	if (p)
 	{
 		*pRet = g_pDirectDraw->CopyScreenToCanvas(p);
@@ -2532,6 +2870,7 @@ STDMETHODIMP CCallbacks::CBCanvasGetScreen(int cnvDest, int *pRet)
 	{
 		*pRet = FALSE;
 	}
+
 	return S_OK;
 }
 
@@ -2542,9 +2881,13 @@ STDMETHODIMP CCallbacks::CBLoadString(int id, BSTR defaultString, BSTR *pRet)
 	return S_OK;
 }
 
-STDMETHODIMP CCallbacks::CBCanvasDrawText(int canvasID, BSTR text, BSTR font, int size, double x, double y, int crColor, int isBold, int isItalics, int isUnderline, int isCentred, int isOutlined, int *pRet)
+STDMETHODIMP CCallbacks::CBCanvasDrawText(int canvasID, BSTR text, BSTR font, int size, 
+										  double x, double y, int crColor, int isBold, 
+										  int isItalics, int isUnderline, int isCentred, 
+										  int isOutlined, int *pRet)
 {
 	CCanvas *p = g_canvases.cast(canvasID);
+
 	if (p)
 	{
 		*pRet = p->DrawText(x * size - size, y * size - size, getString(text), getString(font), size, crColor, isBold, isItalics, isUnderline, isCentred, isOutlined);
@@ -2553,16 +2896,19 @@ STDMETHODIMP CCallbacks::CBCanvasDrawText(int canvasID, BSTR text, BSTR font, in
 	{
 		*pRet = FALSE;
 	}
+
 	return S_OK;
 }
 
-STDMETHODIMP CCallbacks::CBCanvasPopup(int canvasID, int x, int y, int stepSize, int popupType, int *pRet)
+STDMETHODIMP CCallbacks::CBCanvasPopup(int canvasID, int x, int y, int stepSize, int popupType, 
+									   int *pRet)
 {
 	#define POPUP_NOFX			0
 	#define POPUP_VERTICAL		1
 	#define POPUP_HORIZONTAL	2
 
 	CCanvas *p = g_canvases.cast(canvasID);
+
 	if (!p)
 	{
 		*pRet = FALSE;
@@ -2580,6 +2926,7 @@ STDMETHODIMP CCallbacks::CBCanvasPopup(int canvasID, int x, int y, int stepSize,
 			const int h = p->GetHeight();
 			int cnt = 0;
 			CCanvas temp = *g_pDirectDraw->getBackBuffer();
+
 			for (int i = int(h / 2); i >= 0; i -= stepSize)
 			{
 				g_pDirectDraw->DrawCanvas(&temp, 0, 0);
@@ -2589,13 +2936,15 @@ STDMETHODIMP CCallbacks::CBCanvasPopup(int canvasID, int x, int y, int stepSize,
 				cnt += stepSize;
 				processEvent();
 			}
-		} break;
+		} 
+		break;
 		case POPUP_HORIZONTAL:
 		{
 			const int w = p->GetWidth();
 			const int h = p->GetHeight();
 			int cnt = 0;
 			CCanvas temp = *g_pDirectDraw->getBackBuffer();
+
 			for (int i = int(w / 2); i >= 0; i -= stepSize)
 			{
 				g_pDirectDraw->DrawCanvas(&temp, 0, 0);
@@ -2605,7 +2954,8 @@ STDMETHODIMP CCallbacks::CBCanvasPopup(int canvasID, int x, int y, int stepSize,
 				cnt += stepSize;
 				processEvent();
 			}
-		} break;
+		} 
+		break;
 	}
 
 	// Render the canvas.
@@ -2619,6 +2969,7 @@ STDMETHODIMP CCallbacks::CBCanvasPopup(int canvasID, int x, int y, int stepSize,
 STDMETHODIMP CCallbacks::CBCanvasWidth(int canvasID, int *pRet)
 {
 	CCanvas *p = g_canvases.cast(canvasID);
+
 	if (p)
 	{
 		*pRet = p->GetWidth();
@@ -2627,12 +2978,14 @@ STDMETHODIMP CCallbacks::CBCanvasWidth(int canvasID, int *pRet)
 	{
 		*pRet = FALSE;
 	}
+
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBCanvasHeight(int canvasID, int *pRet)
 {
 	CCanvas *p = g_canvases.cast(canvasID);
+
 	if (p)
 	{
 		*pRet = p->GetHeight();
@@ -2641,12 +2994,15 @@ STDMETHODIMP CCallbacks::CBCanvasHeight(int canvasID, int *pRet)
 	{
 		*pRet = FALSE;
 	}
+
 	return S_OK;
 }
 
-STDMETHODIMP CCallbacks::CBCanvasDrawLine(int canvasID, int x1, int y1, int x2, int y2, int crColor, int *pRet)
+STDMETHODIMP CCallbacks::CBCanvasDrawLine(int canvasID, int x1, int y1, int x2, int y2, 
+										  int crColor, int *pRet)
 {
 	CCanvas *p = g_canvases.cast(canvasID);
+
 	if (p)
 	{
 		*pRet = p->DrawLine(x1, y1, x2, y2, crColor);
@@ -2655,12 +3011,15 @@ STDMETHODIMP CCallbacks::CBCanvasDrawLine(int canvasID, int x1, int y1, int x2, 
 	{
 		*pRet = FALSE;
 	}
+
 	return S_OK;
 }
 
-STDMETHODIMP CCallbacks::CBCanvasDrawRect(int canvasID, int x1, int y1, int x2, int y2, int crColor, int *pRet)
+STDMETHODIMP CCallbacks::CBCanvasDrawRect(int canvasID, int x1, int y1, int x2, int y2, 
+										  int crColor, int *pRet)
 {
 	CCanvas *p = g_canvases.cast(canvasID);
+
 	if (p)
 	{
 		*pRet = p->DrawRect(x1, y1, x2, y2, crColor);
@@ -2669,12 +3028,15 @@ STDMETHODIMP CCallbacks::CBCanvasDrawRect(int canvasID, int x1, int y1, int x2, 
 	{
 		*pRet = FALSE;
 	}
+
 	return S_OK;
 }
 
-STDMETHODIMP CCallbacks::CBCanvasFillRect(int canvasID, int x1, int y1, int x2, int y2, int crColor, int *pRet)
+STDMETHODIMP CCallbacks::CBCanvasFillRect(int canvasID, int x1, int y1, int x2, int y2, 
+										  int crColor, int *pRet)
 {
 	CCanvas *p = g_canvases.cast(canvasID);
+
 	if (p)
 	{
 		*pRet = p->DrawFilledRect(x1, y1, x2, y2, crColor);
@@ -2683,6 +3045,7 @@ STDMETHODIMP CCallbacks::CBCanvasFillRect(int canvasID, int x1, int y1, int x2, 
 	{
 		*pRet = FALSE;
 	}
+
 	return S_OK;
 }
 
@@ -2690,6 +3053,7 @@ STDMETHODIMP CCallbacks::CBCanvasDrawHand(int canvasID, int pointx, int pointy, 
 {
 	extern CCanvas *g_cnvCursor;
 	CCanvas *p = g_canvases.cast(canvasID);
+
 	if (p)
 	{
 		*pRet = g_cnvCursor->BltTransparent(p, pointx - 42, pointy - 10, RGB(255, 0, 0));
@@ -2698,6 +3062,7 @@ STDMETHODIMP CCallbacks::CBCanvasDrawHand(int canvasID, int pointx, int pointy, 
 	{
 		*pRet = NULL;
 	}
+
 	return S_OK;
 }
 
@@ -2711,24 +3076,80 @@ STDMETHODIMP CCallbacks::CBDrawHand(int pointx, int pointy, int *pRet)
 STDMETHODIMP CCallbacks::CBCheckKey(BSTR keyPressed, int *pRet)
 {
 	const STRING key = parser::uppercase(getString(keyPressed));
-	if (key == _T("LEFT")) *pRet = (GetAsyncKeyState(VK_LEFT) < 0);
-	else if (key == _T("RIGHT")) *pRet = (GetAsyncKeyState(VK_RIGHT) < 0);
-	else if (key == _T("UP")) *pRet = (GetAsyncKeyState(VK_UP) < 0);
-	else if (key == _T("DOWN")) *pRet = (GetAsyncKeyState(VK_DOWN) < 0);
-	else if (key == _T("SPACE")) *pRet = (GetAsyncKeyState(VK_SPACE) < 0);
-	else if (key == _T("ESC") || key == _T("ESCAPE")) *pRet = (GetAsyncKeyState(VK_ESCAPE) < 0);
-	else if (key == _T("ENTER")) *pRet = (GetAsyncKeyState(VK_RETURN) < 0);
-	else if (key == _T("NUMPAD0")) *pRet = (GetAsyncKeyState(VK_NUMPAD0) < 0);
-	else if (key == _T("NUMPAD1")) *pRet = (GetAsyncKeyState(VK_NUMPAD1) < 0);
-	else if (key == _T("NUMPAD2")) *pRet = (GetAsyncKeyState(VK_NUMPAD2) < 0);
-	else if (key == _T("NUMPAD3")) *pRet = (GetAsyncKeyState(VK_NUMPAD3) < 0);
-	else if (key == _T("NUMPAD4")) *pRet = (GetAsyncKeyState(VK_NUMPAD4) < 0);
-	else if (key == _T("NUMPAD5")) *pRet = (GetAsyncKeyState(VK_NUMPAD5) < 0);
-	else if (key == _T("NUMPAD6")) *pRet = (GetAsyncKeyState(VK_NUMPAD6) < 0);
-	else if (key == _T("NUMPAD7")) *pRet = (GetAsyncKeyState(VK_NUMPAD7) < 0);
-	else if (key == _T("NUMPAD8")) *pRet = (GetAsyncKeyState(VK_NUMPAD8) < 0);
-	else if (key == _T("NUMPAD9")) *pRet = (GetAsyncKeyState(VK_NUMPAD9) < 0);
-	else *pRet = (GetAsyncKeyState(key[0]) < 0);
+
+	if (key == _T("LEFT")) 
+	{
+		*pRet = (GetAsyncKeyState(VK_LEFT) < 0);
+	}
+	else if (key == _T("RIGHT")) 
+	{
+		*pRet = (GetAsyncKeyState(VK_RIGHT) < 0);
+	}
+	else if (key == _T("UP")) 
+	{
+		*pRet = (GetAsyncKeyState(VK_UP) < 0);
+	}
+	else if (key == _T("DOWN")) 
+	{
+		*pRet = (GetAsyncKeyState(VK_DOWN) < 0);
+	}
+	else if (key == _T("SPACE")) 
+	{
+		*pRet = (GetAsyncKeyState(VK_SPACE) < 0);
+	}
+	else if (key == _T("ESC") || key == _T("ESCAPE")) 
+	{
+		*pRet = (GetAsyncKeyState(VK_ESCAPE) < 0);
+	}
+	else if (key == _T("ENTER")) 
+	{
+		*pRet = (GetAsyncKeyState(VK_RETURN) < 0);
+	}
+	else if (key == _T("NUMPAD0")) 
+	{
+		*pRet = (GetAsyncKeyState(VK_NUMPAD0) < 0);
+	}
+	else if (key == _T("NUMPAD1")) 
+	{
+		*pRet = (GetAsyncKeyState(VK_NUMPAD1) < 0);
+	}
+	else if (key == _T("NUMPAD2")) 
+	{
+		*pRet = (GetAsyncKeyState(VK_NUMPAD2) < 0);
+	}
+	else if (key == _T("NUMPAD3")) 
+	{
+		*pRet = (GetAsyncKeyState(VK_NUMPAD3) < 0);
+	}
+	else if (key == _T("NUMPAD4")) 
+	{
+		*pRet = (GetAsyncKeyState(VK_NUMPAD4) < 0);
+	}
+	else if (key == _T("NUMPAD5")) 
+	{
+		*pRet = (GetAsyncKeyState(VK_NUMPAD5) < 0);
+	}
+	else if (key == _T("NUMPAD6")) 
+	{
+		*pRet = (GetAsyncKeyState(VK_NUMPAD6) < 0);
+	}
+	else if (key == _T("NUMPAD7")) 
+	{
+		*pRet = (GetAsyncKeyState(VK_NUMPAD7) < 0);
+	}
+	else if (key == _T("NUMPAD8")) 
+	{
+		*pRet = (GetAsyncKeyState(VK_NUMPAD8) < 0);
+	}
+	else if (key == _T("NUMPAD9")) 
+	{
+		*pRet = (GetAsyncKeyState(VK_NUMPAD9) < 0);
+	}
+	else 
+	{
+		*pRet = (GetAsyncKeyState(key[0]) < 0);
+	}
+
 	return S_OK;
 }
 
@@ -2740,9 +3161,11 @@ STDMETHODIMP CCallbacks::CBPlaySound(BSTR soundFile, int *pRet)
 	return S_OK;
 }
 
-STDMETHODIMP CCallbacks::CBMessageWindow(BSTR text, int textColor, int bgColor, BSTR bgPic, int mbtype, int *pRet)
+STDMETHODIMP CCallbacks::CBMessageWindow(BSTR text, int textColor, int bgColor, BSTR bgPic, 
+										 int mbtype, int *pRet)
 {
-	*pRet = rpgcodeMsgBox(getString(text), mbtype == 0 ? 1 : 2, textColor, bgColor, getString(bgPic));
+	*pRet = rpgcodeMsgBox(getString(text), mbtype == 0 ? 1 : 2, textColor, bgColor, 
+		getString(bgPic));
 	return S_OK;
 }
 
@@ -2780,9 +3203,11 @@ STDMETHODIMP CCallbacks::CBFileDialog(BSTR initialPath, BSTR fileFilter, BSTR *p
 STDMETHODIMP CCallbacks::CBDetermineSpecialMoves(BSTR playerHandle, int *pRet)
 {
 	const STRING handle = getString(playerHandle);
+
 	// Locate the payer with this handle.
 	std::vector<CPlayer *>::const_iterator i = g_players.begin();
 	CPlayer *pPlayer = NULL;
+
 	for (; i != g_players.end(); ++i)
 	{
 		if ((*i)->name() == handle)
@@ -2791,6 +3216,7 @@ STDMETHODIMP CCallbacks::CBDetermineSpecialMoves(BSTR playerHandle, int *pRet)
 			break;
 		}
 	}
+
 	if (pPlayer)
 	{
 		// Determine the moves.
@@ -2803,6 +3229,7 @@ STDMETHODIMP CCallbacks::CBDetermineSpecialMoves(BSTR playerHandle, int *pRet)
 		// Couldn't find the player.
 		*pRet = 0;
 	}
+
 	return S_OK;
 }
 
@@ -2818,6 +3245,7 @@ STDMETHODIMP CCallbacks::CBGetSpecialMoveListEntry(int idx, BSTR *pRet)
 	{
 		SysReAllocString(pRet, L"");
 	}
+
 	return S_OK;
 }
 
@@ -2852,6 +3280,7 @@ void setEntity(LPENTITY p, int idx, int type)
 	else if (type == TYPE_ENEMY)
 	{
 		std::map<unsigned int, PLUGIN_ENEMY>::iterator i = g_enemies.find(idx);
+
 		if (i != g_enemies.end())
 		{
 			p->type = ET_ENEMY;
@@ -2884,6 +3313,7 @@ STDMETHODIMP CCallbacks::CBGetPlayerHP(int playerIdx, double *pRet)
 	{
 		*pRet = 0.0;
 	}
+
 	return S_OK;
 }
 
@@ -2897,6 +3327,7 @@ STDMETHODIMP CCallbacks::CBGetPlayerMaxHP(int playerIdx, double *pRet)
 	{
 		*pRet = 0.0;
 	}
+
 	return S_OK;
 }
 
@@ -2910,6 +3341,7 @@ STDMETHODIMP CCallbacks::CBGetPlayerSMP(int playerIdx, double *pRet)
 	{
 		*pRet = 0.0;
 	}
+
 	return S_OK;
 }
 
@@ -2923,6 +3355,7 @@ STDMETHODIMP CCallbacks::CBGetPlayerMaxSMP(int playerIdx, double *pRet)
 	{
 		*pRet = 0.0;
 	}
+
 	return S_OK;
 }
 
@@ -2936,6 +3369,7 @@ STDMETHODIMP CCallbacks::CBGetPlayerFP(int playerIdx, double *pRet)
 	{
 		*pRet = 0.0;
 	}
+
 	return S_OK;
 }
 
@@ -2949,6 +3383,7 @@ STDMETHODIMP CCallbacks::CBGetPlayerDP(int playerIdx, double *pRet)
 	{
 		*pRet = 0.0;
 	}
+
 	return S_OK;
 }
 
@@ -2964,6 +3399,7 @@ STDMETHODIMP CCallbacks::CBGetPlayerName(int playerIdx, BSTR *pRet)
 	{
 		SysReAllocString(pRet, L"");
 	}
+
 	return S_OK;
 }
 
@@ -2973,6 +3409,7 @@ STDMETHODIMP CCallbacks::CBAddPlayerHP(int amount, int playerIdx)
 	{
 		g_players[playerIdx]->health(g_players[playerIdx]->health() + amount);
 	}
+
 	return S_OK;
 }
 
@@ -2982,6 +3419,7 @@ STDMETHODIMP CCallbacks::CBAddPlayerSMP(int amount, int playerIdx)
 	{
 		g_players[playerIdx]->smp(g_players[playerIdx]->smp() + amount);
 	}
+
 	return S_OK;
 }
 
@@ -2991,6 +3429,7 @@ STDMETHODIMP CCallbacks::CBSetPlayerHP(int amount, int playerIdx)
 	{
 		g_players[playerIdx]->health(amount);
 	}
+
 	return S_OK;
 }
 
@@ -3000,6 +3439,7 @@ STDMETHODIMP CCallbacks::CBSetPlayerSMP(int amount, int playerIdx)
 	{
 		g_players[playerIdx]->smp(amount);
 	}
+
 	return S_OK;
 }
 
@@ -3009,6 +3449,7 @@ STDMETHODIMP CCallbacks::CBSetPlayerFP(int amount, int playerIdx)
 	{
 		g_players[playerIdx]->fight(amount);
 	}
+
 	return S_OK;
 }
 
@@ -3018,94 +3459,153 @@ STDMETHODIMP CCallbacks::CBSetPlayerDP(int amount, int playerIdx)
 	{
 		g_players[playerIdx]->defence(amount);
 	}
+
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetEnemyHP(int eneIdx, int *pRet)
 {
-	if (!g_enemies.count(eneIdx)) return S_OK;
+	if (!g_enemies.count(eneIdx))
+	{
+		return S_OK;
+	}
+
 	*pRet = g_enemies[eneIdx].enemy.iHp;
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetEnemyMaxHP(int eneIdx, int *pRet)
 {
-	if (!g_enemies.count(eneIdx)) return S_OK;
+	if (!g_enemies.count(eneIdx))
+	{
+		return S_OK;
+	}
+
 	*pRet = g_enemies[eneIdx].enemy.iMaxHp;
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetEnemySMP(int eneIdx, int *pRet)
 {
-	if (!g_enemies.count(eneIdx)) return S_OK;
+	if (!g_enemies.count(eneIdx))
+	{
+		return S_OK;
+	}
+
 	*pRet = g_enemies[eneIdx].enemy.iSmp;
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetEnemyMaxSMP(int eneIdx, int *pRet)
 {
-	if (!g_enemies.count(eneIdx)) return S_OK;
+	if (!g_enemies.count(eneIdx))
+	{
+		return S_OK;
+	}
+
 	*pRet = g_enemies[eneIdx].enemy.iMaxSmp;
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetEnemyFP(int eneIdx, int *pRet)
 {
-	if (!g_enemies.count(eneIdx)) return S_OK;
+	if (!g_enemies.count(eneIdx))
+	{
+		return S_OK;
+	}
+
 	*pRet = g_enemies[eneIdx].enemy.fp;
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetEnemyDP(int eneIdx, int *pRet)
 {
-	if (!g_enemies.count(eneIdx)) return S_OK;
+	if (!g_enemies.count(eneIdx))
+	{
+		return S_OK;
+	}
+
 	*pRet = g_enemies[eneIdx].enemy.dp;
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBAddEnemyHP(int amount, int eneIdx)
 {
-	if (!g_enemies.count(eneIdx)) return S_OK;
+	if (!g_enemies.count(eneIdx))
+	{
+		return S_OK;
+	}
+
 	g_enemies[eneIdx].enemy.iHp += amount;
 	if (g_enemies[eneIdx].enemy.iHp > g_enemies[eneIdx].enemy.iMaxHp)
 	{
 		g_enemies[eneIdx].enemy.iHp = g_enemies[eneIdx].enemy.iMaxHp;
 	}
+
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBAddEnemySMP(int amount, int eneIdx)
 {
-	if (!g_enemies.count(eneIdx)) return S_OK;
+	if (!g_enemies.count(eneIdx))
+	{
+		return S_OK;
+	}
+
 	g_enemies[eneIdx].enemy.iSmp += amount;
 	if (g_enemies[eneIdx].enemy.iSmp > g_enemies[eneIdx].enemy.iMaxSmp)
 	{
 		g_enemies[eneIdx].enemy.iSmp = g_enemies[eneIdx].enemy.iMaxSmp;
 	}
+
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBSetEnemyHP(int amount, int eneIdx)
 {
-	if (!g_enemies.count(eneIdx)) return S_OK;
-	if (amount < 0) amount = 0;
-	else if (amount > g_enemies[eneIdx].enemy.iMaxHp) amount = g_enemies[eneIdx].enemy.iMaxHp;
+	if (!g_enemies.count(eneIdx))
+	{
+		return S_OK;
+	}
+
+	if (amount < 0)
+	{
+		amount = 0;
+	}
+	else if (amount > g_enemies[eneIdx].enemy.iMaxHp)
+	{
+		amount = g_enemies[eneIdx].enemy.iMaxHp;
+	}
+
 	g_enemies[eneIdx].enemy.iHp = amount;
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBSetEnemySMP(int amount, int eneIdx)
 {
-	if (!g_enemies.count(eneIdx)) return S_OK;
-	if (amount < 0) amount = 0;
-	else if (amount > g_enemies[eneIdx].enemy.iSmp) amount = g_enemies[eneIdx].enemy.iMaxSmp;
+	if (!g_enemies.count(eneIdx))
+	{
+		return S_OK;
+	}
+
+	if (amount < 0)
+	{
+		amount = 0;
+	}
+	else if (amount > g_enemies[eneIdx].enemy.iSmp)
+	{
+		amount = g_enemies[eneIdx].enemy.iMaxSmp;
+	}
+
 	g_enemies[eneIdx].enemy.iSmp = amount;
 	return S_OK;
 }
 
-STDMETHODIMP CCallbacks::CBCanvasDrawBackground(int canvasID, BSTR bkgFile, int x, int y, int width, int height)
+STDMETHODIMP CCallbacks::CBCanvasDrawBackground(int canvasID, BSTR bkgFile, int x, int y, 
+												int width, int height)
 {
 	CCanvas *p = g_canvases.cast(canvasID);
+
 	if (p)
 	{
 		extern STRING g_projectPath;
@@ -3113,6 +3613,7 @@ STDMETHODIMP CCallbacks::CBCanvasDrawBackground(int canvasID, BSTR bkgFile, int 
 		bkg.open(g_projectPath + BKG_PATH + getString(bkgFile));
 		drawImage(g_projectPath + BMP_PATH + bkg.image, p, x, y, width, height);
 	}
+
 	return S_OK;
 }
 
@@ -3129,7 +3630,8 @@ STDMETHODIMP CCallbacks::CBDestroyAnimation(int idx)
 	return S_OK;
 }
 
-STDMETHODIMP CCallbacks::CBCanvasDrawAnimation(int canvasID, int idx, int x, int y, int forceDraw, int forceTransp)
+STDMETHODIMP CCallbacks::CBCanvasDrawAnimation(int canvasID, int idx, int x, int y, 
+											   int forceDraw, int forceTransp)
 {
 	CSharedAnimation *anm = CSharedAnimation::cast(idx);
 	if (anm)
@@ -3137,33 +3639,48 @@ STDMETHODIMP CCallbacks::CBCanvasDrawAnimation(int canvasID, int idx, int x, int
 		LPANIMATION p = anm->m_pAnm->data();
 		int *const i = &(anm->m_frame);
 		CCanvas *pCnv = g_canvases.cast(canvasID);
+
 		if (pCnv)
 		{
 			// This is a bit dubious!
 			if ((!(anm->m_tick++ % int(80 * p->delay))) || (*i == -1))
 			{
 				++(*i);
-				if (*i >= p->frameCount) *i = 0;
+
+				if (*i >= p->frameCount)
+				{
+					*i = 0;
+				}
+
 				anm->m_pAnm->playFrameSound(*i);
 			}
+
 			if (forceTransp)
 			{
 				pCnv->ClearScreen(TRANSP_COLOR);
 			}
+
 			anm->m_pAnm->getFrame(*i)->BltTransparent(pCnv, x, y, TRANSP_COLOR);
 		}
 	}
+
 	return S_OK;
 }
 
-STDMETHODIMP CCallbacks::CBCanvasDrawAnimationFrame(int canvasID, int idx, int frame, int x, int y, int forceTranspFill)
+STDMETHODIMP CCallbacks::CBCanvasDrawAnimationFrame(int canvasID, int idx, int frame, 
+													int x, int y, int forceTranspFill)
 {
 	CSharedAnimation *anm = CSharedAnimation::cast(idx);
+
 	if (anm)
 	{
 		LPANIMATION p = anm->m_pAnm->data();
 		CCanvas *pCnv = g_canvases.cast(canvasID);
-		if (frame >= p->frameCount) frame = 0;
+
+		if (frame >= p->frameCount)
+		{
+			frame = 0;
+		}
 
 		// Play sound on transitions.
 		if (frame != anm->m_frame) 
@@ -3177,9 +3694,11 @@ STDMETHODIMP CCallbacks::CBCanvasDrawAnimationFrame(int canvasID, int idx, int f
 			{
 				pCnv->ClearScreen(TRANSP_COLOR);
 			}
+
 			anm->m_pAnm->getFrame(anm->m_frame)->BltTransparent(pCnv, x, y, TRANSP_COLOR);
 		}
 	}
+
 	return S_OK;
 }
 
@@ -3215,6 +3734,7 @@ STDMETHODIMP CCallbacks::CBAnimationSizeY(int idx, int *pRet)
 STDMETHODIMP CCallbacks::CBAnimationFrameImage(int idx, int frame, BSTR *pRet)
 {
 	CSharedAnimation *p = CSharedAnimation::cast(idx);
+
 	if (p && (frame < p->m_pAnm->data()->frameCount))
 	{
 		BSTR bstr = getString(p->m_pAnm->data()->frameFiles[frame]);
@@ -3225,12 +3745,14 @@ STDMETHODIMP CCallbacks::CBAnimationFrameImage(int idx, int frame, BSTR *pRet)
 	{
 		SysReAllocString(pRet, L"");
 	}
+
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetPartySize(int partyIdx, int *pRet)
 {
 	extern BATTLE g_battle;
+
 	if (partyIdx < g_battle.parties.size())
 	{
 		*pRet = g_battle.parties[partyIdx].size();
@@ -3239,12 +3761,14 @@ STDMETHODIMP CCallbacks::CBGetPartySize(int partyIdx, int *pRet)
 	{
 		*pRet = 0;
 	}
+
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetFighterHP(int partyIdx, int fighterIdx, int *pRet)
 {
 	LPFIGHTER p = getFighter(partyIdx, fighterIdx);
+
 	if (p)
 	{
 		*pRet = p->pFighter->health();
@@ -3253,12 +3777,14 @@ STDMETHODIMP CCallbacks::CBGetFighterHP(int partyIdx, int fighterIdx, int *pRet)
 	{
 		*pRet = 0;
 	}
+
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetFighterMaxHP(int partyIdx, int fighterIdx, int *pRet)
 {
 	LPFIGHTER p = getFighter(partyIdx, fighterIdx);
+
 	if (p)
 	{
 		*pRet = p->pFighter->maxHealth();
@@ -3267,12 +3793,14 @@ STDMETHODIMP CCallbacks::CBGetFighterMaxHP(int partyIdx, int fighterIdx, int *pR
 	{
 		*pRet = 0;
 	}
+
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetFighterSMP(int partyIdx, int fighterIdx, int *pRet)
 {
 	LPFIGHTER p = getFighter(partyIdx, fighterIdx);
+
 	if (p)
 	{
 		*pRet = p->pFighter->smp();
@@ -3281,12 +3809,14 @@ STDMETHODIMP CCallbacks::CBGetFighterSMP(int partyIdx, int fighterIdx, int *pRet
 	{
 		*pRet = 0;
 	}
+
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetFighterMaxSMP(int partyIdx, int fighterIdx, int *pRet)
 {
 	LPFIGHTER p = getFighter(partyIdx, fighterIdx);
+
 	if (p)
 	{
 		*pRet = p->pFighter->maxSmp();
@@ -3295,12 +3825,14 @@ STDMETHODIMP CCallbacks::CBGetFighterMaxSMP(int partyIdx, int fighterIdx, int *p
 	{
 		*pRet = 0;
 	}
+
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetFighterFP(int partyIdx, int fighterIdx, int *pRet)
 {
 	LPFIGHTER p = getFighter(partyIdx, fighterIdx);
+
 	if (p)
 	{
 		*pRet = p->pFighter->fight();
@@ -3309,12 +3841,14 @@ STDMETHODIMP CCallbacks::CBGetFighterFP(int partyIdx, int fighterIdx, int *pRet)
 	{
 		*pRet = 0;
 	}
+
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetFighterDP(int partyIdx, int fighterIdx, int *pRet)
 {
 	LPFIGHTER p = getFighter(partyIdx, fighterIdx);
+
 	if (p)
 	{
 		*pRet = p->pFighter->defence();
@@ -3323,12 +3857,14 @@ STDMETHODIMP CCallbacks::CBGetFighterDP(int partyIdx, int fighterIdx, int *pRet)
 	{
 		*pRet = 0;
 	}
+
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetFighterName(int partyIdx, int fighterIdx, BSTR *pRet)
 {
 	LPFIGHTER p = getFighter(partyIdx, fighterIdx);
+
 	if (p)
 	{
 		BSTR bstr = getString(p->pFighter->name());
@@ -3339,12 +3875,14 @@ STDMETHODIMP CCallbacks::CBGetFighterName(int partyIdx, int fighterIdx, BSTR *pR
 	{
 		SysReAllocString(pRet, L"");
 	}
+
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetFighterAnimation(int partyIdx, int fighterIdx, BSTR animationName, BSTR *pRet)
 {
 	LPFIGHTER p = getFighter(partyIdx, fighterIdx);
+
 	if (p)
 	{
 		BSTR bstr = getString(p->pFighter->getStanceAnimation(getString(animationName)));
@@ -3355,12 +3893,14 @@ STDMETHODIMP CCallbacks::CBGetFighterAnimation(int partyIdx, int fighterIdx, BST
 	{
 		SysReAllocString(pRet, L"");
 	}
+
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBGetFighterChargePercent(int partyIdx, int fighterIdx, int *pRet)
 {
 	LPFIGHTER p = getFighter(partyIdx, fighterIdx);
+
 	if (p)
 	{
 		*pRet = int(p->charge / double(p->chargeMax) * 100.0);
@@ -3370,6 +3910,7 @@ STDMETHODIMP CCallbacks::CBGetFighterChargePercent(int partyIdx, int fighterIdx,
 	{
 		*pRet = 0;
 	}
+
 	return S_OK;
 }
 
@@ -3381,18 +3922,21 @@ STDMETHODIMP CCallbacks::CBFightTick()
 
 STDMETHODIMP CCallbacks::CBDrawTextAbsolute(BSTR text, BSTR font, int size, int x, int y, int crColor, int isBold, int isItalics, int isUnderline, int isCentred, int isOutlined, int *pRet)
 {
-	*pRet = getBackBuffer()->DrawText(x, y, getString(text), getString(font), size, crColor, isBold, isItalics, isUnderline, isCentred, isOutlined);
+	*pRet = getBackBuffer()->DrawText(x, y, getString(text), getString(font), size, 
+		crColor, isBold, isItalics, isUnderline, isCentred, isOutlined);
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBReleaseFighterCharge(int partyIdx, int fighterIdx)
 {
 	LPFIGHTER p = getFighter(partyIdx, fighterIdx);
+
 	if (p)
 	{
 		p->charge = 0;
 		p->bFrozenCharge = false;
 	}
+
 	return S_OK;
 }
 
@@ -3413,6 +3957,7 @@ STDMETHODIMP CCallbacks::CBFightUseItem(int sourcePartyIdx, int sourceFightIdx, 
 
 	LPFIGHTER pSource = getFighter(sourcePartyIdx, sourceFightIdx);
 	LPFIGHTER pTarget = getFighter(targetPartyIdx, targetFightIdx);
+
 	if (!pSource || !pTarget || (pSource->pFighter->health() < 1))
 	{
 		// Target or source doesn't exist or source is dead.
@@ -3422,12 +3967,17 @@ STDMETHODIMP CCallbacks::CBFightUseItem(int sourcePartyIdx, int sourceFightIdx, 
 	ITEM itm;
 	const STRING strItemFile = getString(itemFile);
 	const STRING fullPath = g_projectPath + ITM_PATH + strItemFile;
-	if (!itm.open(fullPath, NULL)) return S_OK;
+
+	if (!itm.open(fullPath, NULL))
+	{
+		return S_OK;
+	}
 
 	// HP.
 	pTarget->pFighter->health(pTarget->pFighter->health() + itm.fgtHPup);
 	const int hp = pTarget->pFighter->health();
 	const int maxHp = pTarget->pFighter->maxHealth();
+
 	if (hp > maxHp)
 	{
 		pTarget->pFighter->health(maxHp);
@@ -3441,6 +3991,7 @@ STDMETHODIMP CCallbacks::CBFightUseItem(int sourcePartyIdx, int sourceFightIdx, 
 	pTarget->pFighter->smp(pTarget->pFighter->smp() + itm.fgtSMup);
 	const int mana = pTarget->pFighter->smp();
 	const int maxMana = pTarget->pFighter->maxSmp();
+
 	if (mana > maxMana)
 	{
 		pTarget->pFighter->smp(maxMana);
@@ -3458,13 +4009,18 @@ STDMETHODIMP CCallbacks::CBFightUseItem(int sourcePartyIdx, int sourceFightIdx, 
 
 	g_inv.take(fullPath);
 
-	g_pFightPlugin->fightInform(sourcePartyIdx, sourceFightIdx, targetPartyIdx, targetFightIdx, 0, 0, -itm.fgtHPup, -itm.fgtSMup, strItemFile, INFORM_SOURCE_ITEM);
+	g_pFightPlugin->fightInform(sourcePartyIdx, sourceFightIdx, targetPartyIdx, 
+		targetFightIdx, 0, 0, -itm.fgtHPup, -itm.fgtSMup, strItemFile, INFORM_SOURCE_ITEM);
+
 	return S_OK;
 }
 
-STDMETHODIMP CCallbacks::CBFightUseSpecialMove(int sourcePartyIdx, int sourceFightIdx, int targetPartyIdx, int targetFightIdx, BSTR moveFile)
+STDMETHODIMP CCallbacks::CBFightUseSpecialMove(int sourcePartyIdx, int sourceFightIdx, 
+											   int targetPartyIdx, int targetFightIdx, 
+											   BSTR moveFile)
 {
-	performSpecialMove(sourcePartyIdx, sourceFightIdx, targetPartyIdx, targetFightIdx, getString(moveFile));
+	performSpecialMove(sourcePartyIdx, sourceFightIdx, targetPartyIdx, targetFightIdx, 
+		getString(moveFile));
 	return S_OK;
 }
 
@@ -3477,17 +4033,20 @@ STDMETHODIMP CCallbacks::CBDoEvents()
 STDMETHODIMP CCallbacks::CBFighterAddStatusEffect(int partyIdx, int fightIdx, BSTR statusFile)
 {
 	LPFIGHTER p = getFighter(partyIdx, fightIdx);
+
 	if (p)
 	{
 		const STRING file = getString(statusFile);
 		applyStatusEffect(file, p);
 	}
+
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBFighterRemoveStatusEffect(int partyIdx, int fightIdx, BSTR statusFile)
 {
 	LPFIGHTER p = getFighter(partyIdx, fightIdx);
+
 	if (p)
 	{
 		const STRING file = parser::uppercase(getString(statusFile));
@@ -3495,6 +4054,7 @@ STDMETHODIMP CCallbacks::CBFighterRemoveStatusEffect(int partyIdx, int fightIdx,
 		removeStatusEffect(pEffect, p);
 		p->statuses.erase(p->statuses.find(file));
 	}
+
 	return S_OK;
 }
 
@@ -3515,6 +4075,7 @@ STDMETHODIMP CCallbacks::CBReleaseScreenDC()
 STDMETHODIMP CCallbacks::CBCanvasOpenHdc(int cnv, int *pRet)
 {
 	CCanvas *p = g_canvases.cast(cnv);
+
 	if (p)
 	{
 		*pRet = (int)p->OpenDC();
@@ -3523,16 +4084,19 @@ STDMETHODIMP CCallbacks::CBCanvasOpenHdc(int cnv, int *pRet)
 	{
 		*pRet = FALSE;
 	}
+
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBCanvasCloseHdc(int cnv, int hdc)
 {
 	CCanvas *p = g_canvases.cast(cnv);
+
 	if (p)
 	{
 		p->CloseDC((HDC)hdc);
 	}
+
 	return S_OK;
 }
 
@@ -3546,19 +4110,23 @@ STDMETHODIMP CCallbacks::CBFileExists(BSTR strFile, VARIANT_BOOL *pRet)
 STDMETHODIMP CCallbacks::CBCanvasLock(int cnv)
 {
 	CCanvas *p = g_canvases.cast(cnv);
+
 	if (p)
 	{
 		p->Lock();
 	}
+
 	return S_OK;
 }
 
 STDMETHODIMP CCallbacks::CBCanvasUnlock(int cnv)
 {
 	CCanvas *p = g_canvases.cast(cnv);
+
 	if (p)
 	{
 		p->Unlock();
 	}
+
 	return S_OK;
 }

@@ -1,12 +1,16 @@
 /*
  ********************************************************************
  * The RPG Toolkit, Version 3
- * This file copyright (C) 2006  Jonathan D. Hughes
+ * This file copyright (C) 2006-2014 
+ *				- Johnathan D. Hughes
+ *
+ * Contributors:
+ *				- Joshua Michael Daly
  ********************************************************************
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
+ * as published by the Free Software Foundation; either version 3
  * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -104,12 +108,6 @@ CVector &CVector::operator+= (const DB_POINT p)
  */
 void CVector::push_back(DB_POINT p)
 {
-	// Check we're not adding the same point twice.
-//	if (size() > 1)
-//	{
-//		if (p == m_p.back()) return;
-//	}
-
 	// Push a point onto the vector.
 	m_p.push_back(p);
 }	
@@ -139,18 +137,38 @@ void CVector::push_back(const DB_POINT pts[], const short size)
  */
 void CVector::resize(const unsigned int length)
 {
-	if (length < 1) return;
+	if (length < 1)
+	{
+		return;
+	}
+
 	const bool closed = (length < 2 ? false : m_closed);
 	
 	// Unclose the vector.
-	if (m_closed) m_p.pop_back();
+	if (m_closed)
+	{
+		m_p.pop_back();
+	}
 
-	while (length < size()) m_p.pop_back();
-	while (size() < length) m_p.push_back(m_p.back());
+	while (length < size())
+	{
+		m_p.pop_back();
+	}
+
+	while (size() < length)
+	{
+		m_p.push_back(m_p.back());
+	}
 		
 	// Reclose the vector, if the new length permits.
-	if (closed) m_p.push_back(m_p.front());
-	else m_closed = false;
+	if (closed)
+	{
+		m_p.push_back(m_p.front());
+	}
+	else
+	{
+		m_closed = false;
+	}
 }
 
 /*
@@ -166,9 +184,14 @@ void CVector::setPoint(const unsigned int i, const double x, const double y)
 		// Shift the last point if closed.
 		if (m_closed)
 		{
-			if(i == 0) m_p.back() = m_p[0];
+			if(i == 0)
+			{
+				m_p.back() = m_p[0];
+			}
+
 			m_curl = estimateCurl();
 		}
+
 		boundingBox(m_bounds);
 	}
 }
@@ -184,10 +207,22 @@ void CVector::boundingBox(RECT &rect) const
 	// Loop over subvectors and find biggest and smallest points.
 	for (DB_CITR i = m_p.begin(); i != m_p.end(); ++i)
 	{
-		if ((i->x < rect.left) || (i == m_p.begin())) rect.left = i->x;
-		if ((i->y < rect.top) || (i == m_p.begin())) rect.top = i->y;
-		if (i->x > rect.right) rect.right = i->x;
-		if (i->y > rect.bottom) rect.bottom = i->y;
+		if ((i->x < rect.left) || (i == m_p.begin()))
+		{
+			rect.left = i->x;
+		}
+		if ((i->y < rect.top) || (i == m_p.begin()))
+		{
+			rect.top = i->y;
+		}
+		if (i->x > rect.right)
+		{
+			rect.right = i->x;
+		}
+		if (i->y > rect.bottom)
+		{
+			rect.bottom = i->y;
+		}
 	}
 }
 
@@ -198,14 +233,21 @@ void CVector::boundingBox(RECT &rect) const
 void CVector::close(bool isClosed)
 {
 	// Do not close a single line element.
-	if (size() < 2) isClosed = false;
+	if (size() < 2)
+	{
+		isClosed = false;
+	}
 
 	if (m_closed != isClosed)
 	{
 		if (m_closed)
 		{
 			// Remove the duplicate end point.
-			if (size() > 1) m_p.pop_back();
+			if (size() > 1)
+			{
+				m_p.pop_back();
+			}
+
 			m_curl = CURL_NDEF;
 		}
 		else
@@ -214,8 +256,10 @@ void CVector::close(bool isClosed)
 			push_back(m_p.front());
 			m_curl = estimateCurl();
 		}
+
 		m_closed = isClosed;
 	}
+
 	boundingBox(m_bounds);
 }
 
@@ -225,12 +269,19 @@ void CVector::close(bool isClosed)
  */
 bool CVector::operator== (const CVector &rhs) const
 {
-	if (m_p.size() != rhs.m_p.size()) return false;
+	if (m_p.size() != rhs.m_p.size())
+	{
+		return false;
+	}
 
 	for (unsigned int i = 0; i != m_p.size(); ++i)
 	{
-		if (m_p[i] != rhs.m_p[i]) return false;
+		if (m_p[i] != rhs.m_p[i])
+		{
+			return false;
+		}
 	}
+
 	return true;
 }
 
@@ -251,12 +302,17 @@ bool CVector::contains(const CVector &rhs, DB_POINT &ref) const
 	ref.x = ref.y = 1.0;
 
 	// Check the pointer (for selected player checking).
-	if (&rhs == this) return false;
+	if (&rhs == this)
+	{
+		return false;
+	}
 
 	// Do a bounding box test for the entire rhs vector.
 	if ((rhs.m_bounds.right < m_bounds.left) || (rhs.m_bounds.left > m_bounds.right) ||
-		(rhs.m_bounds.bottom < m_bounds.top) || (rhs.m_bounds.top > m_bounds.bottom)) 
+		(rhs.m_bounds.bottom < m_bounds.top) || (rhs.m_bounds.top > m_bounds.bottom))
+	{
 		return false;
+	}
 
 	// Check for boundary collisions first.
 
@@ -280,9 +336,13 @@ bool CVector::contains(const CVector &rhs, DB_POINT &ref) const
 		for (i = rhs.m_p.begin(); i != rhs.m_p.end(); ++i)
 		{
 			// Determine if this point is contained in the polygon.
-			if (containsPoint(*i)) return true;
+			if (containsPoint(*i))
+			{
+				return true;
+			}
 		}
 	}
+
 	return false;
 }
 
@@ -301,7 +361,10 @@ ZO_ENUM CVector::contains(const CVector &rhs/*, DB_POINT &ref*/) const
 	 */
 
 	// Check the pointer (for selected player checking).
-	if (&rhs == this) return ZO_NONE;
+	if (&rhs == this)
+	{
+		return ZO_NONE;
+	}
 
 	// Do a bounding box test for the entire rhs vector.
 	if ((rhs.m_bounds.right < m_bounds.left) ||
@@ -316,7 +379,10 @@ ZO_ENUM CVector::contains(const CVector &rhs/*, DB_POINT &ref*/) const
 	ZO_ENUM zo = ZO_NONE;
 
 	DB_POINT unused = {0.0};
-	if (intersect(rhs, unused)) zo = ZO_COLLIDE;
+	if (intersect(rhs, unused))
+	{
+		zo = ZO_COLLIDE;
+	}
 
 	// We may be completely inside the vector.
 	// Check we have a closed object.
@@ -330,6 +396,7 @@ ZO_ENUM CVector::contains(const CVector &rhs/*, DB_POINT &ref*/) const
 			// Returns the number of times the target vector's borders
 			// were crossed.
 			int count = windingNumber(*i);
+
 			if (count % 2 == 1) 
 			{
 				// A point is contained.
@@ -368,13 +435,20 @@ bool CVector::pointOnLine(const DB_CITR &i, const DB_POINT &p) const
 		// Evaluate the straight-line equation.
 		if (isVertical(i)) 
 		{
-			if (p.x == i->x) return true;
+			if (p.x == i->x)
+			{
+				return true;
+			}
 		}
 		else
 		{
-			if (fabs(p.y - (gradient(i) * (p.x - i->x) + i->y)) < CV_PRECISION) return true;
+			if (fabs(p.y - (gradient(i) * (p.x - i->x) + i->y)) < CV_PRECISION)
+			{
+				return true;
+			}
 		}
 	}
+
 	return false;
 }
 
@@ -395,7 +469,10 @@ int CVector::windingNumber(const DB_POINT p) const
 	 * If the sprite is below the vector, the boundaries will be crossed
 	 * (an even number of times).
 	 */
-	if (!m_closed) return 0;
+	if (!m_closed)
+	{
+		return 0;
+	}
 
 	// Do a bounding box test for *this* point only.
 	// (As opposed to the whole vector check in contains().)
@@ -403,8 +480,15 @@ int CVector::windingNumber(const DB_POINT p) const
 	// Return 2 boundaries crossed for below.
 	if ((p.x < m_bounds.left)  || 
 		(p.x > m_bounds.right) ||
-		(p.y < m_bounds.top)) return 0;
-	if	(p.y > m_bounds.bottom) return 2;
+		(p.y < m_bounds.top))
+	{
+		return 0;
+	}
+
+	if	(p.y > m_bounds.bottom)
+	{
+		return 2;
+	}
 
 	int count = 0; 
 	for (DB_CITR i = m_p.begin(), j = m_p.end() - 2; i != m_p.end() - 1; j = i++)	
@@ -419,7 +503,10 @@ int CVector::windingNumber(const DB_POINT p) const
 			const double y = (p.x - i->x) * (j->y - i->y) / (j->x - i->x) + i->y;
 
 			// If the point is below the line, increment the count.
-			if (p.y > y) ++count;
+			if (p.y > y)
+			{
+				++count;
+			}
 		}
 	} // for (i)
 
@@ -433,10 +520,16 @@ int CVector::windingNumber(const DB_POINT p) const
 bool CVector::createMask(CCanvas *const cnv, const int x, const int y, CONST LONG color) const
 {
 	// Can't create a mask from an open vector (or a null canvas).
-	if (!m_closed || !cnv) return false;
+	if (!m_closed || !cnv)
+	{
+		return false;
+	}
 
 	// Could end up drawing lines off the canvas.
-	if (x > m_bounds.left || y > m_bounds.top) return false;
+	if (x > m_bounds.left || y > m_bounds.top)
+	{
+		return false;
+	}
 
 	// Create a region (RGN) of POINTs that defines the vector.
 	POINT *ppts = new POINT [size() - 1], *p = ppts;
@@ -469,7 +562,8 @@ bool CVector::createMask(CCanvas *const cnv, const int x, const int y, CONST LON
 /*
  * Draw the vector / polygon onto a canvas, offset by x,y. 
  */
-void CVector::draw(CONST LONG color, const bool drawText, const int x, const int y, CCanvas *const cnv) const
+void CVector::draw(CONST LONG color, const bool drawText, const int x, const int y, 
+				   CCanvas *const cnv) const
 {
 	for (DB_CITR i = m_p.begin(); i != m_p.end(); ++i)
 	{
@@ -543,7 +637,10 @@ int CVector::estimateCurl(void)
 inline double CVector::gradient(const DB_CITR &i) const
 {
 	// Avoid divide by zero.
-	if (isVertical(i)) return GRAD_INF;
+	if (isVertical(i))
+	{
+		return GRAD_INF;
+	}
 
 	return (((i + 1)->y - i->y) / ((i + 1)->x - i->x));
 }
@@ -554,7 +651,10 @@ inline double CVector::gradient(const DB_CITR &i) const
 double CVector::intercept(const DB_CITR &i) const
 {
 	// Avoid vertical lines - return (unless other?).
-	if (isVertical(i)) return 0;
+	if (isVertical(i))
+	{
+		return 0;
+	}
 
 	return (i->y - (gradient(i) * i->x));
 }
@@ -613,7 +713,10 @@ bool CVector::intersect(DB_CITR &i, const CVector &rhs, DB_POINT &ref) const
 		const double m2 = rhs.gradient(j), c2 = j->y - (m2 * j->x);
 
 		// Skip this subvector if lines are parallel.
-		if (fabs(m1 - m2) < CV_PRECISION) continue;
+		if (fabs(m1 - m2) < CV_PRECISION)
+		{
+			continue;
+		}
 
 		// Deal with vertical lines.
 		if (isVertical(i)) 
@@ -704,7 +807,11 @@ bool CPfVector::contains(const CPfVector &rhs) const
 	}
 
 	// rhs should only comprise two points.
-	if (rhs.size() != 2) return false;
+	if (rhs.size() != 2)
+	{
+		return false;
+	}
+
 	const DB_POINT start = rhs.m_p.front(), end = rhs.m_p.back();
 
 	DB_CITR first, last;
@@ -718,7 +825,10 @@ bool CPfVector::contains(const CPfVector &rhs) const
 		// Check if *both* of the points of the rhs vector are in this vector.
 		if (*i == start || *i == end)
 		{
-			if (!&*first) first = i;
+			if (!&*first)
+			{
+				first = i;
+			}
 			else
 			{
 				last = i;
@@ -758,12 +868,17 @@ bool CPfVector::contains(const CPfVector &rhs) const
 
 			if ((fabs(p.x - a.x) > CV_PRECISION || fabs(p.y - a.y) > CV_PRECISION) &&
 				(fabs(p.x - b.x) > CV_PRECISION || fabs(p.y - b.y) > CV_PRECISION))
+			{
 				return true;
+			}
 		}
 	} // for (i)
 
 	// There are 2 or 0 nodes on the vector and the line does not intersect the vector.
-	if (!&*first || &*last)	return false;
+	if (!&*first || &*last)
+	{
+		return false;
+	}
 
 	// There is one node on the vector - is the other inside the vector?
 	return (*first == end ? containsPoint(start) : containsPoint(end));
@@ -824,7 +939,10 @@ void CPfVector::grow(const int offset)
 		if (curl == CURL_NDEF)
 		{
 			// Parallel lines.
-			if (m_closed) continue;
+			if (m_closed)
+			{
+				continue;
+			}
 
 			// Place two points diagonally.
 			// Parallel extension.
@@ -951,6 +1069,7 @@ DB_POINT CPfVector::nearestPoint(const DB_POINT start) const
 			// Perpendicular line.
 			DB_POINT d = {i->y - (i + 1)->y, (i + 1)->x - i->x};
 			extendPoint(p, d, PX_OFFSET);
+
 			if (containsPoint(p))
 			{
 				// Extended on the wrong side!
@@ -958,6 +1077,7 @@ DB_POINT CPfVector::nearestPoint(const DB_POINT start) const
 				d.x = -d.x; d.y = -d.y;
 				extendPoint(p, d, PX_OFFSET);
 			}
+
 			return p;
 		}
 
@@ -995,7 +1115,10 @@ DB_POINT CPfVector::nearestPoint(const DB_POINT start) const
 		const double j = fabs(start.x - p.x) + fabs(start.y - p.y),
 					 k = fabs(start.x - best.x) + fabs(start.y - best.y);
 
-		if (j < k) best = p;
+		if (j < k)
+		{
+			best = p;
+		}
 
 	} // for (i)
 
@@ -1044,15 +1167,23 @@ CPfVector CPfVector::sweep(const DB_POINT &origin, const DB_POINT &target)
 	DB_ITR max, min;
 	max = m_p.end();
 	min = m_p.end();
+
 	if (d.x)
 	{
 		const double m = d.y / d.x;
 		double dmax = 0.0, dmin = 0.0;
+
 		for (DB_ITR i = m_p.begin(); i != m_p.end(); ++i)
 		{
 			const double c = i->y - m * i->x;
-			if (min == m_p.end() || c < dmin) { dmin = c; min = i; }
-			if (max == m_p.end() || c > dmax) { dmax = c; max = i; }
+			if (min == m_p.end() || c < dmin) 
+			{ 
+				dmin = c; min = i; 
+			}
+			if (max == m_p.end() || c > dmax) 
+			{ 
+				dmax = c; max = i; 
+			}
 		}
 	}
 	else
@@ -1060,8 +1191,14 @@ CPfVector CPfVector::sweep(const DB_POINT &origin, const DB_POINT &target)
 		// Take any x-value.
 		for (DB_ITR i = m_p.begin(); i != m_p.end(); ++i)
 		{
-			if (min == m_p.end() || i->x < min->x) min = i;
-			if (max == m_p.end() || i->x > max->x) max = i;
+			if (min == m_p.end() || i->x < min->x) 
+			{
+				min = i;
+			}
+			if (max == m_p.end() || i->x > max->x) 
+			{
+				max = i;
+			}
 		}
 	}
 
@@ -1080,7 +1217,11 @@ CPfVector CPfVector::sweep(const DB_POINT &origin, const DB_POINT &target)
  */
 bool CPfVector::operator< (const CPfVector &rhs) const
 {
-	if (*this == rhs) return m_layer < rhs.m_layer;
+	if (*this == rhs)
+	{
+		return m_layer < rhs.m_layer;
+	}
+
 	return sum() > rhs.sum();
 }
 

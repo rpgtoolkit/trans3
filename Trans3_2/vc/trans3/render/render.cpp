@@ -1,16 +1,18 @@
 /*
  ********************************************************************
  * The RPG Toolkit, Version 3
- * This file copyright (C) 2006  Christopher Matthews & contributors
+ * This file copyright (C) 2006-2014  
+ *				- Christopher Matthews
  *
  * Contributors:
- *    - Colin James Fitzpatrick
- *    - Jonathan D. Hughes
+ *				- Colin James Fitzpatrick
+ *				- Jonathan D. Hughes
+ *				- Joshua Michael Daly
  ********************************************************************
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
+ * as published by the Free Software Foundation; either version 3
  * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -82,9 +84,11 @@ void renderRpgCodeScreen()
 {
 	g_cnvRpgCode->CheckSurfaces();
 	g_pDirectDraw->DrawCanvas(g_cnvRpgCode, 0, 0);
+
 	if (g_mwin.visible)
 	{
 		const int x = (g_resX - g_mwin.width) >> 1;
+
 		if (g_mwin.translucency != 1.0)
 		{
 			g_pDirectDraw->DrawCanvasTranslucent(g_mwin.cnvBkg, x, 0, g_mwin.translucency, -1, -1);
@@ -93,8 +97,10 @@ void renderRpgCodeScreen()
 		{
 			g_pDirectDraw->DrawCanvas(g_mwin.cnvBkg, x, 0);
 		}
+
 		g_pDirectDraw->DrawCanvasTransparent(g_mwin.cnvText, x, 0, g_mwin.color);
 	}
+
 	g_pDirectDraw->Refresh();
 }
 
@@ -150,6 +156,7 @@ void createCanvases()
 		const HDC hdc = g_cnvCursor->OpenDC();
 		const HDC compat = CreateCompatibleDC(hdc);
 		extern HINSTANCE g_hInstance;
+
 		HBITMAP bmp = LoadBitmap(g_hInstance, MAKEINTRESOURCE(IDB_BITMAP1));
 		HGDIOBJ obj = SelectObject(compat, bmp);
 		BitBlt(hdc, 0, 0, 32, 32, compat, 0, 0, SRCCOPY);
@@ -168,14 +175,18 @@ void destroyCanvases()
 	// Do not delete g_renderNow.cnv since it is allocated in g_canvases.
 	delete g_cnvRpgCode;
 	delete g_cnvCursor;
+
 	g_mwin.destroyCanvases();
 
 	std::vector<CCanvas *>::iterator i = g_cnvRpgScreens.begin();
+
 	for (; i != g_cnvRpgScreens.end(); ++i)
 	{
 		delete *i;
 	}
+
 	i = g_cnvRpgScans.begin();
+
 	for (; i != g_cnvRpgScans.end(); ++i)
 	{
 		delete *i;
@@ -194,25 +205,30 @@ void splashScreen()
 	hbmp = LoadBitmap(g_hInstance, MAKEINTRESOURCE(IDB_BITMAP3));
 	//SelectObject(hColorDc, hbmp);
 	FIBITMAP *dib = NULL;
-	if(hbmp) {
 
+	if(hbmp) 
+	{
 		BITMAP bm;
 		GetObject(hbmp, sizeof(BITMAP), (LPSTR) &bm);
 		dib = FreeImage_Allocate(bm.bmWidth, bm.bmHeight, bm.bmBitsPixel);
+
 		// The GetDIBits function clears the biClrUsed and biClrImportant BITMAPINFO members (dont't know why)
 		// So we save these infos below. This is needed for palettized images only.
 		int nColors = FreeImage_GetColorsUsed(dib);
 		HDC dc = GetDC(NULL);
+
 		int Success = GetDIBits(dc, hbmp, 0, FreeImage_GetHeight(dib),
 		FreeImage_GetBits(dib), FreeImage_GetInfo(dib), DIB_RGB_COLORS);
 		ReleaseDC(NULL, dc);
+
 		// restore BITMAPINFO members
 		FreeImage_GetInfoHeader(dib)->biClrUsed = nColors;
 		FreeImage_GetInfoHeader(dib)->biClrImportant = nColors;
-
 	}	
+
 	SetStretchBltMode(hHostDc, COLORONCOLOR);
 	int brightness;
+
 	for (brightness = 0; brightness > -99; --brightness)
 	{
 		FreeImage_AdjustBrightness(dib, brightness);
@@ -220,9 +236,17 @@ void splashScreen()
 			g_resX, g_resY,
 			0, 0, FreeImage_GetWidth(dib), FreeImage_GetHeight(dib),
 			FreeImage_GetBits(dib), FreeImage_GetInfo(dib), DIB_RGB_COLORS, SRCCOPY);
-		if (brightness == 0)Sleep(2000);
-		else Sleep(20);
+		
+		if (brightness == 0)
+		{
+			Sleep(2000);
+		}
+		else
+		{
+			Sleep(20);
+		}
 	}
+
 	// don't forget to call FreeImage_Unload when you no longer need the dib
 	FreeImage_Unload(dib);
 	DeleteObject(hbmp);
@@ -235,8 +259,16 @@ void splashScreen()
  */
 void changeCursor(const STRING strCursor)
 {
-	if (strCursor.empty()) return;
-	if (!g_hHostWnd) return;
+	if (strCursor.empty())
+	{
+		return;
+	}
+
+	if (!g_hHostWnd)
+	{
+		return;
+	}
+
 	extern MAIN_FILE g_mainFile;
 
 	const HDC hHostDc = GetDC(g_hHostWnd);
@@ -248,6 +280,7 @@ void changeCursor(const STRING strCursor)
 	if (strCursor == _T("TK DEFAULT"))
 	{
 		extern HINSTANCE g_hInstance;
+
 		hColorBmp = LoadBitmap(g_hInstance, MAKEINTRESOURCE(IDB_BITMAP2));
 		SelectObject(hColorDc, hColorBmp);
 
@@ -259,6 +292,7 @@ void changeCursor(const STRING strCursor)
 		hColorBmp = CreateCompatibleBitmap(hHostDc, 32, 32);
 		SelectObject(hColorDc, hColorBmp);
 		SetStretchBltMode(hColorDc, COLORONCOLOR);
+
 		extern STRING g_projectPath;
 		drawImage(g_projectPath + BMP_PATH + strCursor, hColorDc, 0, 0, 32, 32);
 	}
@@ -293,7 +327,6 @@ void changeCursor(const STRING strCursor)
  */
 void showScreen(const int width, const int height)
 {
-
 	extern MAIN_FILE g_mainFile;
 	extern HINSTANCE g_hInstance;
 
@@ -341,6 +374,7 @@ void showScreen(const int width, const int height)
 
 	int depth = 16 + g_mainFile.colorDepth * 8;
 	g_pDirectDraw = new CDirectDraw();
+
 	while (!g_pDirectDraw->InitGraphicsMode(g_hHostWnd, width, height, depth, g_mainFile.extendToFullScreen))
 	{
 		if (depth == 16)
@@ -371,7 +405,7 @@ void showScreen(const int width, const int height)
 	createCanvases();
 
 	// TBD: Implement smarter conditions when to show splash screen
-	//splashScreen();
+	splashScreen();
 }
 
 /*
@@ -388,10 +422,12 @@ void tagScrollCache::render(const bool bForceRedraw)
 	{
 		const int w = (g_pBoard->pxWidth() < maxWidth ? g_pBoard->pxWidth() : maxWidth);
 		const int h = (g_pBoard->pxHeight() < maxHeight ? g_pBoard->pxHeight() : maxHeight);
+
 		if (w != cnv.GetWidth() || h != cnv.GetHeight())
 		{
 			cnv.Resize(NULL, w, h);
 		}
+
 		r.left = r.top = 0;
 		r.right = w;
 		r.bottom = h;
@@ -441,7 +477,10 @@ void tagScrollCache::render(const bool bForceRedraw)
 
 			for (std::vector<LPBRD_PROGRAM>::iterator b = g_pBoard->programs.begin(); b != g_pBoard->programs.end(); ++b)
 			{
-				if (*b) (*b)->vBase.draw(RGB(255, 255, 0), true, r.left, r.top, &cnv);
+				if (*b)
+				{
+					(*b)->vBase.draw(RGB(255, 255, 0), true, r.left, r.top, &cnv);
+				}
 			}
 
 			for (std::vector<BRD_VECTOR>::iterator c = g_pBoard->vectors.begin(); c != g_pBoard->vectors.end(); ++c)
@@ -466,6 +505,7 @@ void setAmbientLevel(void)
 	extern LPBOARD g_pBoard;
 	extern ZO_VECTOR g_sprites;
 	const RGB_SHORT bae = g_pBoard->ambientEffect;
+
 	const RGBSHADE al = 
 	{
 		int(CProgram::getGlobal(_T("ambientred"))->getNum()) + bae.r,
@@ -510,7 +550,11 @@ void renderNow(CCanvas *cnv, const bool bForce)
 	extern LPBOARD g_pBoard;
 
 	const bool bScreen = (cnv == NULL);
-	if (!cnv) cnv = g_pDirectDraw->getBackBuffer();
+
+	if (!cnv)
+	{
+		cnv = g_pDirectDraw->getBackBuffer();
+	}
 
 	cnv->ClearScreen(g_pBoard->bkgColor);
 
@@ -518,6 +562,7 @@ void renderNow(CCanvas *cnv, const bool bForce)
 	std::vector<RECT> rects;		
 
 	g_pBoard->checkRestore();
+
 	// Draw the background (parallaxed or otherwise).
 	g_pBoard->renderBackground(cnv, g_screen);
 
@@ -598,7 +643,10 @@ void renderNow(CCanvas *cnv, const bool bForce)
 				};
 				rects.push_back(rAligned);
 			}
-			else continue;
+			else
+			{
+				continue;
+			}
 
 			// Get the sprite's vector base to test for collisions with the under vector.
 			const CVector v = (*j)->getVectorBase(true);
@@ -608,8 +656,10 @@ void renderNow(CCanvas *cnv, const bool bForce)
 			for (std::vector<BRD_VECTOR>::const_iterator k = g_pBoard->vectors.begin(); k != g_pBoard->vectors.end(); ++k)
 			{
 				// Check if this is an "under" vector, is on the same layer and has a canvas.
-				if (!k->pCnv || k->layer != layer || k->type & ~TT_UNDER) 
+				if (!k->pCnv || k->layer != layer || k->type & ~TT_UNDER)
+				{
 					continue;
+				}
 
 				// Under vector's bounds.
 				const RECT rBounds = k->pV->getBounds();
@@ -647,11 +697,15 @@ void renderNow(CCanvas *cnv, const bool bForce)
 	CThreadAnimation::renderAll(cnv);
 
 	// Render the 'renderNow' overlay.
-	if (g_renderNow.draw) g_renderNow.cnv->BltTransparent(cnv, 0, 0, g_renderNow.transp);
+	if (g_renderNow.draw)
+	{
+		g_renderNow.cnv->BltTransparent(cnv, 0, 0, g_renderNow.transp);
+	}
 	
 	if (g_mwin.threadVisible)
 	{
 		const int x = (g_resX - g_mwin.width) >> 1;
+
 		if (g_mwin.translucency != 1.0)
 		{
 			g_pDirectDraw->DrawCanvasTranslucent(g_mwin.cnvBkg, x, 0, g_mwin.translucency, -1, -1);
@@ -660,11 +714,15 @@ void renderNow(CCanvas *cnv, const bool bForce)
 		{
 			g_pDirectDraw->DrawCanvas(g_mwin.cnvBkg, x, 0);
 		}
+
 		g_pDirectDraw->DrawCanvasTransparent(g_mwin.cnvText, x, 0, g_mwin.color);
 	}
 
 	// Render the cursor
-	if (bScreen) g_pDirectDraw->Refresh();
+	if (bScreen)
+	{
+		g_pDirectDraw->Refresh();
+	}
 }
 
 /*
@@ -672,7 +730,6 @@ void renderNow(CCanvas *cnv, const bool bForce)
  */
 void initGraphics()
 {
-
 	extern MAIN_FILE g_mainFile;
 
 	int width = 0, height = 0;

@@ -1,12 +1,16 @@
 /*
  ********************************************************************
  * The RPG Toolkit, Version 3
- * This file copyright (C) 2006  Colin James Fitzpatrick
+ * This file copyright (C) 2006-2014 
+ *				- Colin James Fitzpatrick
+ *
+ * Contributors:
+ *				- Joshua Michael Daly
  ********************************************************************
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
+ * as published by the Free Software Foundation; either version 3
  * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -47,7 +51,8 @@ static ICallbacks *g_pCallbacks = NULL;
 interface IPluginInput
 {
 	virtual bool inputRequested(const int type) = 0;
-	virtual bool eventInform(const int keyCode, const int x, const int y, const int button, const int shift, const STRING key, const int type) = 0;
+	virtual bool eventInform(const int keyCode, const int x, const int y, 
+		const int button, const int shift, const STRING key, const int type) = 0;
 };
 
 // Number of members in a COM-based plugin's interface.
@@ -171,13 +176,16 @@ IPlugin *loadPlugin(const STRING path)
 	{
 		FreeLibrary(mod);
 		COldPlugin *p = new COldPlugin();
+
 		if (p->load(file))
 		{
 			p->initialize();
 			return p;
 		}
+
 		messageBox(_T("The file ") + file + _T(" is not a valid plugin."));
 		delete p;
+
 		return NULL;
 	}
 
@@ -259,9 +267,11 @@ IPlugin *loadPlugin(const STRING path)
 /*
  * Inform applicable plugins of an event.
  */
-void informPluginEvent(const int keyCode, const int x, const int y, const int button, const int shift, const STRING key, const int type)
+void informPluginEvent(const int keyCode, const int x, const int y, const int button, 
+					   const int shift, const STRING key, const int type)
 {
 	std::set<IPluginInput *>::iterator i = g_inputPlugins.begin();
+
 	for (; i != g_inputPlugins.end(); ++i)
 	{
 		if ((*i)->inputRequested(type))
@@ -277,7 +287,9 @@ void informPluginEvent(const int keyCode, const int x, const int y, const int bu
 void initPluginSystem()
 {
 	if (g_pCallbacks) return;
-	CoCreateInstance(CLSID_Callbacks, NULL, CLSCTX_INPROC_SERVER, IID_ICallbacks, (void **)&g_pCallbacks);
+	CoCreateInstance(CLSID_Callbacks, NULL, CLSCTX_INPROC_SERVER, IID_ICallbacks, 
+		(void **)&g_pCallbacks);
+
 	// For backward compatibility.
 	g_oldCallbacks.push_back(int(CBRpgCode));
 	g_oldCallbacks.push_back(int(CBGetString));
@@ -419,7 +431,11 @@ void initPluginSystem()
  */
 void freePluginSystem()
 {
-	if (!g_pCallbacks) return;
+	if (!g_pCallbacks)
+	{
+		return;
+	}
+
 	g_pCallbacks->Release();
 	g_pCallbacks = NULL;
 	g_oldCallbacks.clear();
@@ -467,18 +483,13 @@ bool CComPlugin::load(ITypeInfo *pTypeInfo)
 		return false;
 	}
 
-	//messageBox(_T("Passed first hurdle not m_plugin and g_pCallbacks works"));
-
 	// Create an instance of the plugin's class.
-	// Failing on Windows 7 at this point.
 	HRESULT hr = pTypeInfo->CreateInstance(NULL, IID_IDispatch, (LPVOID *)&m_plugin);
 
 	if (FAILED(hr)) 
 	{
 		return false;
 	}
-
-	/*messageBox(_T("HRESULT from creating an instance worked."));*/
 
 	// I regret this arbitrary naming scheme, but it's too
 	// late to change it now.
@@ -514,8 +525,6 @@ bool CComPlugin::load(ITypeInfo *pTypeInfo)
 		return false;
 	}
 
-	/*messageBox(_T("DISPID is known you have passed another hurdle"));*/
-
 	// Provide the plugin with a pointer to an instance of
 	// CCallbacks, via the setCallbacks() function.
 	DISPPARAMS params = {NULL, NULL, 1, 1};
@@ -526,9 +535,9 @@ bool CComPlugin::load(ITypeInfo *pTypeInfo)
 	DISPID put = DISPID_PROPERTYPUT;
 	params.rgdispidNamedArgs = &put;
 
-	if (FAILED(m_plugin->Invoke(disp, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUTREF, &params, NULL, NULL, NULL)))
+	if (FAILED(m_plugin->Invoke(disp, IID_NULL, LOCALE_USER_DEFAULT, 
+		DISPATCH_PROPERTYPUTREF, &params, NULL, NULL, NULL)))
 	{
-		/*messageBox(_T("Property set failed inspection possible worry here"));*/
 		// No property set; try for property let.
 		if (FAILED(m_plugin->Invoke(disp, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYPUT, &params, NULL, NULL, NULL)))
 		{
@@ -537,19 +546,26 @@ bool CComPlugin::load(ITypeInfo *pTypeInfo)
 		}
 	}
 
-	/*messageBox(_T("At least a property set or property let passed inspection"));
-	messageBox(_T("Honestly if you're here then something else has gone wrong somewhere. Trying more opotions"));*/
-
 	return true;
 }
 
 bool COldPlugin::load(const STRING file)
 {
-	if (m_hModule || !g_pCallbacks) return false;
+	if (m_hModule || !g_pCallbacks)
+	{
+		return false;
+	}
+
 	m_hModule = LoadLibrary(file.c_str());
-	if (!m_hModule) return false;
+
+	if (!m_hModule)
+	{
+		return false;
+	}
+
 	INIT_PROC pInit = INIT_PROC(GetProcAddress(m_hModule, _T("TKPlugInit")));
 	VERSION_PROC pVersion = VERSION_PROC(GetProcAddress(m_hModule, _T("TKPlugVersion")));
+
 	if (pInit)
 	{
 		pInit(&g_oldCallbacks[0], (!pVersion) ? 45 : g_oldCallbacks.size());
@@ -559,6 +575,7 @@ bool COldPlugin::load(const STRING file)
 		FreeLibrary(m_hModule);
 		return false;
 	}
+
 	m_plugBegin = BEGIN_PROC(GetProcAddress(m_hModule, _T("TKPlugBegin")));
 	m_plugQuery = QUERY_PROC(GetProcAddress(m_hModule, _T("TKPlugQuery")));
 	m_plugExecute = EXECUTE_PROC(GetProcAddress(m_hModule, _T("TKPlugExecute")));
@@ -569,11 +586,13 @@ bool COldPlugin::load(const STRING file)
 	m_plugFightInform = FIGHT_INFORM_PROC(GetProcAddress(m_hModule, _T("TKPlugFightInform")));
 	m_plugInputRequested = INPUT_REQUESTED_PROC(GetProcAddress(m_hModule, _T("TKPlugInputRequested")));
 	m_plugEventInform = EVENT_INFORM_PROC(GetProcAddress(m_hModule, _T("TKPlugEventInform")));
+	
 	if (m_plugInputRequested)
 	{
 		// This plugin accepts 'special' input.
 		g_inputPlugins.insert(this);
 	}
+
 	return true;
 }
 
@@ -582,10 +601,17 @@ bool COldPlugin::load(const STRING file)
  */
 void CComPlugin::initialize()
 {
-	if (!m_plugin) return;
+	if (!m_plugin)
+	{
+		return;
+	}
 
 	const MEMBERID member = m_members[MEMBER_INITIALIZE];
-	if (member == DISPID_UNKNOWN) return;
+
+	if (member == DISPID_UNKNOWN)
+	{
+		return;
+	}
 
 	DISPPARAMS params = {NULL, NULL, 0, 0};
 
@@ -603,7 +629,11 @@ void CComPlugin::initialize()
 
 void COldPlugin::initialize()
 {
-	if (!m_hModule) return;
+	if (!m_hModule)
+	{
+		return;
+	}
+
 	m_plugBegin();
 }
 
@@ -612,10 +642,17 @@ void COldPlugin::initialize()
  */
 void CComPlugin::terminate()
 {
-	if (!m_plugin) return;
+	if (!m_plugin)
+	{
+		return;
+	}
 
 	const MEMBERID member = m_members[MEMBER_TERMINATE];
-	if (member == DISPID_UNKNOWN) return;
+
+	if (member == DISPID_UNKNOWN)
+	{
+		return;
+	}
 
 	DISPPARAMS params = {NULL, NULL, 0, 0};
 
@@ -633,7 +670,11 @@ void CComPlugin::terminate()
 
 void COldPlugin::terminate()
 {
-	if (!m_hModule) return;
+	if (!m_hModule)
+	{
+		return;
+	}
+
 	m_plugEnd();
 }
 
@@ -642,10 +683,17 @@ void COldPlugin::terminate()
  */
 bool CComPlugin::query(const STRING function)
 {
-	if (!m_plugin) return false;
+	if (!m_plugin)
+	{
+		return false;
+	}
 
 	const MEMBERID member = m_members[MEMBER_QUERY];
-	if (member == DISPID_UNKNOWN) return false;
+
+	if (member == DISPID_UNKNOWN)
+	{
+		return false;
+	}
 
 	CComVariant vars[] = {function.c_str()}, ret;
 	DISPPARAMS params = {vars, NULL, 1, 0};
@@ -666,7 +714,11 @@ bool CComPlugin::query(const STRING function)
 
 bool COldPlugin::query(const STRING function)
 {
-	if (!m_hModule) return false;
+	if (!m_hModule)
+	{
+		return false;
+	}
+
 #pragma warning (disable : 4800) // forcing value to bool 'true' or 'false' (performance warning)
 	return m_plugQuery((char *)getAsciiString(function).c_str());
 #pragma warning (default : 4800) // forcing value to bool 'true' or 'false' (performance warning)
@@ -675,12 +727,20 @@ bool COldPlugin::query(const STRING function)
 /*
  * Execute an RPGCode function.
  */
-bool CComPlugin::execute(const STRING line, int &retValDt, STRING &retValLit, double &retValNum, const short usingReturn)
+bool CComPlugin::execute(const STRING line, int &retValDt, STRING &retValLit, 
+						 double &retValNum, const short usingReturn)
 {
-	if (!m_plugin) return false;
+	if (!m_plugin)
+	{
+		return false;
+	}
 
 	const MEMBERID member = m_members[MEMBER_EXECUTE];
-	if (member == DISPID_UNKNOWN) return false;
+
+	if (member == DISPID_UNKNOWN)
+	{
+		return false;
+	}
 
 	// Arguments in *reverse* order.
 	CComVariant vars[5], ret;
@@ -713,14 +773,20 @@ bool CComPlugin::execute(const STRING line, int &retValDt, STRING &retValLit, do
 	return (ret.boolVal == VARIANT_TRUE);
 }
 
-bool COldPlugin::execute(const STRING line, int &retValDt, STRING &retValLit, double &retValNum, const short usingReturn)
+bool COldPlugin::execute(const STRING line, int &retValDt, STRING &retValLit, 
+						 double &retValNum, const short usingReturn)
 {
-	if (!m_hModule) return false;
+	if (!m_hModule)
+	{
+		return false;
+	}
+
 	retValDt = 0;
 	retValNum = 0.0;
 	retValLit = "";
 	char retLit[255];
 	memset(retLit, 0, sizeof(retLit));
+
 #pragma warning (disable : 4800) // forcing value to bool 'true' or 'false' (performance warning)
 	bool ret = m_plugExecute((char*)getAsciiString(line).c_str(), retValDt, retLit, retValNum, usingReturn);//((char *)getAsciiString(line).c_str());
 	retValLit = std::string(retLit);
@@ -731,12 +797,20 @@ bool COldPlugin::execute(const STRING line, int &retValDt, STRING &retValLit, do
 /*
  * Start a fight.
  */
-int CComPlugin::fight(const int enemyCount, const int skillLevel, const STRING background, const bool canRun)
+int CComPlugin::fight(const int enemyCount, const int skillLevel, 
+					  const STRING background, const bool canRun)
 {
-	if (!m_plugin) return 0;
+	if (!m_plugin)
+	{
+		return 0;
+	}
 
 	const MEMBERID member = m_members[MEMBER_FIGHT];
-	if (member == DISPID_UNKNOWN) return 0;
+
+	if (member == DISPID_UNKNOWN)
+	{
+		return 0;
+	}
 
 	// Arguments in *reverse* order.
 	CComVariant vars[] = {int(canRun), background.c_str(), skillLevel, enemyCount}, ret;
@@ -756,21 +830,37 @@ int CComPlugin::fight(const int enemyCount, const int skillLevel, const STRING b
 	return ret.intVal;
 }
 
-int COldPlugin::fight(const int enemyCount, const int skillLevel, const STRING background, const bool canRun)
+int COldPlugin::fight(const int enemyCount, const int skillLevel, 
+					  const STRING background, const bool canRun)
 {
-	if (!m_hModule) return 0;
+	if (!m_hModule)
+	{
+		return 0;
+	}
+
 	return m_plugFight(enemyCount, skillLevel, (char *)background.c_str(), canRun);
 }
 
 /*
  * Send a fight message.
  */
-int CComPlugin::fightInform(const int sourcePartyIndex, const int sourceFighterIndex, const int targetPartyIndex, const int targetFighterIndex, const int sourceHpLost, const int sourceSmpLost, const int targetHpLost, const int targetSmpLost, const STRING strMessage, const int attackCode)
+int CComPlugin::fightInform(const int sourcePartyIndex, const int sourceFighterIndex, 
+							const int targetPartyIndex, const int targetFighterIndex, 
+							const int sourceHpLost, const int sourceSmpLost, 
+							const int targetHpLost, const int targetSmpLost, 
+							const STRING strMessage, const int attackCode)
 {
-	if (!m_plugin) return 0;
+	if (!m_plugin)
+	{
+		return 0;
+	}
 
 	const MEMBERID member = m_members[MEMBER_FIGHTINFORM];
-	if (member == DISPID_UNKNOWN) return 0;
+
+	if (member == DISPID_UNKNOWN)
+	{
+		return 0;
+	}
 
 	// Arguments in *reverse* order.
 	CComVariant vars[] = {attackCode, strMessage.c_str(), targetSmpLost, targetHpLost, sourceSmpLost, sourceHpLost, targetFighterIndex, targetPartyIndex, sourceFighterIndex, sourcePartyIndex}, ret;
@@ -790,10 +880,20 @@ int CComPlugin::fightInform(const int sourcePartyIndex, const int sourceFighterI
 	return ret.intVal;
 }
 
-int COldPlugin::fightInform(const int sourcePartyIndex, const int sourceFighterIndex, const int targetPartyIndex, const int targetFighterIndex, const int sourceHpLost, const int sourceSmpLost, const int targetHpLost, const int targetSmpLost, const STRING strMessage, const int attackCode)
+int COldPlugin::fightInform(const int sourcePartyIndex, const int sourceFighterIndex, 
+							const int targetPartyIndex, const int targetFighterIndex, 
+							const int sourceHpLost, const int sourceSmpLost, 
+							const int targetHpLost, const int targetSmpLost, 
+							const STRING strMessage, const int attackCode)
 {
-	if (!m_hModule) return 0;
-	return m_plugFightInform(sourcePartyIndex, sourceFighterIndex, targetPartyIndex, targetFighterIndex, sourceHpLost, sourceSmpLost, targetHpLost, targetSmpLost, (char *)strMessage.c_str(), attackCode);
+	if (!m_hModule)
+	{
+		return 0;
+	}
+
+	return m_plugFightInform(sourcePartyIndex, sourceFighterIndex, targetPartyIndex, 
+		targetFighterIndex, sourceHpLost, sourceSmpLost, targetHpLost, targetSmpLost, 
+		(char *)strMessage.c_str(), attackCode);
 }
 
 /*
@@ -801,10 +901,17 @@ int COldPlugin::fightInform(const int sourcePartyIndex, const int sourceFighterI
  */
 bool CComPlugin::getFighterLocation(const int party, const int idx, int &x, int &y)
 {
-	if (!m_plugin) return false;
+	if (!m_plugin)
+	{
+		return false;
+	}
 
 	const MEMBERID member = m_members[MEMBER_GETFIGHTERLOCATION];
-	if (member == DISPID_UNKNOWN) return false;
+
+	if (member == DISPID_UNKNOWN)
+	{
+		return false;
+	}
 
 	// Arguments in *reverse* order.
 	CComVariant vars[4], ret;
@@ -838,10 +945,17 @@ bool CComPlugin::getFighterLocation(const int party, const int idx, int &x, int 
  */
 int CComPlugin::menu(const int request)
 {
-	if (!m_plugin) return 0;
+	if (!m_plugin)
+	{
+		return 0;
+	}
 
 	const MEMBERID member = m_members[MEMBER_MENU];
-	if (member == DISPID_UNKNOWN) return 0;
+
+	if (member == DISPID_UNKNOWN)
+	{
+		return 0;
+	}
 
 	CComVariant vars[] = {request}, ret;
 	DISPPARAMS params = {vars, NULL, 1, 0};
@@ -862,7 +976,11 @@ int CComPlugin::menu(const int request)
 
 int COldPlugin::menu(const int request)
 {
-	if (!m_hModule) return 0;
+	if (!m_hModule)
+	{
+		return 0;
+	}
+
 	return m_plugMenu(request);
 }
 
@@ -871,10 +989,17 @@ int COldPlugin::menu(const int request)
  */
 bool CComPlugin::plugType(const int request)
 {
-	if (!m_plugin) return false;
+	if (!m_plugin)
+	{
+		return false;
+	}
 
 	const MEMBERID member = m_members[MEMBER_TYPE];
-	if (member == DISPID_UNKNOWN) return false;
+
+	if (member == DISPID_UNKNOWN)
+	{
+		return false;
+	}
 
 	CComVariant vars[] = {request}, ret;
 	DISPPARAMS params = {vars, NULL, 1, 0};
@@ -895,7 +1020,11 @@ bool CComPlugin::plugType(const int request)
 
 bool COldPlugin::plugType(const int request)
 {
-	if (!m_hModule) return false;
+	if (!m_hModule)
+	{
+		return false;
+	}
+
 #pragma warning (disable : 4800) // forcing value to bool 'true' or 'false' (performance warning)
 	return (m_plugType ? m_plugType(request) : (request == PT_RPGCODE));
 #pragma warning (default : 4800) // forcing value to bool 'true' or 'false' (performance warning)
@@ -912,6 +1041,7 @@ bool COldPlugin::inputRequested(const int type)
 		return m_plugInputRequested(type);
 #pragma warning (default : 4800) // forcing value to bool 'true' or 'false' (performance warning)
 	}
+
 	return false;
 }
 
@@ -926,6 +1056,7 @@ bool COldPlugin::eventInform(const int keyCode, const int x, const int y, const 
 		return m_plugEventInform(keyCode, x, y, button, shift, (char *)getAsciiString(key).c_str(), type);
 #pragma warning (default : 4800) // forcing value to bool 'true' or 'false' (performance warning)
 	}
+
 	return true;
 }
 
@@ -949,6 +1080,7 @@ void COldPlugin::unload()
 		{
 			g_inputPlugins.erase(this);
 		}
+
 		FreeLibrary(m_hModule);
 		m_hModule = NULL;
 	}

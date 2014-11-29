@@ -1,7 +1,6 @@
 /*
  ********************************************************************
  * The RPG Toolkit, Version 3
-
  * This file copyright (C) 2006-2014 
  *				- Colin James Fitzpatrick
  *				- Jonathan D. Hughes

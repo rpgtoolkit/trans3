@@ -1,12 +1,17 @@
 /*
  ********************************************************************
  * The RPG Toolkit, Version 3
- * This file copyright (C) 2007 Jonathan D. Hughes & Colin James Fitzpatrick
+ * This file copyright (C) 2007-2014 
+ *				- Colin James Fitzpatrick
+ *				- Johnathan D. Hughes
+ *
+ * Contributors:
+ *				- Joshua Michael Daly
  ********************************************************************
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
+ * as published by the Free Software Foundation; either version 3
  * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -212,7 +217,10 @@ void CPlayer::giveExperience(const int amount)
 
 	const int lev = level();
 	
-	if(lev >= m_playerMem.maxLevel) return;
+	if(lev >= m_playerMem.maxLevel)
+	{
+		return;
+	}
 
 	while (m_playerMem.nextLevel <= 0)
 	{
@@ -239,13 +247,17 @@ void CPlayer::levelUp()
 	// Level up.
 	const int lev = level();	
 	
-	if (lev >= m_playerMem.maxLevel) return;
+	if (lev >= m_playerMem.maxLevel)
+	{
+		return;
+	}
 	
 	level(lev + 1);
 	
 	if (m_playerMem.charLevelUpType == 0)
 	{
-		m_playerMem.levelProgression += m_playerMem.levelProgression * int(m_playerMem.experienceIncrease / 100.0);
+		m_playerMem.levelProgression += m_playerMem.levelProgression * 
+			int(m_playerMem.experienceIncrease / 100.0);
 	}
 	else
 	{
@@ -327,17 +339,26 @@ void CPlayer::getLearnedMoves(std::vector<STRING> &moves) const
 	std::vector<STRING>::const_iterator i = m_playerMem.smlist.begin();
 	for (unsigned int j = 0; i != m_playerMem.smlist.end(); ++i, ++j)
 	{
-		if (!i->length()) continue;
+		if (!i->length())
+		{
+			continue;
+		}
 
 		bool learned = false;
 
 		// Check experience.
-		if (exp >= m_playerMem.spcMinExp[j]) learned = true;
+		if (exp >= m_playerMem.spcMinExp[j])
+		{
+			learned = true;
+		}
 
 		// Check level.
 		if (!learned)
 		{
-			if (lev >= m_playerMem.spcMinLevel[j]) learned = true;
+			if (lev >= m_playerMem.spcMinLevel[j])
+			{
+				learned = true;
+			}
 		}
 
 		// Check activation variable.
@@ -346,7 +367,10 @@ void CPlayer::getLearnedMoves(std::vector<STRING> &moves) const
 			if (!m_playerMem.spcVar[j].empty())
 			{
 				LPSTACK_FRAME pVar = CProgram::getGlobal(m_playerMem.spcVar[j]);
-				if (pVar->getLit() == m_playerMem.spcEquals[j]) learned = true;
+				if (pVar->getLit() == m_playerMem.spcEquals[j])
+				{
+					learned = true;
+				}
 			}
 		}
 
@@ -402,11 +426,19 @@ void CPlayer::addEquipment(const unsigned int slot, const STRING file)
 	extern STRING g_projectPath;
 	extern ENTITY g_target;
 
-	if (!CFile::fileExists(file)) return;
+	if (!CFile::fileExists(file))
+	{
+		return;
+	}
+
 	ITEM item;
 	item.open(file, NULL);
 	// Is item equippable?
-	if (item.equipYN != 1) throw CError(_T("Item not equippable"));
+	if (item.equipYN != 1)
+	{
+		throw CError(_T("Item not equippable"));
+	}
+
 	// Is player allowed to equip it?
 	if (item.usedBy == 1)
 	{
@@ -414,15 +446,21 @@ void CPlayer::addEquipment(const unsigned int slot, const STRING file)
 		for (; i != item.itmChars.end(); ++i)
 		{
 			if (_tcsicmp(m_playerMem.charname.c_str(), i->c_str()) == 0)
+			{
 				break;
+			}
 		}
-		if (i == item.itmChars.end()) throw CError(_T("Player cannot equip item."));
+		if (i == item.itmChars.end())
+		{
+			throw CError(_T("Player cannot equip item."));
+		}
 	}
 
 	while (slot >= m_equipment.data.size())
 	{
 		m_equipment.data.push_back(EQ_SLOT());
 	}
+
 	m_equipment.data[slot].first = file;
 	m_equipment.data[slot].second = item.itemName;
 	// Cumulative modifiers.
@@ -442,9 +480,12 @@ void CPlayer::addEquipment(const unsigned int slot, const STRING file)
 	ENTITY t = g_target;
 	g_target.p = this;
 	g_target.type = ET_PLAYER;
-	if(!item.prgEquip.empty()){
+
+	if(!item.prgEquip.empty())
+	{
 		CProgram(g_projectPath + PRG_PATH + item.prgEquip).run();
 	}
+
 	g_target = t;
 }
 
@@ -457,8 +498,15 @@ void CPlayer::removeEquipment(const unsigned int slot)
 	extern ENTITY g_target;
 	extern CInventory g_inv;
 
-	if (slot > m_equipment.data.size()) return;
-	if (m_equipment.data[slot].first.empty()) return;
+	if (slot > m_equipment.data.size())
+	{
+		return;
+	}
+
+	if (m_equipment.data[slot].first.empty())
+	{
+		return;
+	}
 
 	ITEM item;
 	item.open(m_equipment.data[slot].first, NULL);
@@ -470,7 +518,9 @@ void CPlayer::removeEquipment(const unsigned int slot)
 
 	g_target.p = this;
 	g_target.type = ET_PLAYER;
-	if(!item.prgRemove.empty()){
+
+	if(!item.prgRemove.empty())
+	{
 		CProgram(g_projectPath + PRG_PATH + item.prgRemove).run();
 	}
 
@@ -497,9 +547,18 @@ void CPlayer::removeEquipment(const unsigned int slot)
 
 	// Cap health, smp.
 	const int maxHp = maxHealth();
-	if (health() > maxHp) health(maxHp);
+
+	if (health() > maxHp)
+	{
+		health(maxHp);
+	}
+
 	const int maxSm = maxSmp();
-	if (smp() > maxSm) smp(maxSm);
+
+	if (smp() > maxSm)
+	{
+		smp(maxSm);
+	}
 }
 
 /*
@@ -521,6 +580,7 @@ void CPlayer::restore(const bool bDoLevels)
 		{
 			int exp = 0;
 			double levelUp = double(m_playerMem.levelType);
+
 			for (int i = 0; i != levels; ++i)
 			{
 				if (m_playerMem.charLevelUpType == 0)
@@ -536,6 +596,7 @@ void CPlayer::restore(const bool bDoLevels)
 					exp += levelUp;
 				}
 			}
+
 			m_playerMem.nextLevel = exp - experience();
 			m_playerMem.levelProgression = int(levelUp);
 		}
@@ -548,6 +609,7 @@ void CPlayer::restore(const bool bDoLevels)
 void CPlayer::swapGraphics(const STRING file)
 {
 	extern STRING g_projectPath;
+
 	if (CFile::fileExists(g_projectPath + TEM_PATH + file))
 	{
 		m_anmReplacement = file;
@@ -561,6 +623,7 @@ void CPlayer::swapGraphics(const STRING file)
 		{
 			i->swap(*j);
 		}
+
 		m_attr.mapCustomGfx.swap(p.m_attr.mapCustomGfx);
 		// Update the current pointer.
 		setAnm(m_facing.dir());
