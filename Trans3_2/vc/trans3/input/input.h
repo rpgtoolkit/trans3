@@ -45,8 +45,25 @@
 /*
  * Transform a char to an STRING, converting
  * common characters to string representations.
- */
+ */ 
 STRING getName(const char chr, const char isVirtual, const bool bCapital);
+
+/*
+* Gets the virtual key code associated with a ASCII character.
+*/
+SHORT getVirtualKey(const char chr);
+
+/*
+* Gets the virtual key code associated with a virtual string.
+*/
+SHORT getVirtualKey(const STRING str);
+
+/*
+* Gets the physical state of a key on the keyboard
+* is it pressed, depressed, or toggled for keys like
+* Caps Lock.
+*/
+BOOL getKeyState(const SHORT key);
 
 /*
  * Wait for a key.

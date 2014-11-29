@@ -1,8 +1,11 @@
 /*
  ********************************************************************
  * The RPG Toolkit, Version 3
- * This file copyright (C) 2006  Colin Fitzpatrick & Jonathan Hughes
- *
+
+ * This file copyright (C) 2006-2014 
+ *				- Colin James Fitzpatrick
+ *				- Jonathan D. Hughes
+
  * Contributors:
  *				Joshua Michael Daly, LJ Gutierrez
  ********************************************************************
@@ -110,7 +113,7 @@ bool m_testingProgram = false;			// Has trans3 been passed a program to test?
 /*
  * Defines.
  */
-#define _DEBUG 1
+#define _DEBUG 0
 #ifdef _DEBUG
 
 unsigned long g_allocated = 0;
@@ -634,9 +637,8 @@ STRING getMainFileName(const STRING cmdLine)
 
 	if (_ftcsicmp(getExtension(fileName).c_str(), _T("TPK")) == 0)
 	{
-//		MessageBox(NULL, _T("It is a pakfile, PakFile"),_T("Just Checking"),0);
 		initialisePakFile(fileName);
-//		MessageBox(NULL, _T("Still here returning maingame"),_T("Just Checking"),0);
+
 		return mainGam;
 	}
 	return fileName;

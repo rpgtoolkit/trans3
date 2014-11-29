@@ -119,6 +119,73 @@ STRING getName(const char chr, const char isVirtual, const bool bCapital)
 }
 
 /*
+* Get the virtual key code associated with a ASCII character.
+*/
+SHORT getVirtualKey(const char chr)
+{
+	// Assume that the keyboard layout does not matter, if there are locale
+	// issues VkKeyScanEx() should be used in place of this.
+	return VkKeyScan(chr);
+}
+
+/*
+* Get the virtual key code associated with a virtual string.
+*/
+SHORT getVirtualKey(const STRING str)
+{
+	SHORT vkCode = -1;
+
+	if (str == _T("LEFT"))
+	{
+		vkCode = 37;
+	}
+	else if (str == _T("RIGHT"))
+	{
+		vkCode = 39;
+	}
+	else if (str == _T("UP"))
+	{
+		vkCode = 38;
+	}
+	else if (str == _T("DOWN"))
+	{
+		vkCode = 40;
+	}
+	else if (str == _T("ENTER"))
+	{
+		vkCode = 13;
+	}
+	else if (str == _T("ESC"))
+	{
+		vkCode = 27;
+	}
+	else if (str == _T("BACKSPACE"))
+	{
+		vkCode = 8;
+	}
+	else if (str == _T("TAB"))
+	{
+		vkCode = 9;
+	}
+	else if (str == _T("CAPSLOCK"))
+	{
+		vkCode = 20;
+	}
+
+	return vkCode;
+}
+
+/*
+* Gets the physical state of a key on the keyboard
+* is it pressed, depressed, or toggled for keys like
+* Caps Lock.
+*/
+BOOL getKeyState(const SHORT key)
+{
+	return !!(GetAsyncKeyState(key) & 0x8000);
+}
+
+/*
  * Wait for a key.
  *
  * return (out) - the key pressed

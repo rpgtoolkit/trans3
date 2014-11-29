@@ -8741,6 +8741,40 @@ void activePlayer(CALL_DATA &params)
 	params.ret().lit = g_pSelectedPlayer->name();
 }
 
+/* 
+ * bool keyDown(string key)
+ *
+ * Get the pressed state of a key.
+ */
+void keydown(CALL_DATA &params)
+{
+	if (params.params != 1)
+	{
+		throw CError(_T("KeyDown() requires one parameter."));
+	}
+
+	SHORT key;
+
+	// Is it one of our virtual keys "UP", "DOWN",...?
+	if (params[0].getLit().length() > 1)
+	{
+		key = getVirtualKey(params[0].getLit());
+
+		if (key == -1)
+		{
+			throw CError(_T("Invalid constant value used with KeyDown()."));
+		}
+	}
+	else
+	{
+		key = getVirtualKey(tolower(params[0].getLit()[0]));
+	}
+
+	// Return the state.
+	params.ret().udt = UDT_NUM;
+	params.ret().num = double(getKeyState(key));
+}
+
 // Get a numerical stack frame.
 inline STACK_FRAME makeNumStackFrame(const double num)
 {
@@ -8757,6 +8791,7 @@ inline STACK_FRAME makeNumStackFrame(const double num)
 void initRpgCode()
 {
 	// List of functions.
+	CProgram::addFunction(_T("keydown"), keydown);
 	CProgram::addFunction(_T("mwin"), mwin);
 	CProgram::addFunction(_T("wait"), wait);
 	CProgram::addFunction(_T("mwincls"), mwinCls);
