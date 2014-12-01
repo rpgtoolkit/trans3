@@ -204,7 +204,8 @@ void registerFonts(bool bRegister)
 	registerFonts(g_projectPath + FONT_PATH, bRegister);
 
 	// Broadcast to the system that the fonts were updated.
-	PostMessage(HWND_BROADCAST, WM_FONTCHANGE, 0, 0);
+	SendMessage(HWND_BROADCAST, WM_FONTCHANGE, 0, 0);
+	//PostMessage(HWND_BROADCAST, WM_FONTCHANGE, 0, 0);
 }
 
 /*
